@@ -24,7 +24,6 @@ import com.ulfric.commons.cdi.intercept.Interceptor;
 import com.ulfric.commons.cdi.intercept.InterceptorPipeline;
 import com.ulfric.commons.collect.MapUtils;
 import com.ulfric.commons.reflect.AnnotationUtils;
-import com.ulfric.commons.reflect.ClassUtils;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
@@ -79,7 +78,7 @@ public final class BeanFactory {
 	{
 		@SuppressWarnings("unchecked")
 		Class<? extends T> binding = (Class<? extends T>)
-			this.bindings.computeIfAbsent(request, this::inferBinding);
+			this.bindings.computeIfAbsent(request, this::createInterceptorClass);
 
 		if (binding == null)
 		{
@@ -88,21 +87,6 @@ public final class BeanFactory {
 
 		Annotation scope = this.getScope(binding);
 		return this.createInstance(scope, binding);
-	}
-
-	private Class<?> inferBinding(Class<?> request)
-	{
-		if (request.isInterface())
-		{
-			return null;
-		}
-
-		if (ClassUtils.isAbstract(request))
-		{
-			return null;
-		}
-
-		return request;
 	}
 
 	private Annotation getScope(Class<?> holder)
