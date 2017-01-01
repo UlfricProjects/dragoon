@@ -15,6 +15,8 @@ import com.ulfric.commons.cdi.construct.scope.ScopeNotPresentException;
 import com.ulfric.commons.cdi.construct.scope.ScopeStrategy;
 import com.ulfric.commons.cdi.construct.scope.Shared;
 import com.ulfric.commons.cdi.construct.scope.SharedScopeStrategy;
+import com.ulfric.commons.cdi.construct.scope.Supplied;
+import com.ulfric.commons.cdi.construct.scope.SuppliedScopeStrategy;
 import com.ulfric.commons.cdi.inject.Injector;
 import com.ulfric.commons.cdi.intercept.BytebuddyInterceptor;
 import com.ulfric.commons.cdi.intercept.Intercept;
@@ -29,6 +31,7 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 
+@Supplied
 public final class BeanFactory {
 
 	public static BeanFactory newInstance()
@@ -43,12 +46,23 @@ public final class BeanFactory {
 		this.scopes = MapUtils.newSynchronizedIdentityHashMap();
 		this.scopeTypes = MapUtils.newSynchronizedIdentityHashMap();
 		this.registerDefaultScopes();
+		this.registerThisAsInjectable();
 	}
 
 	private void registerDefaultScopes()
 	{
 		this.bind(Default.class).toScope(DefaultScopeStrategy.class);
 		this.bind(Shared.class).toScope(SharedScopeStrategy.class);
+		this.bind(Supplied.class).toScope(SuppliedScopeStrategy.class);
+	}
+
+	private void registerThisAsInjectable()
+	{
+		this.bind(BeanFactory.class).to(BeanFactory.class);
+
+		ScopeStrategy<? extends Annotation> scope = this.scopes.get(Supplied.class);
+		SuppliedScopeStrategy strategy = (SuppliedScopeStrategy) scope;
+		strategy.put(BeanFactory.class, this);
 	}
 
 	private final Injector injector;
