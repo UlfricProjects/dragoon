@@ -6,9 +6,7 @@ import java.util.Objects;
 import com.ulfric.commons.cdi.inject.Injector;
 import com.ulfric.commons.collect.MapUtils;
 
-public enum SuppliedScopeStrategy implements ScopeStrategy<Supplied> {
-
-	INSTANCE;
+public final class SuppliedScopeStrategy implements ScopeStrategy<Supplied> {
 
 	private final Map<Class<?>, Object> values = MapUtils.newSynchronizedIdentityHashMap();
 
