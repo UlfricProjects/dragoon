@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -162,7 +162,9 @@ public final class BeanFactory {
 		DynamicType.Builder<?> builder = new ByteBuddy().subclass(implementation);
 		for (Method method : implementation.getMethods())
 		{
-			List<Annotation> interceptors = AnnotationUtils.getLeafAnnotations(method, Intercept.class);
+			Map<Class<? extends Annotation>, Annotation> interceptors = new LinkedHashMap<>();
+			AnnotationUtils.getLeafAnnotations(method, Intercept.class)
+				.forEach(annotation -> interceptors.put(annotation.annotationType(), annotation));
 
 			Set<Method> superMethods = MethodUtils.getOverrideHierarchy(method, Interfaces.INCLUDE);
 			for (Method superMethod : superMethods)
@@ -170,7 +172,7 @@ public final class BeanFactory {
 				AnnotationUtils.getLeafAnnotations(superMethod, Intercept.class)
 					.stream()
 					.filter(annotation -> annotation.annotationType().isAnnotationPresent(Inherited.class))
-					.forEach(interceptors::add);
+					.forEach(annotation -> interceptors.put(annotation.annotationType(), annotation));
 			}
 
 			if (interceptors.isEmpty())
@@ -179,7 +181,7 @@ public final class BeanFactory {
 			}
 
 			InterceptorPipeline.Builder<Object> pipeline = InterceptorPipeline.builder();
-			for (Annotation interceptor : interceptors)
+			for (Annotation interceptor : interceptors.values())
 			{
 				Object interceptorImpl = this.request(interceptor.annotationType());
 
