@@ -1,11 +1,16 @@
 package com.ulfric.commons.cdi.construct;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+
+import org.apache.commons.lang3.ClassUtils.Interfaces;
+import org.apache.commons.lang3.reflect.MethodUtils;
 
 import com.ulfric.commons.cdi.construct.scope.Default;
 import com.ulfric.commons.cdi.construct.scope.DefaultImpl;
@@ -158,6 +163,16 @@ public final class BeanFactory {
 		for (Method method : implementation.getMethods())
 		{
 			List<Annotation> interceptors = AnnotationUtils.getLeafAnnotations(method, Intercept.class);
+
+			Set<Method> superMethods = MethodUtils.getOverrideHierarchy(method, Interfaces.INCLUDE);
+			for (Method superMethod : superMethods)
+			{
+				AnnotationUtils.getLeafAnnotations(superMethod, Intercept.class)
+					.stream()
+					.filter(annotation -> annotation.annotationType().isAnnotationPresent(Inherited.class))
+					.forEach(interceptors::add);
+			}
+
 			if (interceptors.isEmpty())
 			{
 				continue;
