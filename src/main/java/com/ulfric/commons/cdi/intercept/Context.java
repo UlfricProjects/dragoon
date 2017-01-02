@@ -19,6 +19,7 @@ public final class Context<T> {
 	{
 		Builder() { }
 
+		private Object owner;
 		private Method origin;
 		private Object[] arguments;
 		private Callable<T> destination;
@@ -27,12 +28,21 @@ public final class Context<T> {
 		@Override
 		public Context<T> build()
 		{
+			Objects.requireNonNull(this.owner);
 			Objects.requireNonNull(this.origin);
 			Objects.requireNonNull(this.arguments);
 			Objects.requireNonNull(this.destination);
 			Objects.requireNonNull(this.interceptors);
 
-			return new Context<>(this.origin, this.arguments, this.destination, this.interceptors.iterator());
+			return new Context<>(this.owner, this.origin, this.arguments,
+					this.destination, this.interceptors.iterator());
+		}
+
+		public Builder<T> setOwner(Object owner)
+		{
+			Objects.requireNonNull(owner);
+			this.owner = owner;
+			return this;
 		}
 
 		public Builder<T> setOrigin(Method origin)
@@ -64,18 +74,26 @@ public final class Context<T> {
 		}
 	}
 
-	Context(Method origin, Object[] arguments, Callable<T> destination, Iterator<Interceptor<T>> interceptors)
+	Context(Object owner, Method origin, Object[] arguments,
+			Callable<T> destination, Iterator<Interceptor<T>> interceptors)
 	{
+		this.owner = owner;
 		this.origin = origin;
 		this.arguments = arguments;
 		this.destination = destination;
 		this.interceptors = interceptors;
 	}
 
+	private final Object owner;
 	private final Method origin;
 	private final Object[] arguments;
 	private final Callable<T> destination;
 	private final Iterator<Interceptor<T>> interceptors;
+
+	public Object getOwner()
+	{
+		return this.owner;
+	}
 
 	public Method getOrigin()
 	{

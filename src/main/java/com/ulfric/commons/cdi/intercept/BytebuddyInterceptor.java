@@ -8,6 +8,7 @@ import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
+import net.bytebuddy.implementation.bind.annotation.This;
 
 public final class BytebuddyInterceptor<T> {
 
@@ -26,11 +27,12 @@ public final class BytebuddyInterceptor<T> {
 	private final InterceptorPipeline<T> pipeline;
 
 	@RuntimeType
-	public Object intercept(@Origin Method origin,
+	public Object intercept(@This Object owner,
+							@Origin Method origin,
 							@AllArguments Object[] arguments,
 							@SuperCall Callable<T> destination)
 	{
-		return this.pipeline.call(origin, arguments, destination);
+		return this.pipeline.call(owner, origin, arguments, destination);
 	}
 
 }

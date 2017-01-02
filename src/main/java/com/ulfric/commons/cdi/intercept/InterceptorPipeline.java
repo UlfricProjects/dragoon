@@ -42,9 +42,10 @@ public final class InterceptorPipeline<T> {
 
 	private final List<Interceptor<T>> pipeline;
 
-	public T call(Method origin, Object[] arguments, Callable<T> destination)
+	public T call(Object owner, Method origin, Object[] arguments, Callable<T> destination)
 	{
 		return Context.<T>builder()
+				.setOwner(owner)
 				.setOrigin(origin)
 				.setArguments(arguments)
 				.setDestination(destination)
