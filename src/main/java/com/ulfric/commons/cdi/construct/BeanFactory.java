@@ -197,7 +197,8 @@ public final class BeanFactory {
 			}
 
 			builder = builder.method(ElementMatchers.is(method))
-				.intercept(MethodDelegation.to(BytebuddyInterceptor.newInstance(pipeline.build())));
+				.intercept(MethodDelegation.to(BytebuddyInterceptor.newInstance(pipeline.build())))
+				.annotateMethod(method.getAnnotations());
 		}
 		return builder.make().load(implementation.getClassLoader()).getLoaded();
 	}
