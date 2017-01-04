@@ -5,9 +5,9 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.ulfric.commons.api.UtilInstantiationException;
+public enum InstanceUtils {
 
-public class InstanceUtils {
+	;
 
 	public static <T> T getInstance(Class<T> clazz)
 	{
@@ -34,11 +34,6 @@ public class InstanceUtils {
 		{
 			return ExceptionUtils.rethrow(e);
 		}
-	}
-
-	private InstanceUtils()
-	{
-		throw new UtilInstantiationException();
 	}
 
 }
