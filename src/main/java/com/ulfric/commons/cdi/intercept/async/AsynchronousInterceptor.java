@@ -16,7 +16,7 @@ public class AsynchronousInterceptor implements Interceptor {
 	private final Executor service = Executors.newCachedThreadPool();
 
 	@Override
-	public Future<?> intercept(Context context)
+	public Object intercept(Context context)
 	{
 		return CompletableFuture.supplyAsync(() ->
 		{
