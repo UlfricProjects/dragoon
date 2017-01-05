@@ -12,19 +12,19 @@ import net.bytebuddy.implementation.bind.annotation.This;
 
 public final class BytebuddyInterceptor<T> {
 
-	public static <T> BytebuddyInterceptor<T> newInstance(InterceptorPipeline<T> pipeline)
+	public static <T> BytebuddyInterceptor<T> newInstance(InterceptorPipeline pipeline)
 	{
 		Objects.requireNonNull(pipeline);
 
 		return new BytebuddyInterceptor<>(pipeline);
 	}
 
-	private BytebuddyInterceptor(InterceptorPipeline<T> pipeline)
+	private BytebuddyInterceptor(InterceptorPipeline pipeline)
 	{
 		this.pipeline = pipeline;
 	}
 
-	private final InterceptorPipeline<T> pipeline;
+	private final InterceptorPipeline pipeline;
 
 	@RuntimeType
 	public Object intercept(@This Object owner,

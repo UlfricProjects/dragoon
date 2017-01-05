@@ -35,7 +35,7 @@ public final class Binding<T> {
 		this.registerTo.bindScope(this.request, interceptor);
 	}
 
-	public void toInterceptor(Class<? extends Interceptor<?>> interceptor)
+	public void toInterceptor(Class<? extends Interceptor> interceptor)
 	{
 		Objects.requireNonNull(interceptor);
 		this.registerTo.bind(this.request, interceptor);

@@ -8,25 +8,25 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-public final class Context<T> {
+public final class Context {
 
-	public static <T> Builder<T> builder()
+	public static Builder builder()
 	{
-		return new Builder<>();
+		return new Builder();
 	}
 
-	public static final class Builder<T> implements org.apache.commons.lang3.builder.Builder<Context<T>>
+	public static final class Builder implements org.apache.commons.lang3.builder.Builder<Context>
 	{
 		Builder() { }
 
 		private Object owner;
 		private Method origin;
 		private Object[] arguments;
-		private Callable<T> destination;
-		private List<Interceptor<T>> interceptors;
+		private Callable<?> destination;
+		private List<Interceptor> interceptors;
 
 		@Override
-		public Context<T> build()
+		public Context build()
 		{
 			Objects.requireNonNull(this.owner);
 			Objects.requireNonNull(this.origin);
@@ -34,39 +34,39 @@ public final class Context<T> {
 			Objects.requireNonNull(this.destination);
 			Objects.requireNonNull(this.interceptors);
 
-			return new Context<>(this.owner, this.origin, this.arguments,
+			return new Context(this.owner, this.origin, this.arguments,
 					this.destination, this.interceptors.iterator());
 		}
 
-		public Builder<T> setOwner(Object owner)
+		public Builder setOwner(Object owner)
 		{
 			Objects.requireNonNull(owner);
 			this.owner = owner;
 			return this;
 		}
 
-		public Builder<T> setOrigin(Method origin)
+		public Builder setOrigin(Method origin)
 		{
 			Objects.requireNonNull(origin);
 			this.origin = origin;
 			return this;
 		}
 
-		public Builder<T> setArguments(Object[] arguments)
+		public Builder setArguments(Object[] arguments)
 		{
 			Objects.requireNonNull(arguments);
 			this.arguments = arguments;
 			return this;
 		}
 
-		public Builder<T> setDestination(Callable<T> destination)
+		public Builder setDestination(Callable<?> destination)
 		{
 			Objects.requireNonNull(destination);
 			this.destination = destination;
 			return this;
 		}
 
-		public Builder<T> setInterceptors(List<Interceptor<T>> interceptors)
+		public Builder setInterceptors(List<Interceptor> interceptors)
 		{
 			Objects.requireNonNull(interceptors);
 			this.interceptors = interceptors;
@@ -75,7 +75,7 @@ public final class Context<T> {
 	}
 
 	Context(Object owner, Method origin, Object[] arguments,
-			Callable<T> destination, Iterator<Interceptor<T>> interceptors)
+			Callable<?> destination, Iterator<Interceptor> interceptors)
 	{
 		this.owner = owner;
 		this.origin = origin;
@@ -87,8 +87,8 @@ public final class Context<T> {
 	private final Object owner;
 	private final Method origin;
 	private final Object[] arguments;
-	private final Callable<T> destination;
-	private final Iterator<Interceptor<T>> interceptors;
+	private final Callable<?> destination;
+	private final Iterator<Interceptor> interceptors;
 
 	public Object getOwner()
 	{
@@ -106,7 +106,7 @@ public final class Context<T> {
 		return this.arguments;
 	}
 
-	public T proceed()
+	public Object proceed()
 	{
 		if (this.interceptors.hasNext())
 		{

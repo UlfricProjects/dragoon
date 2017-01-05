@@ -1,7 +1,7 @@
 package com.ulfric.commons.cdi.intercept;
 
-public interface Interceptor<T> {
+public interface Interceptor {
 
-	T intercept(Context<T> context);
+	Object intercept(Context context);
 
 }

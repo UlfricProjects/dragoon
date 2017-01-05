@@ -7,27 +7,27 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
-public final class InterceptorPipeline<T> {
+public final class InterceptorPipeline {
 
-	public static <T> Builder<T> builder()
+	public static Builder builder()
 	{
-		return new Builder<>();
+		return new Builder();
 	}
 
-	public static final class Builder<T> implements org.apache.commons.lang3.builder.Builder<InterceptorPipeline<T>>
+	public static final class Builder implements org.apache.commons.lang3.builder.Builder<InterceptorPipeline>
 	{
 		Builder() { }
 
-		private final List<Interceptor<T>> pipeline = new ArrayList<>();
+		private final List<Interceptor> pipeline = new ArrayList<>();
 
 		@Override
-		public InterceptorPipeline<T> build()
+		public InterceptorPipeline build()
 		{
-			List<Interceptor<T>> pipelineCopy = Collections.unmodifiableList(new ArrayList<>(this.pipeline));
-			return new InterceptorPipeline<>(pipelineCopy);
+			List<Interceptor> pipelineCopy = Collections.unmodifiableList(new ArrayList<>(this.pipeline));
+			return new InterceptorPipeline(pipelineCopy);
 		}
 
-		public Builder<T> addInterceptor(Interceptor<T> interceptor)
+		public Builder addInterceptor(Interceptor interceptor)
 		{
 			Objects.requireNonNull(interceptor);
 			this.pipeline.add(interceptor);
@@ -35,16 +35,16 @@ public final class InterceptorPipeline<T> {
 		}
 	}
 
-	InterceptorPipeline(List<Interceptor<T>> pipeline)
+	InterceptorPipeline(List<Interceptor> pipeline)
 	{
 		this.pipeline = pipeline;
 	}
 
-	private final List<Interceptor<T>> pipeline;
+	private final List<Interceptor> pipeline;
 
-	public T call(Object owner, Method origin, Object[] arguments, Callable<T> destination)
+	public Object call(Object owner, Method origin, Object[] arguments, Callable<?> destination)
 	{
-		return Context.<T>builder()
+		return Context.builder()
 				.setOwner(owner)
 				.setOrigin(origin)
 				.setArguments(arguments)

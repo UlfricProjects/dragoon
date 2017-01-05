@@ -6,10 +6,10 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.ulfric.commons.cdi.intercept.Context;
 import com.ulfric.commons.cdi.intercept.Interceptor;
 
-public class ChanceToRunInterceptor implements Interceptor<Optional<?>> {
+public class ChanceToRunInterceptor implements Interceptor {
 
 	@Override
-	public Optional<?> intercept(Context<Optional<?>> context)
+	public Object intercept(Context context)
 	{
 		double percent = context.getOrigin().getDeclaredAnnotation(ChanceToRun.class).value();
 

@@ -23,12 +23,12 @@ import com.ulfric.commons.cdi.construct.scope.SharedScopeStrategy;
 import com.ulfric.commons.cdi.construct.scope.Supplied;
 import com.ulfric.commons.cdi.construct.scope.SuppliedScopeStrategy;
 import com.ulfric.commons.cdi.inject.Injector;
-import com.ulfric.commons.cdi.intercept.async.Asynchronous;
-import com.ulfric.commons.cdi.intercept.async.AsynchronousInterceptor;
 import com.ulfric.commons.cdi.intercept.BytebuddyInterceptor;
 import com.ulfric.commons.cdi.intercept.Intercept;
 import com.ulfric.commons.cdi.intercept.Interceptor;
 import com.ulfric.commons.cdi.intercept.InterceptorPipeline;
+import com.ulfric.commons.cdi.intercept.async.Asynchronous;
+import com.ulfric.commons.cdi.intercept.async.AsynchronousInterceptor;
 import com.ulfric.commons.cdi.intercept.random.ChanceToRun;
 import com.ulfric.commons.cdi.intercept.random.ChanceToRunInterceptor;
 import com.ulfric.commons.collect.MapUtils;
@@ -191,7 +191,7 @@ public final class BeanFactory {
 				continue;
 			}
 
-			InterceptorPipeline.Builder<Object> pipeline = InterceptorPipeline.builder();
+			InterceptorPipeline.Builder pipeline = InterceptorPipeline.builder();
 			for (Annotation interceptor : interceptors.values())
 			{
 				Object interceptorImpl = this.request(interceptor.annotationType());
@@ -202,8 +202,7 @@ public final class BeanFactory {
 					throw new RuntimeException();
 				}
 
-				@SuppressWarnings("unchecked")
-				Interceptor<Object> casted = (Interceptor<Object>) interceptorImpl;
+				Interceptor casted = (Interceptor) interceptorImpl;
 				pipeline.addInterceptor(casted);
 			}
 
