@@ -29,6 +29,8 @@ import com.ulfric.commons.cdi.intercept.BytebuddyInterceptor;
 import com.ulfric.commons.cdi.intercept.Intercept;
 import com.ulfric.commons.cdi.intercept.Interceptor;
 import com.ulfric.commons.cdi.intercept.InterceptorPipeline;
+import com.ulfric.commons.cdi.intercept.random.ChanceToRun;
+import com.ulfric.commons.cdi.intercept.random.ChanceToRunInterceptor;
 import com.ulfric.commons.collect.MapUtils;
 import com.ulfric.commons.reflect.AnnotationUtils;
 
@@ -66,6 +68,7 @@ public final class BeanFactory {
 	private void registerDefaultInterceptors()
 	{
 		this.bind(Asynchronous.class).toInterceptor(AsynchronousInterceptor.class);
+		this.bind(ChanceToRun.class).toInterceptor(ChanceToRunInterceptor.class);
 	}
 
 	private void registerThisAsInjectable()
