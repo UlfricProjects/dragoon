@@ -23,6 +23,8 @@ import com.ulfric.commons.cdi.construct.scope.SharedScopeStrategy;
 import com.ulfric.commons.cdi.construct.scope.Supplied;
 import com.ulfric.commons.cdi.construct.scope.SuppliedScopeStrategy;
 import com.ulfric.commons.cdi.inject.Injector;
+import com.ulfric.commons.cdi.intercept.async.Asynchronous;
+import com.ulfric.commons.cdi.intercept.async.AsynchronousInterceptor;
 import com.ulfric.commons.cdi.intercept.BytebuddyInterceptor;
 import com.ulfric.commons.cdi.intercept.Intercept;
 import com.ulfric.commons.cdi.intercept.Interceptor;
@@ -50,6 +52,7 @@ public final class BeanFactory {
 		this.scopes = MapUtils.newSynchronizedIdentityHashMap();
 		this.scopeTypes = MapUtils.newSynchronizedIdentityHashMap();
 		this.registerDefaultScopes();
+		this.registerDefaultInterceptors();
 		this.registerThisAsInjectable();
 	}
 
@@ -58,6 +61,11 @@ public final class BeanFactory {
 		this.bind(Default.class).toScope(DefaultScopeStrategy.class);
 		this.bind(Shared.class).toScope(SharedScopeStrategy.class);
 		this.bind(Supplied.class).toScope(SuppliedScopeStrategy.class);
+	}
+
+	private void registerDefaultInterceptors()
+	{
+		this.bind(Asynchronous.class).toInterceptor(AsynchronousInterceptor.class);
 	}
 
 	private void registerThisAsInjectable()
