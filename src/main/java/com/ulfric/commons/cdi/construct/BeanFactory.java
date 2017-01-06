@@ -92,14 +92,11 @@ public final class BeanFactory {
 
 	public <T> Object request(Class<T> request)
 	{
+		Objects.requireNonNull(request);
+
 		@SuppressWarnings("unchecked")
 		Class<? extends T> binding = (Class<? extends T>)
 			this.bindings.computeIfAbsent(request, this::createInterceptorClass);
-
-		if (binding == null)
-		{
-			throw new BindingNotPresentException(request);
-		}
 
 		Annotation scope = this.getScope(binding);
 		return this.createInstance(scope, binding);
@@ -162,7 +159,6 @@ public final class BeanFactory {
 		this.bindings.put(request, wrappedImplementation);
 	}
 
-	// TODO come up with a better name
 	private Class<?> createInterceptorClass(Class<?> implementation)
 	{
 		if (!this.canBeIntercepted(implementation))
@@ -170,7 +166,10 @@ public final class BeanFactory {
 			return implementation;
 		}
 
-		DynamicType.Builder<?> builder = new ByteBuddy().subclass(implementation);
+		DynamicType.Builder<?> builder = new ByteBuddy()
+				.subclass(implementation)
+				.annotateType(implementation.getAnnotations());
+
 		for (Method method : implementation.getMethods())
 		{
 			Map<Class<? extends Annotation>, Annotation> interceptors = new LinkedHashMap<>();

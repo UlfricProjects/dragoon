@@ -3,8 +3,6 @@ package com.ulfric.commons.cdi.construct;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 public enum InstanceUtils {
 
 	;
@@ -17,7 +15,7 @@ public enum InstanceUtils {
 
 			if (constants.length == 0)
 			{
-				// TODO throw exception
+				throw new IllegalArgumentException("Enum isn't a singleton");
 			}
 
 			return constants[0];
@@ -32,7 +30,7 @@ public enum InstanceUtils {
 		catch (NoSuchMethodException | SecurityException | InstantiationException |
 				IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
 		{
-			return ExceptionUtils.rethrow(e);
+			throw new RuntimeException(e);
 		}
 	}
 
