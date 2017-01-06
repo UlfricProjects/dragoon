@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 public final class Context {
 
 	public static Builder builder()
@@ -119,7 +117,7 @@ public final class Context {
 		}
 		catch (Exception exception)
 		{
-			return ExceptionUtils.rethrow(exception);
+			throw new RuntimeException(exception);
 		}
 	}
 

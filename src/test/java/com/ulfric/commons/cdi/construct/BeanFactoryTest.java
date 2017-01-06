@@ -54,8 +54,6 @@ public class BeanFactoryTest {
 		).runsWithoutExceptions();
 	}
 
-
-
 	@Test
 	public void test_request_throwsWhenNull()
 	{

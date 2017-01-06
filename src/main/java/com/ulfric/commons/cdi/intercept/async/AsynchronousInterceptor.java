@@ -6,8 +6,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import com.ulfric.commons.cdi.intercept.Context;
 import com.ulfric.commons.cdi.intercept.Interceptor;
 
@@ -28,7 +26,7 @@ public class AsynchronousInterceptor implements Interceptor {
 			}
 			catch (InterruptedException | ExecutionException caught)
 			{
-				return ExceptionUtils.rethrow(caught);
+				throw new RuntimeException(caught);
 			}
 		}, this.service);
 	}
