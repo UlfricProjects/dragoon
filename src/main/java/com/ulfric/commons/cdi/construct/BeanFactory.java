@@ -24,6 +24,7 @@ import com.ulfric.commons.cdi.construct.scope.Supplied;
 import com.ulfric.commons.cdi.construct.scope.SuppliedScopeStrategy;
 import com.ulfric.commons.cdi.inject.Injector;
 import com.ulfric.commons.cdi.intercept.BytebuddyInterceptor;
+import com.ulfric.commons.cdi.intercept.FauxInterceptorException;
 import com.ulfric.commons.cdi.intercept.Intercept;
 import com.ulfric.commons.cdi.intercept.Interceptor;
 import com.ulfric.commons.cdi.intercept.InterceptorPipeline;
@@ -197,8 +198,7 @@ public final class BeanFactory {
 
 				if (!(interceptorImpl instanceof Interceptor))
 				{
-					// TODO throw different exception
-					throw new RuntimeException();
+					throw new FauxInterceptorException(interceptorImpl);
 				}
 
 				Interceptor casted = (Interceptor) interceptorImpl;
