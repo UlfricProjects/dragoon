@@ -101,6 +101,11 @@ public final class BeanFactory implements Service {
 		return this.injector;
 	}
 
+	private boolean hasParent()
+	{
+		return this.parent != null;
+	}
+
 	public Object request(Class<?> request)
 	{
 		Objects.requireNonNull(request);
@@ -120,9 +125,9 @@ public final class BeanFactory implements Service {
 	{
 		Class<?> binding = this.bindings.get(request);
 
-		if (binding == null)
+		if (binding == null && this.hasParent())
 		{
-			return parent != null ? this.parent.getRecursiveBindingWithoutCreation(request) : null;
+			return this.parent.getRecursiveBindingWithoutCreation(request);
 		}
 
 		return binding;
