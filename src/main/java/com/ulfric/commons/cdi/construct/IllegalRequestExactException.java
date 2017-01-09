@@ -1,5 +1,6 @@
 package com.ulfric.commons.cdi.construct;
 
+@SuppressWarnings("serial")
 public class IllegalRequestExactException extends RuntimeException {
 
 	public IllegalRequestExactException(Class<?> request, Object value)
