@@ -111,14 +111,9 @@ public final class BeanFactory implements Service {
 
 		BeanFactory parent = this.parent;
 
-		while (parent != null && binding != null)
+		while (parent != null && binding == null)
 		{
-			if (parent.bindings.containsKey(binding))
-			{
-				binding = (Class<? extends T>) parent.bindings.get(request);
-				break;
-			}
-
+			binding = (Class<? extends T>) parent.bindings.get(request);
 			parent = parent.parent;
 		}
 
@@ -133,10 +128,6 @@ public final class BeanFactory implements Service {
 		System.out.println("BINDING: " + String.valueOf(binding));
 
 		Annotation scope = this.getScope(binding);
-
-		System.out.println("SCOPE: " + String.valueOf(scope));
-		System.out.println("SCOPE: " + scope.getClass());
-		System.out.println("SCOPE: " + String.valueOf(scope));
 		return this.createInstance(scope, binding);
 	}
 
