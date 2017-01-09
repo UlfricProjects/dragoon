@@ -15,13 +15,14 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import com.ulfric.commons.cdi.construct.scope.Default;
 import com.ulfric.commons.cdi.construct.scope.DefaultImpl;
 import com.ulfric.commons.cdi.construct.scope.DefaultScopeStrategy;
+import com.ulfric.commons.cdi.construct.scope.NoInject;
+import com.ulfric.commons.cdi.construct.scope.NoInjectScopeStrategy;
 import com.ulfric.commons.cdi.construct.scope.Scope;
 import com.ulfric.commons.cdi.construct.scope.ScopeNotPresentException;
 import com.ulfric.commons.cdi.construct.scope.ScopeStrategy;
 import com.ulfric.commons.cdi.construct.scope.Shared;
 import com.ulfric.commons.cdi.construct.scope.SharedScopeStrategy;
-import com.ulfric.commons.cdi.construct.scope.Supplied;
-import com.ulfric.commons.cdi.construct.scope.SuppliedScopeStrategy;
+import com.ulfric.commons.cdi.inject.Inject;
 import com.ulfric.commons.cdi.inject.Injector;
 import com.ulfric.commons.cdi.intercept.BytebuddyInterceptor;
 import com.ulfric.commons.cdi.intercept.FauxInterceptorException;
@@ -42,37 +43,30 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 
-@Supplied
+@NoInject
 @Name("BeanFactory")
 public final class BeanFactory implements Service {
 
 	public static BeanFactory newInstance()
 	{
-		return BeanFactory.newInstance(null);
+		return new BeanFactory();
 	}
 
-	public static BeanFactory newInstance(BeanFactory parent)
+	private BeanFactory()
 	{
-		return new BeanFactory(parent);
-	}
-
-	private BeanFactory(BeanFactory parent)
-	{
-		this.parent = parent;
 		this.injector = Injector.newInstance(this);
 		this.bindings = MapUtils.newSynchronizedIdentityHashMap();
 		this.scopes = MapUtils.newSynchronizedIdentityHashMap();
 		this.scopeTypes = MapUtils.newSynchronizedIdentityHashMap();
 		this.registerDefaultScopes();
 		this.registerDefaultInterceptors();
-		this.registerThisAsInjectable();
 	}
 
 	private void registerDefaultScopes()
 	{
 		this.bind(Default.class).toScope(DefaultScopeStrategy.class);
 		this.bind(Shared.class).toScope(SharedScopeStrategy.class);
-		this.bind(Supplied.class).toScope(SuppliedScopeStrategy.class);
+		this.bind(NoInject.class).toScope(NoInjectScopeStrategy.class);
 	}
 
 	private void registerDefaultInterceptors()
@@ -81,20 +75,13 @@ public final class BeanFactory implements Service {
 		this.bind(ChanceToRun.class).toInterceptor(ChanceToRunInterceptor.class);
 	}
 
-	private void registerThisAsInjectable()
-	{
-		this.bind(BeanFactory.class).to(BeanFactory.class);
-
-		ScopeStrategy<? extends Annotation> scope = this.scopes.get(Supplied.class);
-		SuppliedScopeStrategy strategy = (SuppliedScopeStrategy) scope;
-		strategy.put(BeanFactory.class, this);
-	}
-
-	private final BeanFactory parent;
 	private final Injector injector;
 	private final Map<Class<?>, Class<?>> bindings;
 	private final Map<Class<?>, ScopeStrategy<? extends Annotation>> scopes;
 	private final Map<Class<?>, Class<? extends Annotation>> scopeTypes;
+
+	@Inject
+	private BeanFactory parent;
 
 	public Injector getInjector()
 	{
@@ -104,6 +91,26 @@ public final class BeanFactory implements Service {
 	private boolean hasParent()
 	{
 		return this.parent != null;
+	}
+
+	public BeanFactory createChild()
+	{
+		return (BeanFactory) this.request(BeanFactory.class);
+	}
+
+	public <T> T requestExact(Class<T> request)
+	{
+		Object value = this.request(request);
+
+		if (!request.isInstance(value))
+		{
+			// TODO change exception
+			throw new RuntimeException();
+		}
+
+		@SuppressWarnings("unchecked")
+		T casted = (T) value;
+		return casted;
 	}
 
 	public Object request(Class<?> request)
@@ -135,16 +142,29 @@ public final class BeanFactory implements Service {
 
 	private Annotation getScope(Class<?> holder)
 	{
-		Class<? extends Annotation> scopeType = this.scopeTypes.computeIfAbsent(holder, this::resolveScope);
+		Class<? extends Annotation> scopeType = this.getRecursiveScopeWithoutCreation(holder);
+
+		if (scopeType == null)
+		{
+			System.out.println(holder);
+			scopeType = this.scopeTypes.computeIfAbsent(holder, this::resolveScope);
+		}
 
 		Annotation scope = holder.getAnnotation(scopeType);
 
-		if (scope == null && this.parent != null)
+		return scope == null ? DefaultImpl.INSTANCE : scope;
+	}
+
+	private synchronized Class<? extends Annotation> getRecursiveScopeWithoutCreation(Class<?> request)
+	{
+		Class<? extends Annotation> binding = this.scopeTypes.get(request);
+
+		if (binding == null && this.hasParent())
 		{
-			return this.parent.getScope(holder);
+			return this.parent.getRecursiveScopeWithoutCreation(request);
 		}
 
-		return scope == null ? DefaultImpl.INSTANCE : scope;
+		return binding;
 	}
 
 	private Class<? extends Annotation> resolveScope(Class<?> holder)
