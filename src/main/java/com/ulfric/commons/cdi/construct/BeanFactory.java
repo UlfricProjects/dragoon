@@ -101,16 +101,15 @@ public final class BeanFactory implements Service {
 		return this.injector;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> Object request(Class<T> request)
+	public Object request(Class<?> request)
 	{
 		Objects.requireNonNull(request);
 
-		Class<? extends T> binding = (Class<? extends T>) this.getRecursiveBindingWithoutCreation(request);
+		Class<?> binding = this.getRecursiveBindingWithoutCreation(request);
 
 		if (binding == null)
 		{
-			binding = (Class<? extends T>) this.bindings.computeIfAbsent(request, this::createInterceptorClass);
+			binding = this.bindings.computeIfAbsent(request, this::createInterceptorClass);
 		}
 
 		Annotation scope = this.getScope(binding);
