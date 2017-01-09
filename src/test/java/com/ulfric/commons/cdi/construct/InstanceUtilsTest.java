@@ -42,9 +42,11 @@ public class InstanceUtilsTest extends UtilTestBase {
 
 	public static class OneArg
 	{
+		public Object object;
+
 		public OneArg(Object object)
 		{
-
+			this.object = object;
 		}
 	}
 
