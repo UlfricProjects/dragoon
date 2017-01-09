@@ -78,7 +78,6 @@ public final class BeanFactory implements Service {
 
 	private void registerThisAsInjectable()
 	{
-		this.bind(BeanFactory.class).to(BeanFactory.class);
 		ScopeStrategy<? extends Annotation> scope = this.scopes.get(Supplied.class);
 		SuppliedScopeStrategy strategy = (SuppliedScopeStrategy) scope;
 		strategy.put(BeanFactory.class, this);
