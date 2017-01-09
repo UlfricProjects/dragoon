@@ -24,6 +24,7 @@ import com.ulfric.commons.cdi.construct.scope.Supplied;
 import com.ulfric.commons.cdi.construct.scope.SuppliedScopeStrategy;
 import com.ulfric.commons.cdi.inject.Injector;
 import com.ulfric.commons.cdi.intercept.BytebuddyInterceptor;
+import com.ulfric.commons.cdi.intercept.FauxInterceptorException;
 import com.ulfric.commons.cdi.intercept.Intercept;
 import com.ulfric.commons.cdi.intercept.Interceptor;
 import com.ulfric.commons.cdi.intercept.InterceptorPipeline;
@@ -32,7 +33,9 @@ import com.ulfric.commons.cdi.intercept.async.AsynchronousInterceptor;
 import com.ulfric.commons.cdi.intercept.random.ChanceToRun;
 import com.ulfric.commons.cdi.intercept.random.ChanceToRunInterceptor;
 import com.ulfric.commons.collect.MapUtils;
+import com.ulfric.commons.naming.Name;
 import com.ulfric.commons.reflect.AnnotationUtils;
+import com.ulfric.commons.service.Service;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
@@ -40,7 +43,8 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 
 @Supplied
-public final class BeanFactory {
+@Name("BeanFactory")
+public final class BeanFactory implements Service {
 
 	public static BeanFactory newInstance()
 	{
@@ -197,8 +201,7 @@ public final class BeanFactory {
 
 				if (!(interceptorImpl instanceof Interceptor))
 				{
-					// TODO throw different exception
-					throw new RuntimeException();
+					throw new FauxInterceptorException(interceptorImpl);
 				}
 
 				Interceptor casted = (Interceptor) interceptorImpl;
