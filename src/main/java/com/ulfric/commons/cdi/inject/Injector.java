@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import com.ulfric.commons.cdi.construct.BeanFactory;
 import com.ulfric.commons.collect.MapUtils;
+import com.ulfric.commons.exception.Try;
 import com.ulfric.commons.reflect.HandleUtils;
 
 public final class Injector {
@@ -101,15 +101,11 @@ public final class Injector {
 				handles.forEach(handle ->
 				{
 					Object created = Injector.this.factory.request(type);
-					try
+
+					Try.to(() ->
 					{
 						handle.invokeExact(object, created);
-						// handle.bindTo(object).invokeExact(created); TODO speed difference?
-					}
-					catch (Throwable e)
-					{
-						ExceptionUtils.rethrow(e);
-					}
+					});
 				});
 			});
 		}

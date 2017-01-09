@@ -11,10 +11,9 @@ public enum DefaultScopeStrategy implements ScopeStrategy<Default> {
 	public <T> T getInstance(Class<T> request, Default scope, Injector injector)
 	{
 		T instance = InstanceUtils.getInstance(request);
-		if (instance != null)
-		{
-			injector.injectState(instance);
-		}
+
+		injector.injectState(instance);
+
 		return instance;
 	}
 

@@ -21,10 +21,9 @@ public class SharedScopeStrategy implements ScopeStrategy<Shared> {
 	private <T> T createInstance(Class<T> request, Injector injector)
 	{
 		T instance = InstanceUtils.getInstance(request);
-		if (instance != null)
-		{
-			injector.injectState(instance);
-		}
+
+		injector.injectState(instance);
+
 		return instance;
 	}
 
