@@ -31,7 +31,7 @@ public class BeanFactoryTest {
 	@BeforeEach
 	public void init()
 	{
-		factory = BeanFactory.newInstance();
+		this.factory = BeanFactory.newInstance();
 	}
 
 	@Test
