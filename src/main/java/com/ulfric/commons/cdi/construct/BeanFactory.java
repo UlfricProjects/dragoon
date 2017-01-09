@@ -135,16 +135,19 @@ public final class BeanFactory implements Service {
 		return this.createInstance(scope, binding);
 	}
 
-	private synchronized Class<?> getRecursiveBindingWithoutCreation(Class<?> request)
+	private Class<?> getRecursiveBindingWithoutCreation(Class<?> request)
 	{
-		Class<?> binding = this.bindings.get(request);
-
-		if (binding == null && this.hasParent())
+		synchronized (this.bindings)
 		{
-			return this.parent.getRecursiveBindingWithoutCreation(request);
-		}
+			Class<?> binding = this.bindings.get(request);
 
-		return binding;
+			if (binding == null && this.hasParent())
+			{
+				return this.parent.getRecursiveBindingWithoutCreation(request);
+			}
+
+			return binding;
+		}
 	}
 
 	private Annotation getScope(Class<?> holder)
@@ -161,16 +164,19 @@ public final class BeanFactory implements Service {
 		return scope == null ? DefaultImpl.INSTANCE : scope;
 	}
 
-	private synchronized Class<? extends Annotation> getRecursiveScopeWithoutCreation(Class<?> request)
+	private Class<? extends Annotation> getRecursiveScopeWithoutCreation(Class<?> request)
 	{
-		Class<? extends Annotation> binding = this.scopeTypes.get(request);
-
-		if (binding == null && this.hasParent())
+		synchronized (this.scopeTypes)
 		{
-			return this.parent.getRecursiveScopeWithoutCreation(request);
-		}
+			Class<? extends Annotation> binding = this.scopeTypes.get(request);
 
-		return binding;
+			if (binding == null && this.hasParent())
+			{
+				return this.parent.getRecursiveScopeWithoutCreation(request);
+			}
+
+			return binding;
+		}
 	}
 
 	private Class<? extends Annotation> resolveScope(Class<?> holder)
