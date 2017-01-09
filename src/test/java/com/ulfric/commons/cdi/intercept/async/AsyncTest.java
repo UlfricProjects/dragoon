@@ -66,7 +66,7 @@ public class AsyncTest {
 		}).start();
 	}
 
-	private static volatile Thread crashThread = null;
+	static volatile Thread crashThread = null;
 
 	public static class AsyncInterceptTest
 	{

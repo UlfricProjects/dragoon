@@ -16,8 +16,12 @@ public class InstanceUtilsTest extends UtilTestBase {
 	public void test_getInstance_illegalArgument()
 	{
 		Verify.that(() -> InstanceUtils.getInstance(NoConstant.class)).doesThrow(IllegalArgumentException.class);
-		Verify.that(() -> InstanceUtils.getInstance(OneConstant.class)).runsWithoutExceptions();
-		Verify.that(() -> InstanceUtils.getInstance(OneConstant.class)).valueIsEqualTo(OneConstant.A);
+	}
+
+	@Test
+	public void test_getInstance_returnsOneConstEnum()
+	{
+		Verify.that(InstanceUtils.getInstance(OneConstant.class)).isSameAs(OneConstant.A);
 	}
 
 	@Test

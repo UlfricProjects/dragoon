@@ -16,7 +16,7 @@ public class InjectorTest {
 	@Test
 	public void test_injectState_throwsForNull()
 	{
-		Verify.that(() -> injector.injectState(null)).doesThrow(NullPointerException.class);
+		Verify.that(() -> this.injector.injectState(null)).doesThrow(NullPointerException.class);
 	}
 
 	@Test
