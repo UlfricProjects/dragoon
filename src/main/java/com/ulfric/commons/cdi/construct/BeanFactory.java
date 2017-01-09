@@ -22,7 +22,6 @@ import com.ulfric.commons.cdi.construct.scope.Shared;
 import com.ulfric.commons.cdi.construct.scope.SharedScopeStrategy;
 import com.ulfric.commons.cdi.construct.scope.Supplied;
 import com.ulfric.commons.cdi.construct.scope.SuppliedScopeStrategy;
-import com.ulfric.commons.cdi.inject.Inject;
 import com.ulfric.commons.cdi.inject.Injector;
 import com.ulfric.commons.cdi.intercept.BytebuddyInterceptor;
 import com.ulfric.commons.cdi.intercept.FauxInterceptorException;
@@ -49,11 +48,12 @@ public final class BeanFactory implements Service {
 
 	public static BeanFactory newInstance()
 	{
-		return new BeanFactory();
+		return new BeanFactory(null);
 	}
 
-	private BeanFactory()
+	private BeanFactory(BeanFactory parent)
 	{
+		this.parent = parent;
 		this.injector = Injector.newInstance(this);
 		this.bindings = MapUtils.newSynchronizedIdentityHashMap();
 		this.scopes = MapUtils.newSynchronizedIdentityHashMap();
@@ -87,9 +87,7 @@ public final class BeanFactory implements Service {
 	private final Map<Class<?>, Class<?>> bindings;
 	private final Map<Class<?>, ScopeStrategy<? extends Annotation>> scopes;
 	private final Map<Class<?>, Class<? extends Annotation>> scopeTypes;
-
-	@Inject
-	private BeanFactory parent;
+	private final BeanFactory parent;
 
 	public Injector getInjector()
 	{
@@ -103,7 +101,7 @@ public final class BeanFactory implements Service {
 
 	public BeanFactory createChild()
 	{
-		return (BeanFactory) this.request(BeanFactory.class);
+		return new BeanFactory(this);
 	}
 
 	public <T> T requestExact(Class<T> request)
