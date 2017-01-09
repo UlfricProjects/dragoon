@@ -112,8 +112,7 @@ public final class BeanFactory implements Service {
 
 		if (!request.isInstance(value))
 		{
-			// TODO change exception
-			throw new RuntimeException();
+			throw new IllegalRequestExactException(request, value);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -154,7 +153,6 @@ public final class BeanFactory implements Service {
 
 		if (scopeType == null)
 		{
-			System.out.println(holder);
 			scopeType = this.scopeTypes.computeIfAbsent(holder, this::resolveScope);
 		}
 
