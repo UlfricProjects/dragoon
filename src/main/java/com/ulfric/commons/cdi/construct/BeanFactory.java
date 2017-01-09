@@ -107,9 +107,36 @@ public final class BeanFactory implements Service {
 
 		@SuppressWarnings("unchecked")
 		Class<? extends T> binding = (Class<? extends T>)
-			this.bindings.computeIfAbsent(request, this::createInterceptorClass);
+			this.bindings.get(request);
+
+		BeanFactory parent = this.parent;
+
+		while (parent != null && binding != null)
+		{
+			if (parent.bindings.containsKey(binding))
+			{
+				binding = (Class<? extends T>) parent.bindings.get(request);
+				break;
+			}
+
+			parent = parent.parent;
+		}
+
+		if (binding == null)
+		{
+			binding = (Class<? extends T>) this.createInterceptorClass(request);
+			bindings.put(request, binding);
+		}
+
+		System.out.println("BINDING: " + String.valueOf(binding));
+		System.out.println("BINDING: " + String.valueOf(binding));
+		System.out.println("BINDING: " + String.valueOf(binding));
 
 		Annotation scope = this.getScope(binding);
+
+		System.out.println("SCOPE: " + String.valueOf(scope));
+		System.out.println("SCOPE: " + scope.getClass());
+		System.out.println("SCOPE: " + String.valueOf(scope));
 		return this.createInstance(scope, binding);
 	}
 
@@ -121,9 +148,15 @@ public final class BeanFactory implements Service {
 
 		if (scope == null && this.parent != null)
 		{
+			System.out.println("REQUESTING SCOPE FROM PARENT");
+			System.out.println("REQUESTING SCOPE FROM PARENT");
+			System.out.println("REQUESTING SCOPE FROM PARENT");
 			return this.parent.getScope(holder);
 		}
 
+		System.out.println("RETURNING LOCAL SCOPE");
+		System.out.println("RETURNING LOCAL SCOPE - " + String.valueOf(scope));
+		System.out.println("RETURNING LOCAL SCOPE");
 		return scope == null ? DefaultImpl.INSTANCE : scope;
 	}
 

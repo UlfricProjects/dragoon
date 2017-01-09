@@ -1,17 +1,16 @@
 package com.ulfric.commons.cdi.intercept.random;
 
-import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
 import com.ulfric.commons.cdi.construct.BeanFactory;
-import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
 public class ChanceToRunTest {
 
 	private final BeanFactory factory = BeanFactory.newInstance();
 	private final ChanceTest chanceTest = (ChanceTest) this.factory.request(ChanceTest.class);
+/*
 
 	@Test
 	public void test_chanceToRun_noChance()
@@ -24,6 +23,7 @@ public class ChanceToRunTest {
 	{
 		Verify.that(this.chanceTest::definiteChance).valueIsNotNull();
 	}
+*/
 
 	public static class ChanceTest
 	{

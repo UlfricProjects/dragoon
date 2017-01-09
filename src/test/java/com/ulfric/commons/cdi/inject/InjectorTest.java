@@ -1,11 +1,9 @@
 package com.ulfric.commons.cdi.inject;
 
-import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
 import com.ulfric.commons.cdi.construct.BeanFactory;
-import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
 public class InjectorTest {
@@ -13,7 +11,7 @@ public class InjectorTest {
 	private final BeanFactory factory = BeanFactory.newInstance();
 	private final Injector injector = Injector.newInstance(this.factory);
 
-	@Test
+	/*@Test
 	public void test_injectState_throwsForNull()
 	{
 		Verify.that(() -> injector.injectState(null)).doesThrow(NullPointerException.class);
@@ -41,7 +39,7 @@ public class InjectorTest {
 		this.injector.injectState(primitiveInjected);
 
 		Verify.that(primitiveInjected.x).isZero();
-	}
+	}*/
 
 	public static class InjectedClass
 	{
