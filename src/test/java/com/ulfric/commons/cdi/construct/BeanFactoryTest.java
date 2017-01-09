@@ -7,7 +7,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
@@ -32,7 +34,6 @@ public class BeanFactoryTest {
 		this.factory = BeanFactory.newInstance();
 	}
 
-	/*
 	@Test
 	public void test_newInstance_returnsNewValues()
 	{
@@ -147,7 +148,6 @@ public class BeanFactoryTest {
 			this.factory.request(BazNotIntercepted.class);
 		}).doesThrow(RuntimeException.class);
 	}
-	*/
 
 	@Test
 	public void test_beanFactory_parentScopeLookup()
@@ -159,7 +159,6 @@ public class BeanFactoryTest {
 		Verify.that((child.requestExact(ScopedClass.class)).hasObject()).isTrue();
 	}
 
-	/*
 	@Test
 	public void test_beanFactory_parentInterceptor()
 	{
@@ -171,7 +170,6 @@ public class BeanFactoryTest {
 
 		Verify.that(intercepted::foo).runsWithoutExceptions();
 	}
-	*/
 
 	public static class FooClass
 	{
