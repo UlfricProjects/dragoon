@@ -48,11 +48,17 @@ public final class BeanFactory implements Service {
 
 	public static BeanFactory newInstance()
 	{
-		return new BeanFactory();
+		return BeanFactory.newInstance(null);
 	}
 
-	private BeanFactory()
+	public static BeanFactory newInstance(BeanFactory parent)
 	{
+		return new BeanFactory(parent);
+	}
+
+	private BeanFactory(BeanFactory parent)
+	{
+		this.parent = parent;
 		this.injector = Injector.newInstance(this);
 		this.bindings = MapUtils.newSynchronizedIdentityHashMap();
 		this.scopes = MapUtils.newSynchronizedIdentityHashMap();
@@ -84,6 +90,7 @@ public final class BeanFactory implements Service {
 		strategy.put(BeanFactory.class, this);
 	}
 
+	private final BeanFactory parent;
 	private final Injector injector;
 	private final Map<Class<?>, Class<?>> bindings;
 	private final Map<Class<?>, ScopeStrategy<? extends Annotation>> scopes;
@@ -111,6 +118,12 @@ public final class BeanFactory implements Service {
 		Class<? extends Annotation> scopeType = this.scopeTypes.computeIfAbsent(holder, this::resolveScope);
 
 		Annotation scope = holder.getAnnotation(scopeType);
+
+		if (scope == null && this.parent != null)
+		{
+			return this.parent.getScope(holder);
+		}
+
 		return scope == null ? DefaultImpl.INSTANCE : scope;
 	}
 
@@ -124,6 +137,10 @@ public final class BeanFactory implements Service {
 				return scopeType;
 			}
 		}
+		if (this.parent != null)
+		{
+			return this.parent.resolveScope(holder);
+		}
 		return Default.class;
 	}
 
@@ -135,6 +152,10 @@ public final class BeanFactory implements Service {
 
 		if (instanceCache == null)
 		{
+			if (this.parent != null)
+			{
+				return this.parent.createInstance(scope, request);
+			}
 			throw new ScopeNotPresentException(scope.annotationType());
 		}
 

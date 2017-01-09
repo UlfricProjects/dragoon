@@ -149,6 +149,28 @@ public class BeanFactoryTest {
 		}).doesThrow(RuntimeException.class);
 	}
 
+	@Test
+	public void test_beanFactory_parentScopeLookup()
+	{
+		BeanFactory child = BeanFactory.newInstance(this.factory);
+
+		this.factory.bind(ScopeAnnotation.class).toScope(ScopeStrategyTest.class);
+
+		Verify.that(((ScopedClass) child.request(ScopedClass.class)).hasObject()).isTrue();
+	}
+
+	@Test
+	public void test_beanFactory_parentInterceptor()
+	{
+		BeanFactory child = BeanFactory.newInstance(this.factory);
+
+		child.bind(Baz.class).toInterceptor(BazInterceptor.class);
+
+		BazIntercepted intercepted = (BazIntercepted) child.request(BazIntercepted.class);
+
+		Verify.that(intercepted::foo).runsWithoutExceptions();
+	}
+
 	public static class FooClass
 	{
 
