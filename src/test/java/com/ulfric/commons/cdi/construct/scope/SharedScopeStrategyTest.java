@@ -1,11 +1,13 @@
 package com.ulfric.commons.cdi.construct.scope;
 
+import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
 import com.ulfric.commons.cdi.construct.BeanFactory;
 import com.ulfric.commons.cdi.inject.Inject;
 import com.ulfric.commons.cdi.inject.Injector;
+import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
 public class SharedScopeStrategyTest {
@@ -13,7 +15,7 @@ public class SharedScopeStrategyTest {
 	private final BeanFactory factory = BeanFactory.newInstance();
 	private final Injector injector = Injector.newInstance(this.factory);
 
-	/*@Test
+	@Test
 	public void test_getInstance_injectsState()
 	{
 		SharedScopeStrategy strategy = new SharedScopeStrategy();
@@ -25,7 +27,6 @@ public class SharedScopeStrategyTest {
 		Verify.that(singleton).isNotNull();
 		Verify.that(singleton.injected).isNotNull();
 	}
-*/
 	public static class FooInjected
 	{
 

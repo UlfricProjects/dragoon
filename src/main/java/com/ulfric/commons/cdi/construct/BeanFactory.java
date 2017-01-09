@@ -101,34 +101,32 @@ public final class BeanFactory implements Service {
 		return this.injector;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> Object request(Class<T> request)
 	{
 		Objects.requireNonNull(request);
 
-		@SuppressWarnings("unchecked")
-		Class<? extends T> binding = (Class<? extends T>)
-			this.bindings.get(request);
-
-		BeanFactory parent = this.parent;
-
-		while (parent != null && binding == null)
-		{
-			binding = (Class<? extends T>) parent.bindings.get(request);
-			parent = parent.parent;
-		}
+		Class<? extends T> binding = (Class<? extends T>) this.getRecursiveBindingWithoutCreation(request);
 
 		if (binding == null)
 		{
-			binding = (Class<? extends T>) this.createInterceptorClass(request);
-			bindings.put(request, binding);
+			binding = (Class<? extends T>) this.bindings.computeIfAbsent(request, this::createInterceptorClass);
 		}
-
-		System.out.println("BINDING: " + String.valueOf(binding));
-		System.out.println("BINDING: " + String.valueOf(binding));
-		System.out.println("BINDING: " + String.valueOf(binding));
 
 		Annotation scope = this.getScope(binding);
 		return this.createInstance(scope, binding);
+	}
+
+	private synchronized Class<?> getRecursiveBindingWithoutCreation(Class<?> request)
+	{
+		Class<?> binding = this.bindings.get(request);
+
+		if (binding == null)
+		{
+			return parent != null ? this.parent.getRecursiveBindingWithoutCreation(request) : null;
+		}
+
+		return binding;
 	}
 
 	private Annotation getScope(Class<?> holder)
@@ -139,15 +137,9 @@ public final class BeanFactory implements Service {
 
 		if (scope == null && this.parent != null)
 		{
-			System.out.println("REQUESTING SCOPE FROM PARENT");
-			System.out.println("REQUESTING SCOPE FROM PARENT");
-			System.out.println("REQUESTING SCOPE FROM PARENT");
 			return this.parent.getScope(holder);
 		}
 
-		System.out.println("RETURNING LOCAL SCOPE");
-		System.out.println("RETURNING LOCAL SCOPE - " + String.valueOf(scope));
-		System.out.println("RETURNING LOCAL SCOPE");
 		return scope == null ? DefaultImpl.INSTANCE : scope;
 	}
 
