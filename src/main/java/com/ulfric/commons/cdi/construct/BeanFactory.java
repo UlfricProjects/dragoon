@@ -78,9 +78,27 @@ public class BeanFactory implements Service {
 
 	private void registerThisAsInjectable()
 	{
+		this.bindThisToThisManuallyToPreventDynamicSubclassing();
+		this.putThisIntoSuppliedScopeStrategy();
+	}
+
+	private void bindThisToThisManuallyToPreventDynamicSubclassing()
+	{
+		Class<?> thiz = this.getClass();
+		this.bindings.put(thiz, thiz);
+	}
+
+	private void putThisIntoSuppliedScopeStrategy()
+	{
+		SuppliedScopeStrategy strategy = this.getSuppliedScopeStrategy();
+		strategy.put(BeanFactory.class, this);
+	}
+
+	private SuppliedScopeStrategy getSuppliedScopeStrategy()
+	{
 		ScopeStrategy<? extends Annotation> scope = this.scopes.get(Supplied.class);
 		SuppliedScopeStrategy strategy = (SuppliedScopeStrategy) scope;
-		strategy.put(BeanFactory.class, this);
+		return strategy;
 	}
 
 	private final Injector injector;

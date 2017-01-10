@@ -189,6 +189,12 @@ public class BeanFactoryTest {
 	}
 
 	@Test
+	public void test_beanFactory_requestBeanFactory()
+	{
+		Verify.that(this.factory.request(BeanFactory.class)).isNotNull();
+	}
+
+	@Test
 	public void test_beanFactory_requestExact()
 	{
 		this.factory.bind(Baz.class).toInterceptor(BazInterceptor.class);

@@ -101,12 +101,16 @@ public final class Injector {
 				handles.forEach(handle ->
 				{
 					Object created = Injector.this.factory.request(type);
-
-					Try.to(() ->
-					{
-						handle.invokeExact(object, created);
-					});
+					this.tryToInvokeVoid(handle, object, created);
 				});
+			});
+		}
+
+		private void tryToInvokeVoid(MethodHandle handle, Object object, Object created)
+		{
+			Try.to(() ->
+			{
+				handle.invokeExact(object, created);
 			});
 		}
 	}
