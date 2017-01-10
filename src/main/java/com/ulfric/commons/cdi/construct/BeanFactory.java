@@ -44,7 +44,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 @Supplied
 @Name("BeanFactory")
-public final class BeanFactory implements Service {
+public class BeanFactory implements Service {
 
 	public static BeanFactory newInstance()
 	{
@@ -94,7 +94,7 @@ public final class BeanFactory implements Service {
 		return this.injector;
 	}
 
-	private boolean hasParent()
+	boolean hasParent()
 	{
 		return this.parent != null;
 	}
