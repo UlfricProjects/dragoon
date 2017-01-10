@@ -48,6 +48,12 @@ public class BeanFactory implements Service {
 		return new BeanFactory(null);
 	}
 
+	private final Injector injector;
+	private final Map<Class<?>, Class<?>> bindings;
+	private final Map<Class<?>, ScopeStrategy<? extends Annotation>> scopes;
+	private final Map<Class<?>, Class<? extends Annotation>> scopeTypes;
+	private final BeanFactory parent;
+
 	private BeanFactory(BeanFactory parent)
 	{
 		this.parent = parent;
@@ -77,12 +83,6 @@ public class BeanFactory implements Service {
 		Class<?> thiz = this.getClass();
 		this.bindings.put(thiz, thiz);
 	}
-
-	private final Injector injector;
-	private final Map<Class<?>, Class<?>> bindings;
-	private final Map<Class<?>, ScopeStrategy<? extends Annotation>> scopes;
-	private final Map<Class<?>, Class<? extends Annotation>> scopeTypes;
-	private final BeanFactory parent;
 
 	public Injector getInjector()
 	{

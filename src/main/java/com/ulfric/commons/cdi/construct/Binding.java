@@ -14,14 +14,14 @@ public final class Binding<T> {
 		return new Binding<>(registerTo, request);
 	}
 
+	private final BeanFactory registerTo;
+	private final Class<T> request;
+
 	private Binding(BeanFactory registerTo, Class<T> request)
 	{
 		this.registerTo = registerTo;
 		this.request = request;
 	}
-
-	private final BeanFactory registerTo;
-	private final Class<T> request;
 
 	public void to(Class<? extends T> implementation)
 	{

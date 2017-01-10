@@ -26,14 +26,14 @@ public final class Injector {
 		return new Injector(factory);
 	}
 
+	private final Map<Class<?>, InjectionData> profiles;
+	final BeanFactory factory;
+
 	private Injector(BeanFactory factory)
 	{
 		this.factory = factory;
 		this.profiles = MapUtils.newSynchronizedIdentityHashMap();
 	}
-
-	private final Map<Class<?>, InjectionData> profiles;
-	final BeanFactory factory;
 
 	public void injectState(Object object)
 	{
@@ -49,15 +49,16 @@ public final class Injector {
 
 	private final class InjectionData
 	{
+
+		private final Class<?> clazz;
+		private final Map<Class<?>, List<MethodHandle>> mutators;
+
 		InjectionData(Class<?> clazz)
 		{
 			this.clazz = clazz;
 			this.mutators = new IdentityHashMap<>();
 			this.resolveMutators();
 		}
-
-		private final Class<?> clazz;
-		private final Map<Class<?>, List<MethodHandle>> mutators;
 
 		private void resolveMutators()
 		{

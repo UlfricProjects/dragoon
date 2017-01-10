@@ -15,13 +15,13 @@ public final class Context {
 
 	public static final class Builder implements org.apache.commons.lang3.builder.Builder<Context>
 	{
-		Builder() { }
-
 		private Object owner;
 		private Method origin;
 		private Object[] arguments;
 		private Callable<?> destination;
 		private List<Interceptor> interceptors;
+
+		Builder() { }
 
 		@Override
 		public Context build()
@@ -72,6 +72,13 @@ public final class Context {
 		}
 	}
 
+	private final Object owner;
+	private final Method origin;
+	private final Object[] arguments;
+	private final Callable<?> destination;
+	private final Iterator<Interceptor> interceptors;
+
+
 	Context(Object owner, Method origin, Object[] arguments,
 			Callable<?> destination, Iterator<Interceptor> interceptors)
 	{
@@ -81,13 +88,6 @@ public final class Context {
 		this.destination = destination;
 		this.interceptors = interceptors;
 	}
-
-	private final Object owner;
-	private final Method origin;
-	private final Object[] arguments;
-	private final Callable<?> destination;
-	private final Iterator<Interceptor> interceptors;
-
 	public Object getOwner()
 	{
 		return this.owner;

@@ -19,12 +19,12 @@ public final class BytebuddyInterceptor<T> {
 		return new BytebuddyInterceptor<>(pipeline);
 	}
 
+	private final InterceptorPipeline pipeline;
+
 	private BytebuddyInterceptor(InterceptorPipeline pipeline)
 	{
 		this.pipeline = pipeline;
 	}
-
-	private final InterceptorPipeline pipeline;
 
 	@RuntimeType
 	public Object intercept(@This Object owner,

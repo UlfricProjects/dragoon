@@ -16,9 +16,9 @@ public final class InterceptorPipeline {
 
 	public static final class Builder implements org.apache.commons.lang3.builder.Builder<InterceptorPipeline>
 	{
-		Builder() { }
-
 		private final List<Interceptor> pipeline = new ArrayList<>();
+
+		Builder() { }
 
 		@Override
 		public InterceptorPipeline build()
@@ -35,12 +35,13 @@ public final class InterceptorPipeline {
 		}
 	}
 
+	private final List<Interceptor> pipeline;
+
 	InterceptorPipeline(List<Interceptor> pipeline)
 	{
 		this.pipeline = pipeline;
 	}
 
-	private final List<Interceptor> pipeline;
 
 	public Object call(Object owner, Method origin, Object[] arguments, Callable<?> destination)
 	{
