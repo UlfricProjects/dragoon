@@ -130,6 +130,18 @@ public class BeanFactoryTest {
 	}
 
 	@Test
+	public void testRequest_BeanFactory_isNotNull()
+	{
+		Verify.that(this.factory.request(BeanFactory.class)).isNotNull();
+	}
+
+	@Test
+	public void testRequest_BeanFactory_isUnique()
+	{
+		Verify.that(() -> this.factory.request(BeanFactory.class)).suppliesUniqueValues();
+	}
+
+	@Test
 	public void test_createInterceptor_binding()
 	{
 		Verify.that(() ->
@@ -186,12 +198,6 @@ public class BeanFactoryTest {
 		Method getRecursiveScopeWithoutCreation = MethodUtils.getMatchingMethod(BeanFactory.class, "getRecursiveScopeWithoutCreation", Class.class);
 		getRecursiveScopeWithoutCreation.setAccessible(true);
 		Verify.that(() -> getRecursiveScopeWithoutCreation.invoke(spy, FooClass.class)).doesThrow(RuntimeException.class);
-	}
-
-	@Test
-	public void test_beanFactory_requestBeanFactory()
-	{
-		Verify.that(this.factory.request(BeanFactory.class)).isNotNull();
 	}
 
 	@Test

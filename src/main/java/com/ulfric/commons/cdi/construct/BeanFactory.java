@@ -20,8 +20,6 @@ import com.ulfric.commons.cdi.construct.scope.ScopeNotPresentException;
 import com.ulfric.commons.cdi.construct.scope.ScopeStrategy;
 import com.ulfric.commons.cdi.construct.scope.Shared;
 import com.ulfric.commons.cdi.construct.scope.SharedScopeStrategy;
-import com.ulfric.commons.cdi.construct.scope.Supplied;
-import com.ulfric.commons.cdi.construct.scope.SuppliedScopeStrategy;
 import com.ulfric.commons.cdi.inject.Injector;
 import com.ulfric.commons.cdi.intercept.BytebuddyInterceptor;
 import com.ulfric.commons.cdi.intercept.FauxInterceptorException;
@@ -42,7 +40,6 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 
-@Supplied
 @Name("BeanFactory")
 public class BeanFactory implements Service {
 
@@ -60,14 +57,13 @@ public class BeanFactory implements Service {
 		this.scopeTypes = MapUtils.newSynchronizedIdentityHashMap();
 		this.registerDefaultScopes();
 		this.registerDefaultInterceptors();
-		this.registerThisAsInjectable();
+		this.bindThisManuallyToPreventDynamicSubclassingWithoutFinal();
 	}
 
 	private void registerDefaultScopes()
 	{
 		this.bind(Default.class).toScope(DefaultScopeStrategy.class);
 		this.bind(Shared.class).toScope(SharedScopeStrategy.class);
-		this.bind(Supplied.class).toScope(SuppliedScopeStrategy.class);
 	}
 
 	private void registerDefaultInterceptors()
@@ -76,29 +72,10 @@ public class BeanFactory implements Service {
 		this.bind(ChanceToRun.class).toInterceptor(ChanceToRunInterceptor.class);
 	}
 
-	private void registerThisAsInjectable()
-	{
-		this.bindThisToThisManuallyToPreventDynamicSubclassing();
-		this.putThisIntoSuppliedScopeStrategy();
-	}
-
-	private void bindThisToThisManuallyToPreventDynamicSubclassing()
+	private void bindThisManuallyToPreventDynamicSubclassingWithoutFinal()
 	{
 		Class<?> thiz = this.getClass();
 		this.bindings.put(thiz, thiz);
-	}
-
-	private void putThisIntoSuppliedScopeStrategy()
-	{
-		SuppliedScopeStrategy strategy = this.getSuppliedScopeStrategy();
-		strategy.put(BeanFactory.class, this);
-	}
-
-	private SuppliedScopeStrategy getSuppliedScopeStrategy()
-	{
-		ScopeStrategy<? extends Annotation> scope = this.scopes.get(Supplied.class);
-		SuppliedScopeStrategy strategy = (SuppliedScopeStrategy) scope;
-		return strategy;
 	}
 
 	private final Injector injector;
@@ -115,11 +92,6 @@ public class BeanFactory implements Service {
 	boolean hasParent()
 	{
 		return this.parent != null;
-	}
-
-	public BeanFactory createChild()
-	{
-		return new BeanFactory(this);
 	}
 
 	public <T> T requestExact(Class<T> request)
@@ -140,6 +112,11 @@ public class BeanFactory implements Service {
 	{
 		Objects.requireNonNull(request);
 
+		if (this.isRequestingBeanFactory(request))
+		{
+			return this.createChild();
+		}
+
 		Class<?> binding = this.getRecursiveBindingWithoutCreation(request);
 
 		if (binding == null)
@@ -149,6 +126,16 @@ public class BeanFactory implements Service {
 
 		Annotation scope = this.getScope(binding);
 		return this.createInstance(scope, binding);
+	}
+
+	private boolean isRequestingBeanFactory(Class<?> request)
+	{
+		return request == this.getClass();
+	}
+
+	public BeanFactory createChild()
+	{
+		return new BeanFactory(this);
 	}
 
 	private Class<?> getRecursiveBindingWithoutCreation(Class<?> request)
