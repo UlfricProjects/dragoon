@@ -106,29 +106,6 @@ public class BeanFactoryTest {
 		}).doesThrow(InvocationTargetException.class);
 	}
 
-	private Method getCanBeIntercepted()
-	{
-		Method method = MethodUtils.getMatchingMethod(
-				BeanFactory.class, "canBeIntercepted", Class.class
-		);
-
-		method.setAccessible(true);
-
-		return method;
-	}
-
-	@Test
-	public void test_canBeIntercepted_all()
-	{
-		Method method = this.getCanBeIntercepted();
-
-		Verify.that(() -> method.invoke(this.factory, FooClass.class)).valueIsEqualTo(true);
-		Verify.that(() -> method.invoke(this.factory, FooInterface.class)).valueIsEqualTo(false);
-		Verify.that(() -> method.invoke(this.factory, FooEnum.class)).valueIsEqualTo(false);
-		Verify.that(() -> method.invoke(this.factory, FooAbstractClass.class)).valueIsEqualTo(false);
-		Verify.that(() -> method.invoke(this.factory, FooFinalClass.class)).valueIsEqualTo(false);
-	}
-
 	@Test
 	public void testRequest_BeanFactory_isNotNull()
 	{
@@ -211,7 +188,7 @@ public class BeanFactoryTest {
 	@Test
 	public void test_beanFactory_createInterceptorClassNoImpl()
 	{
-		Method method = MethodUtils.getMatchingMethod(BeanFactory.class, "createInterceptorClass", Class.class);
+		Method method = MethodUtils.getMatchingMethod(BeanFactory.class, "createInterceptableClass", Class.class);
 		method.setAccessible(true);
 
 		Verify.that(() -> method.invoke(this.factory, FooEnum.class)).valueIsEqualTo(FooEnum.class);

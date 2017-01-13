@@ -1,16 +1,8 @@
 package com.ulfric.commons.cdi.construct;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.Inherited;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-
-import org.apache.commons.lang3.ClassUtils.Interfaces;
-import org.apache.commons.lang3.reflect.MethodUtils;
 
 import com.ulfric.commons.cdi.construct.scope.Default;
 import com.ulfric.commons.cdi.construct.scope.DefaultImpl;
@@ -21,11 +13,6 @@ import com.ulfric.commons.cdi.construct.scope.ScopeStrategy;
 import com.ulfric.commons.cdi.construct.scope.Shared;
 import com.ulfric.commons.cdi.construct.scope.SharedScopeStrategy;
 import com.ulfric.commons.cdi.inject.Injector;
-import com.ulfric.commons.cdi.intercept.BytebuddyInterceptor;
-import com.ulfric.commons.cdi.intercept.FauxInterceptorException;
-import com.ulfric.commons.cdi.intercept.Intercept;
-import com.ulfric.commons.cdi.intercept.Interceptor;
-import com.ulfric.commons.cdi.intercept.InterceptorPipeline;
 import com.ulfric.commons.cdi.intercept.async.Asynchronous;
 import com.ulfric.commons.cdi.intercept.async.AsynchronousInterceptor;
 import com.ulfric.commons.cdi.intercept.random.ChanceToRun;
@@ -34,11 +21,6 @@ import com.ulfric.commons.collect.MapUtils;
 import com.ulfric.commons.naming.Name;
 import com.ulfric.commons.reflect.AnnotationUtils;
 import com.ulfric.commons.service.Service;
-
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.implementation.MethodDelegation;
-import net.bytebuddy.matcher.ElementMatchers;
 
 @Name("BeanFactory")
 public class BeanFactory implements Service {
@@ -121,7 +103,7 @@ public class BeanFactory implements Service {
 
 		if (binding == null)
 		{
-			binding = this.bindings.computeIfAbsent(request, this::createInterceptorClass);
+			binding = this.bindings.computeIfAbsent(request, this::createInterceptableClass);
 		}
 
 		Annotation scope = this.getScope(binding);
@@ -224,84 +206,21 @@ public class BeanFactory implements Service {
 		return Binding.newInstance(this, request);
 	}
 
-	void bindScope(Class<?> request, Class<? extends ScopeStrategy<?>> implementation)
+	void registerScopeBinding(Class<?> request, Class<? extends ScopeStrategy<?>> implementation)
 	{
 		ScopeStrategy<? extends Annotation> scopeStrategy = InstanceUtils.getInstance(implementation);
 		this.scopes.put(request, scopeStrategy);
 	}
 
-	void bind(Class<?> request, Class<?> implementation)
+	void registerBinding(Class<?> request, Class<?> implementation)
 	{
-		Objects.requireNonNull(request);
-		Objects.requireNonNull(implementation);
-
-		Class<?> wrappedImplementation = this.createInterceptorClass(implementation);
+		Class<?> wrappedImplementation = this.createInterceptableClass(implementation);
 		this.bindings.put(request, wrappedImplementation);
 	}
 
-	private Class<?> createInterceptorClass(Class<?> implementation)
+	private Class<?> createInterceptableClass(Class<?> parent)
 	{
-		if (!this.canBeIntercepted(implementation))
-		{
-			return implementation;
-		}
-
-		DynamicType.Builder<?> builder = new ByteBuddy()
-				.subclass(implementation)
-				.annotateType(implementation.getAnnotations());
-
-		for (Method method : implementation.getMethods())
-		{
-			Map<Class<? extends Annotation>, Annotation> interceptors = new LinkedHashMap<>();
-			AnnotationUtils.getLeafAnnotations(method, Intercept.class)
-				.forEach(annotation -> interceptors.put(annotation.annotationType(), annotation));
-
-			Set<Method> superMethods = MethodUtils.getOverrideHierarchy(method, Interfaces.INCLUDE);
-			for (Method superMethod : superMethods)
-			{
-				AnnotationUtils.getLeafAnnotations(superMethod, Intercept.class)
-					.stream()
-					.filter(annotation -> annotation.annotationType().isAnnotationPresent(Inherited.class))
-					.forEach(annotation -> interceptors.put(annotation.annotationType(), annotation));
-			}
-
-			if (interceptors.isEmpty())
-			{
-				continue;
-			}
-
-			InterceptorPipeline.Builder pipeline = InterceptorPipeline.builder();
-			for (Annotation interceptor : interceptors.values())
-			{
-				Object interceptorImpl = this.request(interceptor.annotationType());
-
-				if (!(interceptorImpl instanceof Interceptor))
-				{
-					throw new FauxInterceptorException(interceptorImpl);
-				}
-
-				Interceptor casted = (Interceptor) interceptorImpl;
-				pipeline.addInterceptor(casted);
-			}
-
-			builder = builder.method(ElementMatchers.is(method))
-				.intercept(MethodDelegation.to(BytebuddyInterceptor.newInstance(pipeline.build())))
-				.annotateMethod(method.getAnnotations());
-		}
-		return builder.make().load(implementation.getClassLoader()).getLoaded();
-	}
-
-	private boolean canBeIntercepted(Class<?> clazz)
-	{
-		return !clazz.isInterface() &&
-				!clazz.isEnum() &&
-				!this.isAbstractOrFinal(clazz);
-	}
-
-	private boolean isAbstractOrFinal(Class<?> clazz)
-	{
-		int modifiers = clazz.getModifiers();
-		return Modifier.isAbstract(modifiers) || Modifier.isFinal(modifiers);
+		return new DynamicSubclassFactory<>(this, parent).create();
 	}
 
 }

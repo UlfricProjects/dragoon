@@ -26,19 +26,19 @@ public final class Binding<T> {
 	public void to(Class<? extends T> implementation)
 	{
 		Objects.requireNonNull(implementation);
-		this.registerTo.bind(this.request, implementation);
+		this.registerTo.registerBinding(this.request, implementation);
 	}
 
 	public void toScope(Class<? extends ScopeStrategy<?>> interceptor)
 	{
 		Objects.requireNonNull(interceptor);
-		this.registerTo.bindScope(this.request, interceptor);
+		this.registerTo.registerScopeBinding(this.request, interceptor);
 	}
 
 	public void toInterceptor(Class<? extends Interceptor> interceptor)
 	{
 		Objects.requireNonNull(interceptor);
-		this.registerTo.bind(this.request, interceptor);
+		this.registerTo.registerBinding(this.request, interceptor);
 	}
 
 }
