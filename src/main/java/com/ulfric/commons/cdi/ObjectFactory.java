@@ -1,4 +1,4 @@
-package com.ulfric.commons.cdi.construct;
+package com.ulfric.commons.cdi;
 
 public class ObjectFactory {
 

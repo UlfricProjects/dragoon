@@ -1,10 +1,11 @@
-package com.ulfric.commons.cdi.construct;
+package com.ulfric.commons.cdi;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
+import com.ulfric.commons.cdi.ObjectFactory;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
