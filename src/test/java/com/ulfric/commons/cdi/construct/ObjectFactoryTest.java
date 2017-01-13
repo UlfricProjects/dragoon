@@ -10,7 +10,7 @@ import com.ulfric.verify.Verify;
 public class ObjectFactoryTest {
 
 	@Test
-	void testNew()
+	void testNewInstance()
 	{
 		Verify.that(ObjectFactory::newInstance).suppliesUniqueValues();
 	}
