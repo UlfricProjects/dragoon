@@ -12,7 +12,7 @@ public class BindingTest {
 	@Test
 	void testNew()
 	{
-		Verify.that(() -> new Binding<>(null)).runsWithoutExceptions();;
+		Verify.that(() -> new Binding<>(null)).runsWithoutExceptions();
 	}
 
 }
