@@ -12,4 +12,9 @@ public class ObjectFactory {
 		
 	}
 
+	ObjectFactory subfactory()
+	{
+		return new ObjectFactory();
+	}
+
 }
