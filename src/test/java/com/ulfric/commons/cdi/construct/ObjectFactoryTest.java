@@ -12,7 +12,7 @@ public class ObjectFactoryTest {
 	@Test
 	void testNew()
 	{
-		Verify.that(ObjectFactory::newInstance).runsWithoutExceptions();
+		Verify.that(ObjectFactory::newInstance).suppliesUniqueValues();
 	}
 
 }
