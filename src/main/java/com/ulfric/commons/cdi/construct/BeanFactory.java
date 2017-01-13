@@ -1,7 +1,6 @@
 package com.ulfric.commons.cdi.construct;
 
 import java.lang.annotation.Annotation;
-import java.util.Map;
 import java.util.Objects;
 
 import com.ulfric.commons.cdi.construct.scope.Default;
@@ -15,7 +14,6 @@ import com.ulfric.commons.cdi.intercept.async.Asynchronous;
 import com.ulfric.commons.cdi.intercept.async.AsynchronousInterceptor;
 import com.ulfric.commons.cdi.intercept.random.ChanceToRun;
 import com.ulfric.commons.cdi.intercept.random.ChanceToRunInterceptor;
-import com.ulfric.commons.collect.MapUtils;
 import com.ulfric.commons.naming.Name;
 import com.ulfric.commons.service.Service;
 
@@ -29,28 +27,38 @@ public class BeanFactory implements Service {
 
 	private final BeanFactory parent;
 	private final Injector injector;
-	private final ScopeMappings scopes;
-	private final Map<Class<?>, Class<?>> bindings;
+	private final Scopes scopes;
+	private final Bindings bindings;
 
 	private BeanFactory(BeanFactory parent)
 	{
 		this.parent = parent;
 		this.scopes = this.createScopeMappings();
+		this.bindings = this.createBindings();
 		this.injector = this.createInjector();
-		this.bindings = MapUtils.newSynchronizedIdentityHashMap();
 		this.registerDefaultScopes();
 		this.registerDefaultInterceptors();
 		this.bindThisManuallyToPreventDynamicSubclassingWithoutFinal();
 	}
 
-	private ScopeMappings createScopeMappings()
+	private Scopes createScopeMappings()
 	{
-		return new ScopeMappings(this.parent != null ? this.parent.scopes : null);
+		return new Scopes(this.hasParent() ? this.parent.scopes : null);
+	}
+
+	private Bindings createBindings()
+	{
+		return new Bindings(this.hasParent() ? this.parent.bindings : null);
 	}
 
 	private Injector createInjector()
 	{
 		return Injector.newInstance(this);
+	}
+
+	private boolean hasParent()
+	{
+		return this.parent != null;
 	}
 
 	private void registerDefaultScopes()
@@ -68,17 +76,7 @@ public class BeanFactory implements Service {
 	private void bindThisManuallyToPreventDynamicSubclassingWithoutFinal()
 	{
 		Class<?> thiz = this.getClass();
-		this.bindings.put(thiz, thiz);
-	}
-
-	public Injector getInjector()
-	{
-		return this.injector;
-	}
-
-	boolean hasParent()
-	{
-		return this.parent != null;
+		this.bindings.registerBinding(thiz, thiz);
 	}
 
 	public <T> T requestExact(Class<T> request)
@@ -104,11 +102,12 @@ public class BeanFactory implements Service {
 			return this.createChild();
 		}
 
-		Class<?> binding = this.getRecursiveBindingWithoutCreation(request);
+		Class<?> binding = this.bindings.getBinding(request);
 
 		if (binding == null)
 		{
-			binding = this.bindings.computeIfAbsent(request, this::createInterceptableClass);
+			binding = this.createInterceptableClass(binding);
+			this.bindings.registerBinding(request, binding);
 		}
 
 		Annotation scope = this.scopes.getScopeForType(binding);
@@ -123,21 +122,6 @@ public class BeanFactory implements Service {
 	public BeanFactory createChild()
 	{
 		return new BeanFactory(this);
-	}
-
-	private Class<?> getRecursiveBindingWithoutCreation(Class<?> request)
-	{
-		synchronized (this.bindings)
-		{
-			Class<?> binding = this.bindings.get(request);
-
-			if (binding == null && this.hasParent())
-			{
-				return this.parent.getRecursiveBindingWithoutCreation(request);
-			}
-
-			return binding;
-		}
 	}
 
 	private <T, S extends Annotation> T createInstance(S scope, Class<T> request)
@@ -155,12 +139,10 @@ public class BeanFactory implements Service {
 
 	public <T> Binding<T> bind(Class<T> request)
 	{
-		Objects.requireNonNull(request);
-
 		return Binding.newInstance(this, request);
 	}
 
-	void registerScopeBinding(Class<?> request, Class<? extends ScopeStrategy<?>> implementation)
+	void registerScope(Class<?> request, Class<? extends ScopeStrategy<?>> implementation)
 	{
 		ScopeStrategy<? extends Annotation> scopeStrategy = InstanceUtils.getInstance(implementation);
 		this.scopes.registerScopeStrategy(request, scopeStrategy);
@@ -169,7 +151,7 @@ public class BeanFactory implements Service {
 	void registerBinding(Class<?> request, Class<?> implementation)
 	{
 		Class<?> wrappedImplementation = this.createInterceptableClass(implementation);
-		this.bindings.put(request, wrappedImplementation);
+		this.bindings.registerBinding(request, wrappedImplementation);
 	}
 
 	private Class<?> createInterceptableClass(Class<?> parent)

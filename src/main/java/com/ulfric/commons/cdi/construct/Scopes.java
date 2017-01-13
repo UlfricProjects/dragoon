@@ -2,6 +2,7 @@ package com.ulfric.commons.cdi.construct;
 
 import java.lang.annotation.Annotation;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -12,20 +13,20 @@ import com.ulfric.commons.cdi.construct.scope.Scope;
 import com.ulfric.commons.cdi.construct.scope.ScopeStrategy;
 import com.ulfric.commons.reflect.AnnotationUtils;
 
-final class ScopeMappings {
+final class Scopes {
 
-	private final ScopeMappings parent;
+	private final Scopes parent;
 	private final Map<Class<?>, ScopeStrategy<? extends Annotation>> scopeStrategies = new IdentityHashMap<>();
 	private final Map<Class<?>, Class<? extends Annotation>> scopeTypes = new IdentityHashMap<>();
 	private final ReadWriteLock scopeStrategiesLock = new ReentrantReadWriteLock();
 	private final ReadWriteLock scopeTypesLock = new ReentrantReadWriteLock();
 
-	public ScopeMappings(ScopeMappings parent)
+	public Scopes(Scopes parent)
 	{
 		this.parent = parent;
 	}
 
-	public <T extends Annotation> ScopeStrategy<T> getScopeStrategy(Class<T> scope)
+	<T extends Annotation> ScopeStrategy<T> getScopeStrategy(Class<T> scope)
 	{
 		this.scopeStrategiesLock.readLock().lock();
 
@@ -56,11 +57,15 @@ final class ScopeMappings {
 
 		if (scopeType == null)
 		{
-			scopeType = this.resolveAndPutScopeType(holder);
+			scopeType = this.resolveAndRegisterScopeType(holder);
 		}
 
 		Annotation scope = holder.getAnnotation(scopeType);
+		return this.getScopeOrDefault(scope);
+	}
 
+	private Annotation getScopeOrDefault(Annotation scope)
+	{
 		return scope == null ? DefaultImpl.INSTANCE : scope;
 	}
 
@@ -75,11 +80,10 @@ final class ScopeMappings {
 		}
 
 		this.scopeTypesLock.readLock().unlock();
-
 		return binding;
 	}
 
-	private Class<? extends Annotation> resolveAndPutScopeType(Class<?> holder)
+	private Class<? extends Annotation> resolveAndRegisterScopeType(Class<?> holder)
 	{
 		this.scopeTypesLock.writeLock().lock();
 
@@ -87,21 +91,30 @@ final class ScopeMappings {
 		this.scopeTypes.put(holder, scopeType);
 
 		this.scopeTypesLock.writeLock().unlock();
-
 		return scopeType;
 	}
 
 	private Class<? extends Annotation> resolveScope(Class<?> holder)
 	{
-		for (Annotation scope : AnnotationUtils.getLeafAnnotations(holder, Scope.class))
+		for (Annotation scope : this.getScopes(holder))
 		{
-			Class<? extends Annotation> scopeType = scope.annotationType();
-			if (this.getScopeStrategy(scopeType) != null)
+			if (this.containsScopeStrategy(scope))
 			{
-				return scopeType;
+				return scope.annotationType();
 			}
 		}
 		return Default.class;
+	}
+
+	private boolean containsScopeStrategy(Annotation scope)
+	{
+		Class<? extends Annotation> scopeType = scope.annotationType();
+		return this.getScopeStrategy(scopeType) != null;
+	}
+
+	private List<Annotation> getScopes(Class<?> holder)
+	{
+		return AnnotationUtils.getLeafAnnotations(holder, Scope.class);
 	}
 
 	private boolean hasParent()

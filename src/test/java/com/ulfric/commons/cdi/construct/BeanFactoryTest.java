@@ -41,12 +41,6 @@ public class BeanFactoryTest {
 	}
 
 	@Test
-	public void test_getIntjector_returnsNonNull()
-	{
-		Verify.that(this.factory.getInjector()).isNotNull();
-	}
-
-	@Test
 	public void test_bindScope_runsWithoutExceptions()
 	{
 		Verify.that(

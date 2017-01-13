@@ -11,6 +11,7 @@ public final class Binding<T> {
 	{
 		Objects.requireNonNull(registerTo);
 		Objects.requireNonNull(request);
+
 		return new Binding<>(registerTo, request);
 	}
 
@@ -32,7 +33,7 @@ public final class Binding<T> {
 	public void toScope(Class<? extends ScopeStrategy<?>> interceptor)
 	{
 		Objects.requireNonNull(interceptor);
-		this.registerTo.registerScopeBinding(this.request, interceptor);
+		this.registerTo.registerScope(this.request, interceptor);
 	}
 
 	public void toInterceptor(Class<? extends Interceptor> interceptor)
