@@ -30,4 +30,10 @@ public class ObjectFactoryTest {
 		Verify.that(this.factory::subfactory).suppliesUniqueValues();
 	}
 
+	@Test
+	void testHasParent()
+	{
+		Verify.that(this.factory.subfactory().hasParent()).isTrue();
+	}
+
 }
