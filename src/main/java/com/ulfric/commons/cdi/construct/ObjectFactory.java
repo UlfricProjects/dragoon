@@ -7,16 +7,26 @@ public class ObjectFactory {
 		return new ObjectFactory();
 	}
 
+	private final ObjectFactory parent;
+
 	private ObjectFactory()
 	{
-		
+		this(null);
+	}
+
+	private ObjectFactory(ObjectFactory parent)
+	{
+		this.parent = parent;
 	}
 
 	ObjectFactory subfactory()
 	{
-		return new ObjectFactory();
+		return new ObjectFactory(this);
 	}
 
-	
+	boolean hasParent()
+	{
+		return this.parent != null;
+	}
 
 }
