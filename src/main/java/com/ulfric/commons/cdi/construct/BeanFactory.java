@@ -5,9 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.ulfric.commons.cdi.construct.scope.Default;
-import com.ulfric.commons.cdi.construct.scope.DefaultImpl;
 import com.ulfric.commons.cdi.construct.scope.DefaultScopeStrategy;
-import com.ulfric.commons.cdi.construct.scope.Scope;
 import com.ulfric.commons.cdi.construct.scope.ScopeNotPresentException;
 import com.ulfric.commons.cdi.construct.scope.ScopeStrategy;
 import com.ulfric.commons.cdi.construct.scope.Shared;
@@ -19,7 +17,6 @@ import com.ulfric.commons.cdi.intercept.random.ChanceToRun;
 import com.ulfric.commons.cdi.intercept.random.ChanceToRunInterceptor;
 import com.ulfric.commons.collect.MapUtils;
 import com.ulfric.commons.naming.Name;
-import com.ulfric.commons.reflect.AnnotationUtils;
 import com.ulfric.commons.service.Service;
 
 @Name("BeanFactory")
@@ -30,22 +27,30 @@ public class BeanFactory implements Service {
 		return new BeanFactory(null);
 	}
 
-	private final Injector injector;
-	private final Map<Class<?>, Class<?>> bindings;
-	private final Map<Class<?>, ScopeStrategy<? extends Annotation>> scopes;
-	private final Map<Class<?>, Class<? extends Annotation>> scopeTypes;
 	private final BeanFactory parent;
+	private final Injector injector;
+	private final ScopeMappings scopes;
+	private final Map<Class<?>, Class<?>> bindings;
 
 	private BeanFactory(BeanFactory parent)
 	{
 		this.parent = parent;
-		this.injector = Injector.newInstance(this);
+		this.scopes = this.createScopeMappings();
+		this.injector = this.createInjector();
 		this.bindings = MapUtils.newSynchronizedIdentityHashMap();
-		this.scopes = MapUtils.newSynchronizedIdentityHashMap();
-		this.scopeTypes = MapUtils.newSynchronizedIdentityHashMap();
 		this.registerDefaultScopes();
 		this.registerDefaultInterceptors();
 		this.bindThisManuallyToPreventDynamicSubclassingWithoutFinal();
+	}
+
+	private ScopeMappings createScopeMappings()
+	{
+		return new ScopeMappings(this.parent != null ? this.parent.scopes : null);
+	}
+
+	private Injector createInjector()
+	{
+		return Injector.newInstance(this);
 	}
 
 	private void registerDefaultScopes()
@@ -106,7 +111,7 @@ public class BeanFactory implements Service {
 			binding = this.bindings.computeIfAbsent(request, this::createInterceptableClass);
 		}
 
-		Annotation scope = this.getScope(binding);
+		Annotation scope = this.scopes.getScopeForType(binding);
 		return this.createInstance(scope, binding);
 	}
 
@@ -135,64 +140,13 @@ public class BeanFactory implements Service {
 		}
 	}
 
-	private Annotation getScope(Class<?> holder)
-	{
-		Class<? extends Annotation> scopeType = this.getRecursiveScopeWithoutCreation(holder);
-
-		if (scopeType == null)
-		{
-			scopeType = this.scopeTypes.computeIfAbsent(holder, this::resolveScope);
-		}
-
-		Annotation scope = holder.getAnnotation(scopeType);
-
-		return scope == null ? DefaultImpl.INSTANCE : scope;
-	}
-
-	private Class<? extends Annotation> getRecursiveScopeWithoutCreation(Class<?> request)
-	{
-		synchronized (this.scopeTypes)
-		{
-			Class<? extends Annotation> binding = this.scopeTypes.get(request);
-
-			if (binding == null && this.hasParent())
-			{
-				return this.parent.getRecursiveScopeWithoutCreation(request);
-			}
-
-			return binding;
-		}
-	}
-
-	private Class<? extends Annotation> resolveScope(Class<?> holder)
-	{
-		for (Annotation scope : AnnotationUtils.getLeafAnnotations(holder, Scope.class))
-		{
-			Class<? extends Annotation> scopeType = scope.annotationType();
-			if (this.scopes.containsKey(scopeType))
-			{
-				return scopeType;
-			}
-		}
-		if (this.parent != null)
-		{
-			return this.parent.resolveScope(holder);
-		}
-		return Default.class;
-	}
-
-	private <T> T createInstance(Annotation scope, Class<T> request)
+	private <T, S extends Annotation> T createInstance(S scope, Class<T> request)
 	{
 		@SuppressWarnings("unchecked")
-		ScopeStrategy<Annotation> instanceCache = (ScopeStrategy<Annotation>)
-			this.scopes.get(scope.annotationType());
+		ScopeStrategy<S> instanceCache = (ScopeStrategy<S>) this.scopes.getScopeStrategy(scope.annotationType());
 
 		if (instanceCache == null)
 		{
-			if (this.parent != null)
-			{
-				return this.parent.createInstance(scope, request);
-			}
 			throw new ScopeNotPresentException(scope.annotationType());
 		}
 
@@ -209,7 +163,7 @@ public class BeanFactory implements Service {
 	void registerScopeBinding(Class<?> request, Class<? extends ScopeStrategy<?>> implementation)
 	{
 		ScopeStrategy<? extends Annotation> scopeStrategy = InstanceUtils.getInstance(implementation);
-		this.scopes.put(request, scopeStrategy);
+		this.scopes.registerScopeStrategy(request, scopeStrategy);
 	}
 
 	void registerBinding(Class<?> request, Class<?> implementation)

@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import com.ulfric.commons.cdi.construct.scope.Scope;
 import com.ulfric.commons.cdi.construct.scope.ScopeStrategy;
@@ -159,22 +158,6 @@ public class BeanFactoryTest {
 		BazIntercepted intercepted = child.requestExact(BazIntercepted.class);
 
 		Verify.that(intercepted::foo).runsWithoutExceptions();
-	}
-
-	@Test
-	public void test_beanFactory_abruptSynchronized()
-	{
-		BeanFactory spy = Mockito.spy(this.factory);
-
-		Mockito.when(spy.hasParent()).thenThrow(new RuntimeException());
-
-		Method getRecursiveBindingWithoutCreation = MethodUtils.getMatchingMethod(BeanFactory.class, "getRecursiveBindingWithoutCreation", Class.class);
-		getRecursiveBindingWithoutCreation.setAccessible(true);
-		Verify.that(() -> getRecursiveBindingWithoutCreation.invoke(spy, FooClass.class)).doesThrow(RuntimeException.class);
-
-		Method getRecursiveScopeWithoutCreation = MethodUtils.getMatchingMethod(BeanFactory.class, "getRecursiveScopeWithoutCreation", Class.class);
-		getRecursiveScopeWithoutCreation.setAccessible(true);
-		Verify.that(() -> getRecursiveScopeWithoutCreation.invoke(spy, FooClass.class)).doesThrow(RuntimeException.class);
 	}
 
 	@Test
