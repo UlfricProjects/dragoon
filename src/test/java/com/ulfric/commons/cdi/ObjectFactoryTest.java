@@ -43,9 +43,9 @@ public class ObjectFactoryTest {
 	}
 
 	@Test
-	void testBind_null_throwsIAE()
+	void testBind_null_throwsNPE()
 	{
-		Verify.that(() -> this.factory.bind(null)).doesThrow(IllegalArgumentException.class);
+		Verify.that(() -> this.factory.bind(null)).doesThrow(NullPointerException.class);
 	}
 
 	@Test

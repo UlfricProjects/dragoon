@@ -1,5 +1,7 @@
 package com.ulfric.commons.cdi;
 
+import org.apache.commons.lang3.Validate;
+
 public class ObjectFactory {
 
 	public static ObjectFactory newInstance()
@@ -31,7 +33,7 @@ public class ObjectFactory {
 
 	public void bind(Object object)
 	{
-		throw new IllegalArgumentException();
+		Validate.notNull(object);
 	}
 
 }
