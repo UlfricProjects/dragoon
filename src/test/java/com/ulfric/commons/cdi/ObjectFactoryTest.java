@@ -54,4 +54,10 @@ public class ObjectFactoryTest {
 		Verify.that(this.factory.bind(Number.class)).isNotNull();
 	}
 
+	@Test
+	void testRequest_null_throwsNPE()
+	{
+		Verify.that(() -> this.factory.request(null)).doesThrow(NullPointerException.class);
+	}
+
 }
