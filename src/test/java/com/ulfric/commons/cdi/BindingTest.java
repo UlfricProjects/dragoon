@@ -18,7 +18,27 @@ public class BindingTest {
 	@Test
 	void testNew_nonnull()
 	{
-		Verify.that(() -> new Binding<>(Number.class)).runsWithoutExceptions();
+		Verify.that(() -> new Binding<>(Hello.class)).runsWithoutExceptions();
+	}
+
+	@Test
+	void testTo_null()
+	{
+		Verify.that(() -> new Binding<>(Hello.class).to(HelloImpl.class)).runsWithoutExceptions();
+	}
+
+	interface Hello
+	{
+		String sayHello();
+	}
+
+	class HelloImpl implements Hello
+	{
+		@Override
+		public String sayHello()
+		{
+			return "Hello, world!";
+		}
 	}
 
 }
