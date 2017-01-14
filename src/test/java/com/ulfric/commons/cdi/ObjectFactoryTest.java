@@ -48,4 +48,10 @@ public class ObjectFactoryTest {
 		Verify.that(() -> this.factory.bind(null)).doesThrow(IllegalArgumentException.class);
 	}
 
+	@Test
+	void testBind_nonnull()
+	{
+		Verify.that(() -> this.factory.bind(Number.class)).runsWithoutExceptions();
+	}
+
 }
