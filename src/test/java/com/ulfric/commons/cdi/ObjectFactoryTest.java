@@ -49,9 +49,9 @@ public class ObjectFactoryTest {
 	}
 
 	@Test
-	void testBind_nonnull()
+	void testBind_nonnull_isNotNull()
 	{
-		Verify.that(() -> this.factory.bind(Number.class)).runsWithoutExceptions();
+		Verify.that(this.factory.bind(Number.class)).isNotNull();
 	}
 
 }
