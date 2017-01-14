@@ -31,9 +31,11 @@ public class ObjectFactory {
 		return this.parent != null;
 	}
 
-	public void bind(Object object)
+	public <T> Binding<T> bind(Class<T> request)
 	{
-		Objects.requireNonNull(object);
+		Objects.requireNonNull(request);
+
+		return new Binding<>(request);
 	}
 
 }
