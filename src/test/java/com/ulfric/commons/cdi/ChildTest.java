@@ -27,4 +27,17 @@ public class ChildTest {
 		Verify.that(new Child<>(new Object()).hasParent()).isTrue();
 	}
 
+	@Test
+	void testGetParent_root()
+	{
+		Verify.that(new Child<>().getParent()).isNull();
+	}
+
+	@Test
+	void testGetParent_child()
+	{
+		Object o = new Object();
+		Verify.that(new Child<>(o).getParent()).isSameAs(o);
+	}
+
 }
