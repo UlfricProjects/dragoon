@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
-import com.ulfric.commons.cdi.ObjectFactory;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
@@ -41,6 +40,12 @@ public class ObjectFactoryTest {
 	void testHasParent_root_isFalse()
 	{
 		Verify.that(this.factory.hasParent()).isFalse();
+	}
+
+	@Test
+	void testBind_null_throwsIAE()
+	{
+		Verify.that(() -> this.factory.bind(null)).doesThrow(IllegalArgumentException.class);
 	}
 
 }
