@@ -29,16 +29,12 @@ public class BindingTest {
 
 	interface Hello
 	{
-		String sayHello();
+		
 	}
 
 	class HelloImpl implements Hello
 	{
-		@Override
-		public String sayHello()
-		{
-			return "Hello, world!";
-		}
+		
 	}
 
 }

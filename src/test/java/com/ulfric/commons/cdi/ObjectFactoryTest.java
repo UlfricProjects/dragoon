@@ -51,13 +51,23 @@ public class ObjectFactoryTest {
 	@Test
 	void testBind_nonnull_isNotNull()
 	{
-		Verify.that(this.factory.bind(Number.class)).isNotNull();
+		Verify.that(this.factory.bind(Hello.class)).isNotNull();
 	}
 
 	@Test
 	void testRequest_null_throwsNPE()
 	{
 		Verify.that(() -> this.factory.request(null)).doesThrow(NullPointerException.class);
+	}
+
+	interface Hello
+	{
+		
+	}
+
+	class HelloImpl implements Hello
+	{
+		
 	}
 
 }
