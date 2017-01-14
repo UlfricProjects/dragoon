@@ -10,9 +10,15 @@ import com.ulfric.verify.Verify;
 public class BindingTest {
 
 	@Test
-	void testNew()
+	void testNew_null()
 	{
 		Verify.that(() -> new Binding<>(null)).runsWithoutExceptions();
+	}
+
+	@Test
+	void testNew_nonnull()
+	{
+		Verify.that(() -> new Binding<>(Number.class)).runsWithoutExceptions();
 	}
 
 }
