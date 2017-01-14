@@ -36,4 +36,20 @@ public class BindingsTest {
 		Verify.that(this.bindings.getRegisteredBinding(Object.class)).isNull();
 	}
 
+	@Test
+	void testregisterBinding_empty_RunsWithoutExceptions()
+	{
+		Verify.that(() -> this.bindings.registerBinding(Hello.class, HelloImpl.class)).runsWithoutExceptions();
+	}
+
+	interface Hello
+	{
+		
+	}
+
+	class HelloImpl implements Hello
+	{
+		
+	}
+
 }
