@@ -12,4 +12,9 @@ final class Bindings extends Child<Bindings> {
 		super(parent);
 	}
 
+	Class<?> getRegisteredBinding(Class<?> request)
+	{
+		return null;
+	}
+
 }
