@@ -7,4 +7,9 @@ public final class Binding<T> {
 		
 	}
 
+	public void to(Class<? extends T> implementation)
+	{
+		
+	}
+
 }
