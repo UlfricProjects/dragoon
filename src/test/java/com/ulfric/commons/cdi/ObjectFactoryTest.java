@@ -66,6 +66,13 @@ public class ObjectFactoryTest {
 		Verify.that(this.factory.request(Hello.class)).isNull();
 	}
 
+	@Test
+	void testRequest_nonnull_nonnull()
+	{
+		this.factory.bind(Hello.class).to(HelloImpl.class);
+		Verify.that(this.factory.request(Hello.class)).isNotNull();
+	}
+
 	interface Hello
 	{
 		
