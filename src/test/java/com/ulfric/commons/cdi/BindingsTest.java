@@ -10,15 +10,15 @@ import com.ulfric.verify.Verify;
 public class BindingsTest {
 
 	@Test
-	void testNew()
-	{
-		Verify.that(Bindings::new).runsWithoutExceptions();
-	}
-
-	@Test
 	void testHasParent_root()
 	{
 		Verify.that(new Bindings().hasParent()).isFalse();
+	}
+
+	@Test
+	void testHasParent_child()
+	{
+		Verify.that(new Bindings(new Bindings()).hasParent()).isTrue();
 	}
 
 }
