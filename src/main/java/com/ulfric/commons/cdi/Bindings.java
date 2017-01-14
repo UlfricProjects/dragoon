@@ -1,6 +1,11 @@
 package com.ulfric.commons.cdi;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
+
 final class Bindings extends Child<Bindings> {
+
+	private final Map<Class<?>, Class<?>> bindings = new IdentityHashMap<>();
 
 	Bindings()
 	{
@@ -14,12 +19,12 @@ final class Bindings extends Child<Bindings> {
 
 	Class<?> getRegisteredBinding(Class<?> request)
 	{
-		return null;
+		return this.bindings.get(request);
 	}
 
 	void registerBinding(Class<?> request, Class<?> implementation)
 	{
-		
+		this.bindings.put(request, implementation);
 	}
 
 }
