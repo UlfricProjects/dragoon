@@ -17,4 +17,9 @@ final class Bindings extends Child<Bindings> {
 		return null;
 	}
 
+	void registerBinding(Class<?> request, Class<?> implementation)
+	{
+		
+	}
+
 }
