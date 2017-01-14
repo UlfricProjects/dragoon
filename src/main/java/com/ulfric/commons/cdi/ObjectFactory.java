@@ -31,9 +31,10 @@ public class ObjectFactory extends Child<ObjectFactory> {
 		return new Binding<>(request);
 	}
 
-	public void request(Class<?> request)
+	public Object request(Class<?> request)
 	{
 		Objects.requireNonNull(request);
+		return null;
 	}
 
 }
