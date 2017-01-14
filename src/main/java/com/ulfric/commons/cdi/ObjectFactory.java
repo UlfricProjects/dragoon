@@ -29,4 +29,9 @@ public class ObjectFactory {
 		return this.parent != null;
 	}
 
+	public void bind(Object object)
+	{
+		throw new IllegalArgumentException();
+	}
+
 }
