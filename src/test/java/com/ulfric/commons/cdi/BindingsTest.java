@@ -21,4 +21,10 @@ public class BindingsTest {
 		Verify.that(new Bindings(new Bindings()).hasParent()).isTrue();
 	}
 
+	@Test
+	void testGetRegisteredBinding_empty_isNull()
+	{
+		Verify.that(new Bindings().getRegisteredBinding(Object.class)).isNull();
+	}
+
 }
