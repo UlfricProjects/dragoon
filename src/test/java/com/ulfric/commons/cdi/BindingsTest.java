@@ -15,4 +15,10 @@ public class BindingsTest {
 		Verify.that(Bindings::new).runsWithoutExceptions();
 	}
 
+	@Test
+	void testHasParent_root()
+	{
+		Verify.that(new Bindings().hasParent()).isFalse();
+	}
+
 }
