@@ -1,6 +1,6 @@
 package com.ulfric.commons.cdi;
 
-import org.apache.commons.lang3.Validate;
+import java.util.Objects;
 
 public class ObjectFactory {
 
@@ -33,7 +33,7 @@ public class ObjectFactory {
 
 	public void bind(Object object)
 	{
-		Validate.notNull(object);
+		Objects.requireNonNull(object);
 	}
 
 }
