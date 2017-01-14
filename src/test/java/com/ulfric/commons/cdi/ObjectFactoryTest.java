@@ -60,6 +60,12 @@ public class ObjectFactoryTest {
 		Verify.that(() -> this.factory.request(null)).doesThrow(NullPointerException.class);
 	}
 
+	@Test
+	void testRequest_nonnullButEmpty_null()
+	{
+		Verify.that(this.factory.request(Hello.class)).isNull();
+	}
+
 	interface Hello
 	{
 		
