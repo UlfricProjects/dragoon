@@ -43,7 +43,8 @@ public class ChildTest {
 	@Test
 	void testCreateChild()
 	{
-		Verify.that(new Child<>().createChild()).isNotNull();
+		Object o = new Object();
+		Verify.that(new Child<>(o).createChild()).isNotNull();
 	}
 
 }

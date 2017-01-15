@@ -24,4 +24,9 @@ class Child<T> {
 		return this.parent;
 	}
 
+	T createChild()
+	{
+		return this.parent;
+	}
+
 }
