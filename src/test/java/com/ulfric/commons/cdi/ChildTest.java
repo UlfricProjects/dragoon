@@ -1,5 +1,6 @@
 package com.ulfric.commons.cdi;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
@@ -9,41 +10,42 @@ import com.ulfric.verify.Verify;
 @RunWith(JUnitPlatform.class)
 public class ChildTest {
 
-	@Test
-	void testHasParent_root()
+	private Son child;
+
+	@BeforeEach
+	void init()
 	{
-		Verify.that(new Child<>().hasParent()).isFalse();
+		this.child = new Son();
 	}
 
 	@Test
-	void testHasParent_null_isRoot()
+	void testHasParent_root()
 	{
-		Verify.that(new Child<>(null).hasParent()).isFalse();
+		Verify.that(this.child.hasParent()).isFalse();
 	}
 
 	@Test
 	void testHasParent_child()
 	{
-		Verify.that(new Child<>(new Object()).hasParent()).isTrue();
+		Verify.that(new Son(this.child).hasParent()).isTrue();
 	}
 
 	@Test
 	void testGetParent_root()
 	{
-		Verify.that(new Child<>().getParent()).isNull();
+		Verify.that(this.child.getParent()).isNull();
 	}
 
 	@Test
 	void testGetParent_child()
 	{
-		Object o = new Object();
-		Verify.that(new Child<>(o).getParent()).isSameAs(o);
+		Verify.that(new Son(this.child).getParent()).isSameAs(this.child);
 	}
 
 	@Test
 	void testCreateChild_isUnique()
 	{
-		Verify.that(new Son()::createChild).suppliesUniqueValues();
+		Verify.that(this.child::createChild).suppliesUniqueValues();
 	}
 
 	static class Son extends Child<Son>
