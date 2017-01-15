@@ -62,6 +62,13 @@ public class ObjectFactoryTest {
 	}
 
 	@Test
+	void testRequest_child()
+	{
+		this.factory.bind(Hello.class).to(HelloImpl.class);
+		Verify.that(this.factory.createChild().request(Hello.class)).isNotNull();
+	}
+
+	@Test
 	void testCreateChild()
 	{
 		Verify.that(this.factory::createChild).suppliesUniqueValues();
