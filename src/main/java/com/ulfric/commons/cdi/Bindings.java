@@ -24,7 +24,14 @@ final class Bindings extends Child<Bindings> {
 
 	Class<?> getRegisteredBinding(Class<?> request)
 	{
-		return this.bindings.get(request);
+		Class<?> binding = this.bindings.get(request);
+
+		if (binding == null && this.hasParent())
+		{
+			return this.getParent().getRegisteredBinding(request);
+		}
+
+		return binding;
 	}
 
 	void registerBinding(Class<?> request, Class<?> implementation)
