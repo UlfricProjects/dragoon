@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.ulfric.commons.exception.Try;
 
-abstract class Child<T> {
+abstract class Child<T extends Child<T>> {
 
 	private static final Map<Class<?>, MethodHandle> CHILD_CONSTRUCTORS = new ConcurrentHashMap<>();
 
