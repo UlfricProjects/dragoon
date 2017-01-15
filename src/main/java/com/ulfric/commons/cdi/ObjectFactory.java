@@ -12,6 +12,7 @@ public class ObjectFactory extends Child<ObjectFactory> {
 	}
 
 	private final Bindings bindings;
+	private final ImplementationFactory implementationFactory = new DynamicImplementationFactory();
 
 	private ObjectFactory()
 	{
@@ -36,7 +37,8 @@ public class ObjectFactory extends Child<ObjectFactory> {
 	{
 		Objects.requireNonNull(request);
 
-		Class<?> implementation = this.bindings.getRegisteredBinding(request);
+		Class<?> implementation =
+				this.bindings.getOrTryToCreateBinding(request, this.implementationFactory);
 
 		if (implementation == null)
 		{

@@ -62,6 +62,12 @@ public class ObjectFactoryTest {
 	}
 
 	@Test
+	void testRequest_instantiableNonnullButEmpty_nonnull()
+	{
+		Verify.that(this.factory.request(HelloImpl.class)).isNotNull();
+	}
+
+	@Test
 	void testRequest_child()
 	{
 		this.factory.bind(Hello.class).to(HelloImpl.class);

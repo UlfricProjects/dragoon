@@ -1,14 +1,12 @@
 package com.ulfric.commons.cdi;
 
-import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import com.ulfric.commons.collect.MapUtils;
 
 final class Bindings extends Child<Bindings> {
 
-	private final Map<Class<?>, Class<?>> bindings = new IdentityHashMap<>();
-	private final ReadWriteLock mutex = new ReentrantReadWriteLock();
+	private final Map<Class<?>, Class<?>> bindings = MapUtils.newSynchronizedIdentityHashMap();
 
 	Bindings()
 	{
@@ -25,28 +23,43 @@ final class Bindings extends Child<Bindings> {
 		return new Binding<>(this, request);
 	}
 
-	Class<?> getRegisteredBinding(Class<?> request)
+	Class<?> getOrTryToCreateBinding(Class<?> request, ImplementationFactory implementationFactory)
 	{
-		this.mutex.readLock().lock();
+		Class<?> implementation = this.getRegisteredBinding(request);
 
-		Class<?> binding = this.bindings.get(request);
-
-		if (binding == null && this.hasParent())
+		if (implementation == null)
 		{
-			binding = this.getParent().getRegisteredBinding(request);
+			implementation = implementationFactory.createImplementationClass(request);
+
+			if (implementation != null)
+			{
+				this.registerBinding(request, implementation);
+			}
 		}
 
-		this.mutex.readLock().unlock();
-		return binding;
+		return implementation;
+	}
+
+	private Class<?> getRegisteredBinding(Class<?> request)
+	{
+		Class<?> implementation = this.bindings.get(request);
+
+		if (implementation == null)
+		{
+			implementation = this.getRegisteredBindingFromParent(request);
+		}
+
+		return implementation;
+	}
+
+	private Class<?> getRegisteredBindingFromParent(Class<?> request)
+	{
+		return this.hasParent() ? this.getParent().getRegisteredBinding(request) : null;
 	}
 
 	void registerBinding(Class<?> request, Class<?> implementation)
 	{
-		this.mutex.writeLock().lock();
-
 		this.bindings.put(request, implementation);
-
-		this.mutex.writeLock().unlock();
 	}
 
 }
