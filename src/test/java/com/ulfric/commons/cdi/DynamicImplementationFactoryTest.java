@@ -29,6 +29,18 @@ public class DynamicImplementationFactoryTest {
 		Verify.that(this.factory.createImplementationClass(AHello.class)).isNull();
 	}
 
+	@Test
+	void testCreateImplementationClass_concrete_notSameAsParent()
+	{
+		Verify.that(this.factory.createImplementationClass(Hello.class)).isNotSameAs(Hello.class);
+	}
+
+	@Test
+	void testCreateImplementationClass_concrete_extendedFromParent()
+	{
+		Verify.that(this.factory.createImplementationClass(Hello.class)).isAssignableTo(Hello.class);
+	}
+
 	interface IHello
 	{
 		
