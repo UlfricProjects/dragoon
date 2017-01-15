@@ -78,7 +78,7 @@ public class ObjectFactoryTest {
 		
 	}
 
-	class HelloImpl implements Hello
+	static class HelloImpl implements Hello
 	{
 		
 	}

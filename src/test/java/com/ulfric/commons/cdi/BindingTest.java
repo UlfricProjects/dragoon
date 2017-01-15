@@ -1,5 +1,6 @@
 package com.ulfric.commons.cdi;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
@@ -9,22 +10,29 @@ import com.ulfric.verify.Verify;
 @RunWith(JUnitPlatform.class)
 public class BindingTest {
 
-	@Test
-	void testNew_null()
+	private Bindings bindings;
+
+	@BeforeEach
+	void init()
 	{
-		Verify.that(() -> new Binding<>(null)).runsWithoutExceptions();
+		this.bindings = new Bindings();
 	}
 
 	@Test
-	void testNew_nonnull()
+	void testNew_null()
 	{
-		Verify.that(() -> new Binding<>(Hello.class)).runsWithoutExceptions();
+		Verify.that(() -> this.bind(null)).runsWithoutExceptions();
 	}
 
 	@Test
 	void testTo_null()
 	{
-		Verify.that(() -> new Binding<>(Hello.class).to(HelloImpl.class)).runsWithoutExceptions();
+		Verify.that(() -> this.bind(Hello.class).to(HelloImpl.class)).runsWithoutExceptions();
+	}
+
+	private <T> Binding<T> bind(Class<T> binding)
+	{
+		return new Binding<>(this.bindings, binding);
 	}
 
 	interface Hello

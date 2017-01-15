@@ -17,6 +17,11 @@ final class Bindings extends Child<Bindings> {
 		super(parent);
 	}
 
+	<T> Binding<T> createBinding(Class<T> request)
+	{
+		return new Binding<>(this, request);
+	}
+
 	Class<?> getRegisteredBinding(Class<?> request)
 	{
 		return this.bindings.get(request);
