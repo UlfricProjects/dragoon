@@ -25,18 +25,6 @@ public class ObjectFactoryTest {
 	}
 
 	@Test
-	void testSubfactory()
-	{
-		Verify.that(this.factory::subfactory).suppliesUniqueValues();
-	}
-
-	@Test
-	void testHasParent_subfactory_isTrue()
-	{
-		Verify.that(this.factory.subfactory().hasParent()).isTrue();
-	}
-
-	@Test
 	void testHasParent_root_isFalse()
 	{
 		Verify.that(this.factory.hasParent()).isFalse();

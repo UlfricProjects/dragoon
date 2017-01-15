@@ -25,11 +25,6 @@ public class ObjectFactory extends Child<ObjectFactory> {
 		this.bindings = new Bindings(parent.bindings);
 	}
 
-	ObjectFactory subfactory()
-	{
-		return new ObjectFactory(this);
-	}
-
 	public <T> Binding<T> bind(Class<T> request)
 	{
 		Objects.requireNonNull(request);
