@@ -61,6 +61,12 @@ public class ObjectFactoryTest {
 		Verify.that(this.factory.request(Hello.class)).isNotNull();
 	}
 
+	@Test
+	void testCreateChild()
+	{
+		Verify.that(this.factory::createChild).suppliesUniqueValues();
+	}
+
 	interface Hello
 	{
 		

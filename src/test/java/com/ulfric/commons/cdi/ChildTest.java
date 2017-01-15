@@ -41,10 +41,22 @@ public class ChildTest {
 	}
 
 	@Test
-	void testCreateChild()
+	void testCreateChild_isUnique()
 	{
-		Object o = new Object();
-		Verify.that(new Child<>(o).createChild()).isNotNull();
+		Verify.that(new Son()::createChild).suppliesUniqueValues();
+	}
+
+	static class Son extends Child<Object>
+	{
+		Son()
+		{
+			
+		}
+
+		Son(Son parent)
+		{
+			super(parent);
+		}
 	}
 
 }
