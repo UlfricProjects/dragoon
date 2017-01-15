@@ -46,7 +46,7 @@ public class ChildTest {
 		Verify.that(new Son()::createChild).suppliesUniqueValues();
 	}
 
-	static class Son extends Child<Object>
+	static class Son extends Child<Son>
 	{
 		Son()
 		{
