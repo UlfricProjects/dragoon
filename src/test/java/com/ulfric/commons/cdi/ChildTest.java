@@ -40,4 +40,10 @@ public class ChildTest {
 		Verify.that(new Child<>(o).getParent()).isSameAs(o);
 	}
 
+	@Test
+	void testCreateChild()
+	{
+		Verify.that(new Child<>().createChild()).isNotNull();
+	}
+
 }
