@@ -37,15 +37,31 @@ public class ObjectFactory extends Child<ObjectFactory> {
 	{
 		Objects.requireNonNull(request);
 
-		Class<?> implementation =
-				this.bindings.getOrTryToCreateBinding(request, this.implementationFactory);
+		Class<?> implementation = this.bindings.getRegisteredBinding(request);
 
 		if (implementation == null)
 		{
-			return null;
+			implementation = this.tryToCreateImplementation(request);
+
+			if (implementation == null)
+			{
+				return null;
+			}
 		}
 
 		return Try.to(implementation::newInstance);
+	}
+
+	private Class<?> tryToCreateImplementation(Class<?> request)
+	{
+		Class<?> implementation = this.implementationFactory.createImplementationClass(request);
+
+		if (implementation != null)
+		{
+			this.bindings.registerBinding(request, implementation);
+		}
+
+		return implementation;
 	}
 
 }

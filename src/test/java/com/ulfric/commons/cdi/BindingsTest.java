@@ -33,20 +33,15 @@ public class BindingsTest {
 	@Test
 	void testGetRegisteredBinding_empty_isNull()
 	{
-		Verify.that(this.getBinding(Hello.class)).isNull();
+		Verify.that(this.bindings.getRegisteredBinding(Hello.class)).isNull();
 	}
 
 	@Test
 	void testRegisterBinding_HelloToHelloImpl_IsBound()
 	{
-		Verify.that(this.getBinding(Hello.class)).isNull();
+		Verify.that(this.bindings.getRegisteredBinding(Hello.class)).isNull();
 		this.bindings.registerBinding(Hello.class, HelloImpl.class);
-		Verify.that(this.getBinding(Hello.class)).isSameAs(HelloImpl.class);
-	}
-
-	private Class<?> getBinding(Class<?> request)
-	{
-		return this.bindings.getOrTryToCreateBinding(request, ignore -> { return null; });
+		Verify.that(this.bindings.getRegisteredBinding(Hello.class)).isSameAs(HelloImpl.class);
 	}
 
 	interface Hello
