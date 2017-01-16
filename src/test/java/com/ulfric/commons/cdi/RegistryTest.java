@@ -8,14 +8,14 @@ import org.junit.runner.RunWith;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
-public class BindingsTest {
+public class RegistryTest {
 
-	private Bindings bindings;
+	private Registry<?> bindings;
 
 	@BeforeEach
 	void init()
 	{
-		this.bindings = new Bindings();
+		this.bindings = new RegistryImpl();
 	}
 
 	@Test
@@ -27,7 +27,7 @@ public class BindingsTest {
 	@Test
 	void testHasParent_child()
 	{
-		Verify.that(new Bindings(this.bindings).hasParent()).isTrue();
+		Verify.that(this.bindings.createChild().hasParent()).isTrue();
 	}
 
 	@Test
@@ -42,6 +42,19 @@ public class BindingsTest {
 		Verify.that(this.bindings.getRegisteredBinding(Hello.class)).isNull();
 		this.bindings.registerBinding(Hello.class, HelloImpl.class);
 		Verify.that(this.bindings.getRegisteredBinding(Hello.class)).isSameAs(HelloImpl.class);
+	}
+
+	static final class RegistryImpl extends Registry<RegistryImpl>
+	{
+		RegistryImpl()
+		{
+			
+		}
+
+		RegistryImpl(RegistryImpl parent)
+		{
+			super(parent);
+		}
 	}
 
 	interface Hello
