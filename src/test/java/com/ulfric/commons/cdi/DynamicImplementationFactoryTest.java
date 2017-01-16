@@ -41,6 +41,12 @@ public class DynamicImplementationFactoryTest {
 		Verify.that(this.factory.createImplementationClass(Hello.class)).isAssignableTo(Hello.class);
 	}
 
+	@Test
+	void testCreateImplementationClass_final_same()
+	{
+		Verify.that(this.factory.createImplementationClass(FHello.class)).isSameAs(FHello.class);
+	}
+
 	interface IHello
 	{
 		
@@ -52,6 +58,11 @@ public class DynamicImplementationFactoryTest {
 	}
 
 	static class Hello extends AHello
+	{
+		
+	}
+
+	final static class FHello extends Hello
 	{
 		
 	}
