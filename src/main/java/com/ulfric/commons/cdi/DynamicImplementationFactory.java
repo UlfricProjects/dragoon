@@ -5,14 +5,14 @@ import java.lang.reflect.Modifier;
 final class DynamicImplementationFactory implements ImplementationFactory {
 
 	@Override
-	public Class<?> createImplementationClass(Class<?> parent)
+	public <T> Class<? extends T> createImplementationClass(Class<T> parent)
 	{
 		if (!this.isInstantiable(parent))
 		{
 			return null;
 		}
 
-		return parent;
+		return new DynamicSubclassBuilder<>(parent).build();
 	}
 
 	private boolean isInstantiable(Class<?> clazz)
