@@ -30,9 +30,9 @@ public class BindingTest {
 		Verify.that(() -> this.bind(Hello.class).to(HelloImpl.class)).runsWithoutExceptions();
 	}
 
-	private <T> Binding<T> bind(Class<T> binding)
+	private Binding bind(Class<?> binding)
 	{
-		return new Binding<>(this.bindings, binding);
+		return new Binding(this.bindings, binding);
 	}
 
 	interface Hello

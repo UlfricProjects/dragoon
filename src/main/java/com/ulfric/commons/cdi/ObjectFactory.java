@@ -26,7 +26,7 @@ public class ObjectFactory extends Child<ObjectFactory> {
 		this.bindings = new Bindings(parent.bindings);
 	}
 
-	public <T> Binding<T> bind(Class<T> request)
+	public Binding bind(Class<?> request)
 	{
 		Objects.requireNonNull(request);
 
@@ -41,7 +41,7 @@ public class ObjectFactory extends Child<ObjectFactory> {
 
 		if (implementation == null)
 		{
-			implementation = this.tryToCreateImplementation(request);
+			implementation = this.tryToCreateAndRegisterImplementation(request);
 
 			if (implementation == null)
 			{
@@ -52,7 +52,7 @@ public class ObjectFactory extends Child<ObjectFactory> {
 		return Try.to(implementation::newInstance);
 	}
 
-	private Class<?> tryToCreateImplementation(Class<?> request)
+	private Class<?> tryToCreateAndRegisterImplementation(Class<?> request)
 	{
 		Class<?> implementation = this.implementationFactory.createImplementationClass(request);
 

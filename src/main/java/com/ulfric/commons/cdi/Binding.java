@@ -2,18 +2,18 @@ package com.ulfric.commons.cdi;
 
 import java.util.Objects;
 
-public final class Binding<T> {
+public final class Binding {
 
-	private final Bindings registerTo;
-	private final Class<T> request;
+	private final Registry<?> registerTo;
+	private final Class<?> request;
 
-	Binding(Bindings registerTo, Class<T> request)
+	Binding(Registry<?> registerTo, Class<?> request)
 	{
 		this.registerTo = registerTo;
 		this.request = request;
 	}
 
-	public void to(Class<? extends T> implementation)
+	public void to(Class<?> implementation)
 	{
 		Objects.requireNonNull(implementation);
 
