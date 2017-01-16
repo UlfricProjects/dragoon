@@ -5,6 +5,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.util.Map;
+import java.util.Objects;
 
 import com.ulfric.commons.collect.MapUtils;
 
@@ -16,6 +17,8 @@ public enum InstanceUtils {
 
 	public static <T> T createOrNull(Class<T> clazz)
 	{
+		Objects.requireNonNull(clazz);
+
 		@SuppressWarnings("unchecked")
 		T instance = (T) InstanceUtils.getOrCreateConstructor(clazz).invoke();
 		return instance;
