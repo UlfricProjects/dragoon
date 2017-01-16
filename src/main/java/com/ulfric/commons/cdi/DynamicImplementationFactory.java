@@ -12,6 +12,11 @@ final class DynamicImplementationFactory implements ImplementationFactory {
 			return null;
 		}
 
+		if (!this.isExtendable(parent))
+		{
+			return parent;
+		}
+
 		return new DynamicSubclassBuilder<>(parent).build();
 	}
 
@@ -23,6 +28,16 @@ final class DynamicImplementationFactory implements ImplementationFactory {
 	private boolean isAbstract(Class<?> clazz)
 	{
 		return Modifier.isAbstract(clazz.getModifiers());
+	}
+
+	private boolean isExtendable(Class<?> clazz)
+	{
+		return !this.isFinal(clazz);
+	}
+
+	private boolean isFinal(Class<?> clazz)
+	{
+		return Modifier.isFinal(clazz.getModifiers());
 	}
 
 }
