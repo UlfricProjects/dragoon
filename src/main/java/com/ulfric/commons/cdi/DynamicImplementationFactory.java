@@ -32,7 +32,7 @@ final class DynamicImplementationFactory implements ImplementationFactory {
 
 	private boolean isExtendable(Class<?> clazz)
 	{
-		return !this.isFinal(clazz);
+		return !this.isFinal(clazz) && !clazz.isPrimitive() && !clazz.isArray();
 	}
 
 	private boolean isFinal(Class<?> clazz)
