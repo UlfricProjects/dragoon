@@ -7,7 +7,7 @@ final class DynamicImplementationFactory implements ImplementationFactory {
 	@Override
 	public <T> Class<? extends T> createImplementationClass(Class<T> parent)
 	{
-		if (!this.isImplemented(parent))
+		if (!this.isInstantiable(parent))
 		{
 			return null;
 		}
@@ -20,9 +20,9 @@ final class DynamicImplementationFactory implements ImplementationFactory {
 		return new DynamicSubclassBuilder<>(parent).build();
 	}
 
-	private boolean isImplemented(Class<?> clazz)
+	private boolean isInstantiable(Class<?> clazz)
 	{
-		return !clazz.isInterface() && !this.isAbstract(clazz);
+		return !clazz.isInterface() && !this.isAbstract(clazz) && !clazz.isPrimitive() && !clazz.isArray();
 	}
 
 	private boolean isAbstract(Class<?> clazz)
@@ -32,7 +32,7 @@ final class DynamicImplementationFactory implements ImplementationFactory {
 
 	private boolean isExtendable(Class<?> clazz)
 	{
-		return !this.isFinal(clazz) && !clazz.isPrimitive() && !clazz.isArray();
+		return !this.isFinal(clazz);
 	}
 
 	private boolean isFinal(Class<?> clazz)

@@ -51,14 +51,14 @@ public class DynamicImplementationFactoryTest {
 	void testCreateImplementationClass_primitive_same()
 	{
 		Class<?> primitive = int.class;
-		Verify.that(this.factory.createImplementationClass(primitive)).isSameAs(primitive);
+		Verify.that(this.factory.createImplementationClass(primitive)).isNull();
 	}
 
 	@Test
 	void testCreateImplementationClass_array_same()
 	{
 		Class<?> array = Object[].class;
-		Verify.that(this.factory.createImplementationClass(array)).isSameAs(array);
+		Verify.that(this.factory.createImplementationClass(array)).isNull();
 	}
 
 	interface IHello
