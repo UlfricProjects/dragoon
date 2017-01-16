@@ -1,5 +1,10 @@
 package com.ulfric.commons.cdi;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
@@ -42,6 +47,13 @@ public class DynamicImplementationFactoryTest {
 	}
 
 	@Test
+	void testCreateImplementationClass_concrete_annotationsPresist()
+	{
+		Verify.that(this.factory.createImplementationClass(Hello.class).getAnnotations())
+			.isEqualTo(Hello.class.getAnnotations());
+	}
+
+	@Test
 	void testCreateImplementationClass_final_same()
 	{
 		Verify.that(this.factory.createImplementationClass(FHello.class)).isSameAs(FHello.class);
@@ -71,12 +83,20 @@ public class DynamicImplementationFactoryTest {
 		
 	}
 
+	@AnnoHello
 	static class Hello extends AHello
 	{
 		
 	}
 
 	final static class FHello extends Hello
+	{
+		
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	@interface AnnoHello
 	{
 		
 	}
