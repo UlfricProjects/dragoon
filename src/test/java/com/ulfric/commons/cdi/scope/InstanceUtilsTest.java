@@ -15,7 +15,7 @@ public class InstanceUtilsTest extends UtilTestBase {
 	@Test
 	void testCreateInstanceOrNull_object_nonnull()
 	{
-		Verify.that(InstanceUtils.createInstanceOrNull(Object.class)).isNotNull();
+		Verify.that(InstanceUtils.createOrNull(Object.class)).isNotNull();
 	}
 
 }
