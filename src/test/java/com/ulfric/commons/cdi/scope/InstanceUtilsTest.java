@@ -13,9 +13,20 @@ import com.ulfric.verify.Verify;
 public class InstanceUtilsTest extends UtilTestBase {
 
 	@Test
-	void testCreateInstanceOrNull_object_nonnull()
+	void testCreateInstanceOrNull_valid_nonnull()
 	{
 		Verify.that(InstanceUtils.createOrNull(Object.class)).isNotNull();
+	}
+
+	@Test
+	void testCreateInstanceOrNull_interface_null()
+	{
+		Verify.that(InstanceUtils.createOrNull(Hello.class)).isNull();
+	}
+
+	private interface Hello
+	{
+		
 	}
 
 }
