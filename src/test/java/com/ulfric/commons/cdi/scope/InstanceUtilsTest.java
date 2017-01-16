@@ -24,6 +24,12 @@ public class InstanceUtilsTest extends UtilTestBase {
 		Verify.that(InstanceUtils.createOrNull(Hello.class)).isNull();
 	}
 
+	@Test
+	void testCreateInstanceOrNull_null_null()
+	{
+		Verify.that(() -> InstanceUtils.createOrNull(null)).isNull();
+	}
+
 	private interface Hello
 	{
 		
