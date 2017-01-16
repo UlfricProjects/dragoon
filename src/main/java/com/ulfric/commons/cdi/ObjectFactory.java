@@ -12,7 +12,7 @@ public class ObjectFactory extends Child<ObjectFactory> {
 	}
 
 	private final Bindings bindings;
-	private final ImplementationFactory implementationFactory = new DynamicImplementationFactory();
+	private final ImplementationFactory implementationFactory = new ImplementationFactory();
 
 	private ObjectFactory()
 	{

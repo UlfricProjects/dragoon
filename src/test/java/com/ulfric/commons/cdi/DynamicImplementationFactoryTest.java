@@ -14,7 +14,7 @@ import com.ulfric.verify.Verify;
 @RunWith(JUnitPlatform.class)
 public class DynamicImplementationFactoryTest {
 
-	private final ImplementationFactory factory = new DynamicImplementationFactory();
+	private final ImplementationFactory factory = new ImplementationFactory();
 
 	@Test
 	void testCreateImplementationClass_concrete_nonnull()
