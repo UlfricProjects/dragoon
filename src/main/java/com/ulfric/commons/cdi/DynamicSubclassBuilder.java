@@ -1,5 +1,7 @@
 package com.ulfric.commons.cdi;
 
+import java.lang.annotation.Annotation;
+
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
 
@@ -21,12 +23,28 @@ final class DynamicSubclassBuilder<T> {
 
 	public Class<? extends T> build()
 	{
+		this.make();
 		return this.builder.make().load(this.getParentLoader()).getLoaded();
 	}
 
 	private ClassLoader getParentLoader()
 	{
 		return this.parent.getClassLoader();
+	}
+
+	private void make()
+	{
+		this.addAnnotationsFromParent();
+	}
+
+	private void addAnnotationsFromParent()
+	{
+		this.builder = this.builder.annotateType(this.getParentAnnotations());
+	}
+
+	private Annotation[] getParentAnnotations()
+	{
+		return this.parent.getAnnotations();
 	}
 
 }
