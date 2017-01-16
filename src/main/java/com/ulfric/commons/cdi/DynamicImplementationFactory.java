@@ -22,7 +22,7 @@ final class DynamicImplementationFactory implements ImplementationFactory {
 
 	private boolean isInstantiable(Class<?> clazz)
 	{
-		return !clazz.isInterface() && !this.isAbstract(clazz) && !clazz.isPrimitive() && !clazz.isArray();
+		return !clazz.isInterface() && !this.isAbstract(clazz);
 	}
 
 	private boolean isAbstract(Class<?> clazz)
