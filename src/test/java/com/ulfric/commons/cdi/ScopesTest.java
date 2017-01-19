@@ -8,22 +8,26 @@ import org.junit.runner.RunWith;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
-public class InjectorTest {
+public class ScopesTest {
 
-	private ObjectFactory factory;
-	private Injector injector;
+	private Scopes scopes;
 
 	@BeforeEach
 	void init()
 	{
-		this.factory = ObjectFactory.newInstance();
-		this.injector = new Injector(this.factory);
+		this.scopes = new Scopes();
 	}
 
 	@Test
-	void testNew()
+	void testNew_empty()
 	{
-		Verify.that(this.injector).isNotNull();
+		Verify.that(this.scopes).isNotNull();
+	}
+
+	@Test
+	void testNew_child()
+	{
+		Verify.that(new Scopes(this.scopes)).isNotNull();
 	}
 
 }
