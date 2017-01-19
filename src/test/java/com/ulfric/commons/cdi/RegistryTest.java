@@ -10,7 +10,7 @@ import com.ulfric.verify.Verify;
 @RunWith(JUnitPlatform.class)
 public class RegistryTest {
 
-	private Registry<?> bindings;
+	private Registry<?, ?> bindings;
 
 	@BeforeEach
 	void init()
@@ -44,7 +44,7 @@ public class RegistryTest {
 		Verify.that(this.bindings.getRegisteredBinding(Hello.class)).isSameAs(HelloImpl.class);
 	}
 
-	static final class RegistryImpl extends Registry<RegistryImpl>
+	static final class RegistryImpl extends Registry<RegistryImpl, Class<?>>
 	{
 		RegistryImpl()
 		{
@@ -54,6 +54,12 @@ public class RegistryTest {
 		RegistryImpl(RegistryImpl parent)
 		{
 			super(parent);
+		}
+
+		@Override
+		void registerBinding(Class<?> request, Class<?> implementation)
+		{
+			this.registered.put(request, implementation);
 		}
 	}
 

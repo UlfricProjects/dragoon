@@ -1,6 +1,9 @@
 package com.ulfric.commons.cdi;
 
-final class Scopes extends Registry<Scopes> {
+import com.ulfric.commons.cdi.construct.InstanceUtils;
+import com.ulfric.commons.cdi.scope.ScopeStrategy;
+
+final class Scopes extends Registry<Scopes, ScopeStrategy> {
 
 	Scopes()
 	{
@@ -10,6 +13,17 @@ final class Scopes extends Registry<Scopes> {
 	Scopes(Scopes parent)
 	{
 		super(parent);
+	}
+
+	@Override
+	void registerBinding(Class<?> request, Class<?> implementation)
+	{
+		if (!ScopeStrategy.class.isAssignableFrom(implementation))
+		{
+			throw new IllegalArgumentException(implementation + " is not a ScopeStrategy!");
+		}
+
+		this.registered.put(request, (ScopeStrategy) InstanceUtils.createOrNull(implementation));
 	}
 
 }

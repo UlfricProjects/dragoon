@@ -30,4 +30,12 @@ public class ScopesTest {
 		Verify.that(new Scopes(this.scopes)).isNotNull();
 	}
 
+	@Test
+	void testRegisterBinding_notScopeStrategy_throwsIAE()
+	{
+		Verify.that(() -> this.scopes.registerBinding(null, Object.class)).doesThrow(IllegalArgumentException.class);
+	}
+
+	
+
 }

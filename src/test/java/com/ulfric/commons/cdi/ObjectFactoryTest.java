@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
+import com.ulfric.commons.cdi.scope.Default;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
@@ -40,6 +41,18 @@ public class ObjectFactoryTest {
 	void testBind_nonnull_isNotNull()
 	{
 		Verify.that(this.factory.bind(Hello.class)).isNotNull();
+	}
+
+	@Test
+	void testBindScope_null_throwsNPE()
+	{
+		Verify.that(() -> this.factory.bindScope(null)).doesThrow(NullPointerException.class);
+	}
+
+	@Test
+	void testBindScope_nonnull_isNotNull()
+	{
+		Verify.that(this.factory.bindScope(Default.class)).isNotNull();
 	}
 
 	@Test

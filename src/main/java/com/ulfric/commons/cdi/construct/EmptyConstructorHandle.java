@@ -1,4 +1,4 @@
-package com.ulfric.commons.cdi.scope;
+package com.ulfric.commons.cdi.construct;
 
 enum EmptyConstructorHandle implements ConstructorHandle {
 

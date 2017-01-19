@@ -3,9 +3,9 @@ package com.ulfric.commons.cdi;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-abstract class Registry<T extends Registry<T>> extends Child<T> {
+abstract class Registry<T extends Registry<T, R>, R> extends Child<T> {
 
-	private final Map<Class<?>, Class<?>> bindings = new IdentityHashMap<>();
+	final Map<Class<?>, R> registered = new IdentityHashMap<>();
 
 	public Registry()
 	{
@@ -22,9 +22,9 @@ abstract class Registry<T extends Registry<T>> extends Child<T> {
 		return new Binding(this, request);
 	}
 
-	final Class<?> getRegisteredBinding(Class<?> request)
+	final R getRegisteredBinding(Class<?> request)
 	{
-		Class<?> implementation = this.bindings.get(request);
+		R implementation = this.registered.get(request);
 
 		if (implementation == null)
 		{
@@ -34,14 +34,11 @@ abstract class Registry<T extends Registry<T>> extends Child<T> {
 		return implementation;
 	}
 
-	private Class<?> getRegisteredBindingFromParent(Class<?> request)
+	private R getRegisteredBindingFromParent(Class<?> request)
 	{
 		return this.hasParent() ? this.getParent().getRegisteredBinding(request) : null;
 	}
 
-	final void registerBinding(Class<?> request, Class<?> implementation)
-	{
-		this.bindings.put(request, implementation);
-	}
+	abstract void registerBinding(Class<?> request, Class<?> implementation);
 
 }

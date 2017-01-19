@@ -1,7 +1,10 @@
 package com.ulfric.commons.cdi;
 
+import java.lang.annotation.Annotation;
 import java.util.Objects;
 
+import com.ulfric.commons.cdi.scope.Default;
+import com.ulfric.commons.cdi.scope.DefaultScopeStrategy;
 import com.ulfric.commons.exception.Try;
 
 public class ObjectFactory extends Child<ObjectFactory> {
@@ -12,11 +15,15 @@ public class ObjectFactory extends Child<ObjectFactory> {
 	}
 
 	private final Bindings bindings;
+	private final Scopes scopes;
 	private final ImplementationFactory implementationFactory = new ImplementationFactory();
 
 	private ObjectFactory()
 	{
 		this.bindings = new Bindings();
+		this.scopes = new Scopes();
+
+		this.init();
 	}
 
 	private ObjectFactory(ObjectFactory parent)
@@ -24,6 +31,14 @@ public class ObjectFactory extends Child<ObjectFactory> {
 		super(parent);
 
 		this.bindings = new Bindings(parent.bindings);
+		this.scopes = new Scopes(parent.scopes);
+
+		this.init();
+	}
+
+	private void init()
+	{
+		this.scopes.registerBinding(Default.class, DefaultScopeStrategy.class);
 	}
 
 	public Binding bind(Class<?> request)
@@ -31,6 +46,13 @@ public class ObjectFactory extends Child<ObjectFactory> {
 		Objects.requireNonNull(request);
 
 		return this.bindings.createBinding(request);
+	}
+
+	public Binding bindScope(Class<? extends Annotation> request)
+	{
+		Objects.requireNonNull(request);
+
+		return this.scopes.createBinding(request);
 	}
 
 	public Object request(Class<?> request)

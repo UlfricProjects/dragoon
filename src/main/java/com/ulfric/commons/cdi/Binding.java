@@ -4,10 +4,10 @@ import java.util.Objects;
 
 public final class Binding {
 
-	private final Registry<?> registerTo;
+	private final Registry<?, ?> registerTo;
 	private final Class<?> request;
 
-	Binding(Registry<?> registerTo, Class<?> request)
+	Binding(Registry<?, ?> registerTo, Class<?> request)
 	{
 		this.registerTo = registerTo;
 		this.request = request;
