@@ -5,7 +5,9 @@ import java.util.Objects;
 
 import com.ulfric.commons.cdi.scope.Default;
 import com.ulfric.commons.cdi.scope.DefaultScopeStrategy;
-import com.ulfric.commons.exception.Try;
+import com.ulfric.commons.cdi.scope.Scoped;
+import com.ulfric.commons.cdi.scope.Shared;
+import com.ulfric.commons.cdi.scope.SharedScopeStrategy;
 
 public class ObjectFactory extends Child<ObjectFactory> {
 
@@ -17,6 +19,7 @@ public class ObjectFactory extends Child<ObjectFactory> {
 	private final Bindings bindings;
 	private final Scopes scopes;
 	private final ImplementationFactory implementationFactory = new ImplementationFactory();
+	private final Injector injector = new Injector(this);
 
 	private ObjectFactory()
 	{
@@ -39,6 +42,7 @@ public class ObjectFactory extends Child<ObjectFactory> {
 	private void init()
 	{
 		this.scopes.registerBinding(Default.class, DefaultScopeStrategy.class);
+		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
 	}
 
 	public Binding bind(Class<?> request)
@@ -71,7 +75,14 @@ public class ObjectFactory extends Child<ObjectFactory> {
 			}
 		}
 
-		return Try.to(implementation::newInstance);
+		return this.getInjectedObject(implementation);
+	}
+
+	private Object getInjectedObject(Class<?> implementation)
+	{
+		Scoped<?> scoped = this.scopes.getScopedObject(implementation);
+		this.injector.injectFields(scoped);
+		return scoped.read();
 	}
 
 	private Class<?> tryToCreateAndRegisterImplementation(Class<?> request)
