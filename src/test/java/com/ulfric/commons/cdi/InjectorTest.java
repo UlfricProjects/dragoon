@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
+import com.ulfric.commons.cdi.inject.Inject;
+import com.ulfric.commons.cdi.scope.Scoped;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
@@ -21,9 +23,26 @@ public class InjectorTest {
 	}
 
 	@Test
-	void testNew()
+	void testInjectFields_isRead_isNotInjected()
 	{
-		Verify.that(this.injector).isNotNull();
+		Scoped<Example> scoped = new Scoped<>(new Example());
+		scoped.read();
+		this.injector.injectFields(scoped);
+		Verify.that(scoped.read().value).isNull();
+	}
+
+	@Test
+	void testInjectFields_notIsRead_isInjected()
+	{
+		Scoped<Example> scoped = new Scoped<>(new Example());
+		this.injector.injectFields(scoped);
+		Verify.that(scoped.read().value).isNotNull();
+	}
+
+	static final class Example
+	{
+		@Inject
+		Object value;
 	}
 
 }
