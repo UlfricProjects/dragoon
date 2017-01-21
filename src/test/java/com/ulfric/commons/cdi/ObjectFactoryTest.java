@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
+import com.ulfric.commons.cdi.inject.Inject;
 import com.ulfric.commons.cdi.scope.Default;
 import com.ulfric.verify.Verify;
 
@@ -87,6 +88,14 @@ public class ObjectFactoryTest {
 		Verify.that(this.factory.createChild().request(Hello.class)).isNotNull();
 	}
 
+	@Test
+	void testRequest_doesInjection()
+	{
+		this.factory.bind(Hello.class).to(HelloImpl.class);
+		HelloInject hello = (HelloInject) this.factory.request(HelloInject.class);
+		Verify.that(hello.inject).isNotNull();
+	}
+
 	interface Hello
 	{
 		
@@ -95,6 +104,12 @@ public class ObjectFactoryTest {
 	static class HelloImpl implements Hello
 	{
 		
+	}
+
+	static class HelloInject
+	{
+		@Inject
+		Hello inject;
 	}
 
 }
