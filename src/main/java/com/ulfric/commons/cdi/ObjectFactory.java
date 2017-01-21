@@ -18,7 +18,7 @@ public class ObjectFactory extends Child<ObjectFactory> {
 
 	private final Bindings bindings;
 	private final Scopes scopes;
-	private final ImplementationFactory implementationFactory = new ImplementationFactory();
+	private final Subclasser implementationFactory = new Subclasser(this);
 	private final Injector injector = new Injector(this);
 
 	private ObjectFactory()

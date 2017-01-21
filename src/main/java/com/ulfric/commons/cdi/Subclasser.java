@@ -2,7 +2,14 @@ package com.ulfric.commons.cdi;
 
 import java.lang.reflect.Modifier;
 
-final class ImplementationFactory {
+final class Subclasser {
+
+	private final ObjectFactory factory;
+
+	public Subclasser(ObjectFactory factory)
+	{
+		this.factory = factory;
+	}
 
 	public <T> Class<? extends T> createImplementationClass(Class<T> parent)
 	{
@@ -16,7 +23,7 @@ final class ImplementationFactory {
 			return parent;
 		}
 
-		return new DynamicSubclassBuilder<>(parent).build();
+		return new DynamicSubclassBuilder<>(this.factory, parent).build();
 	}
 
 	private boolean isInstantiable(Class<?> clazz)
