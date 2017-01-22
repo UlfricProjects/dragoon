@@ -33,7 +33,6 @@ public class StateInterceptorTest {
 	private Iterator<Interceptor> pipelineIterator;
 
 	private Object[] arguments = new Object[0];
-
 	private Context invocation;
 
 	@BeforeEach
