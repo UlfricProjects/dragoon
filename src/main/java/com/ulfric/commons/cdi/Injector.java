@@ -72,12 +72,14 @@ final class Injector {
 			this.type = field.getType();
 		}
 
-		void inject(Object object, ObjectFactory factory)
+		void inject(Object holder, ObjectFactory factory)
 		{
-			Try.to(() ->
-			{
-				this.fieldHandle.invokeExact(object, factory.request(this.type));
-			});
+			Try.to(() -> this.invoke(holder, factory.request(this.type)));
+		}
+
+		private void invoke(Object holder, Object value) throws Throwable
+		{
+			this.fieldHandle.invokeExact(holder, value);
 		}
 	}
 
