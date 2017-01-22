@@ -118,9 +118,8 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Service
 		}
 
 		@SuppressWarnings("unchecked")
-		T t = (T) value;
-
-		return t;
+		T casted = (T) value;
+		return casted;
 	}
 
 	private Object getInjectedObject(Class<?> implementation)
