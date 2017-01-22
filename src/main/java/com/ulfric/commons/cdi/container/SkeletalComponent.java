@@ -1,6 +1,4 @@
-package com.ulfric.commons.cdi.intercept;
-
-import com.ulfric.commons.cdi.container.Component;
+package com.ulfric.commons.cdi.container;
 
 abstract class SkeletalComponent implements Component {
 

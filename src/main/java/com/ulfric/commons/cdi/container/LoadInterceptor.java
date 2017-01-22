@@ -1,4 +1,4 @@
-package com.ulfric.commons.cdi.intercept;
+package com.ulfric.commons.cdi.container;
 
 import com.ulfric.commons.text.FormatUtils;
 

@@ -3,12 +3,12 @@ package com.ulfric.commons.cdi;
 import java.lang.annotation.Annotation;
 import java.util.Objects;
 
-import com.ulfric.commons.cdi.intercept.Disable;
-import com.ulfric.commons.cdi.intercept.DisableInterceptor;
-import com.ulfric.commons.cdi.intercept.Enable;
-import com.ulfric.commons.cdi.intercept.EnableInterceptor;
-import com.ulfric.commons.cdi.intercept.Load;
-import com.ulfric.commons.cdi.intercept.LoadInterceptor;
+import com.ulfric.commons.cdi.container.Disable;
+import com.ulfric.commons.cdi.container.DisableInterceptor;
+import com.ulfric.commons.cdi.container.Enable;
+import com.ulfric.commons.cdi.container.EnableInterceptor;
+import com.ulfric.commons.cdi.container.Load;
+import com.ulfric.commons.cdi.container.LoadInterceptor;
 import com.ulfric.commons.cdi.scope.Default;
 import com.ulfric.commons.cdi.scope.DefaultScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scoped;
