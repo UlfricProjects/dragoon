@@ -129,7 +129,7 @@ public class Container implements Component {
 	}
 
 	@LogLoad
-	protected void onLoad()
+	public void onLoad()
 	{
 
 	}
@@ -146,18 +146,18 @@ public class Container implements Component {
 		this.notifyComponents();
 	}
 
-	@LogEnable
-	protected void onEnable()
-	{
-
-	}
-
 	private void loadIfNotLoaded()
 	{
 		if (!this.isLoaded())
 		{
 			this.load();
 		}
+	}
+
+	@LogEnable
+	public void onEnable()
+	{
+
 	}
 
 	@Override
@@ -171,7 +171,7 @@ public class Container implements Component {
 	}
 
 	@LogDisable
-	protected void onDisable()
+	public void onDisable()
 	{
 
 	}

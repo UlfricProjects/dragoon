@@ -2,7 +2,7 @@ package com.ulfric.commons.cdi.container;
 
 import com.ulfric.commons.text.FormatUtils;
 
-public class LogEnableInterceptor extends StateInterceptor {
+public final class LogEnableInterceptor extends StateInterceptor {
 
 	@Override
 	protected void before(String name)

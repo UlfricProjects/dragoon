@@ -2,7 +2,12 @@ package com.ulfric.commons.cdi.container;
 
 import com.ulfric.commons.text.FormatUtils;
 
-public class LogLoadInterceptor extends StateInterceptor {
+public final class LogLoadInterceptor extends StateInterceptor {
+
+	public LogLoadInterceptor()
+	{
+		new Exception("Hello!").printStackTrace();
+	}
 
 	@Override
 	protected void before(String name)

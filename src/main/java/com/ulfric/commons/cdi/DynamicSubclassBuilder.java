@@ -67,7 +67,7 @@ final class DynamicSubclassBuilder<T> {
 
 	private void overloadInterceptableMethods()
 	{
-		for (Method method : this.parent.getDeclaredMethods())
+		for (Method method : this.parent.getMethods())
 		{
 			if (!this.isOverridable(method))
 			{
@@ -92,7 +92,7 @@ final class DynamicSubclassBuilder<T> {
 	private boolean isOverridable(Method method)
 	{
 		int modifier = method.getModifiers();
-		return !Modifier.isPrivate(modifier) && !Modifier.isFinal(modifier) && !Modifier.isStatic(modifier);
+		return !Modifier.isFinal(modifier) && !Modifier.isStatic(modifier);
 	}
 
 	private List<Interceptor> getInterceptors(Method method)
