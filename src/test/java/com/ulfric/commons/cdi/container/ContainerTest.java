@@ -3,6 +3,7 @@ package com.ulfric.commons.cdi.container;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,6 @@ import org.mockito.Mockito;
 
 import com.ulfric.commons.cdi.ObjectFactory;
 import com.ulfric.commons.exception.Try;
-import com.ulfric.commons.logging.Logger;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
@@ -211,23 +211,6 @@ public class ContainerTest {
 
 	public static class FooContainer extends Container
 	{
-
-	}
-
-	public static class NullLogger implements Logger
-	{
-
-		@Override
-		public void info(String s)
-		{
-
-		}
-
-		@Override
-		public void error(String s)
-		{
-
-		}
 
 	}
 

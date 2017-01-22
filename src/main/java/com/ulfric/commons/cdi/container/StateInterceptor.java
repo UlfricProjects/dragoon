@@ -1,9 +1,10 @@
 package com.ulfric.commons.cdi.container;
 
+import java.util.logging.Logger;
+
 import com.ulfric.commons.cdi.inject.Inject;
 import com.ulfric.commons.cdi.intercept.Context;
 import com.ulfric.commons.cdi.intercept.Interceptor;
-import com.ulfric.commons.logging.Logger;
 import com.ulfric.commons.naming.Named;
 
 abstract class StateInterceptor implements Interceptor {

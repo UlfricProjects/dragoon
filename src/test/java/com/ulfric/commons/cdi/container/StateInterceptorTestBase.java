@@ -3,7 +3,6 @@ package com.ulfric.commons.cdi.container;
 import java.lang.reflect.Field;
 
 import com.ulfric.commons.exception.Try;
-import com.ulfric.commons.logging.Logger;
 import com.ulfric.verify.Verify;
 
 abstract class StateInterceptorTestBase<T extends StateInterceptor> {
@@ -17,20 +16,7 @@ abstract class StateInterceptorTestBase<T extends StateInterceptor> {
 		{
 			Field field = t.getClass().getSuperclass().getDeclaredField("logger");
 
-			field.set(this.t, new Logger()
-			{
-				@Override
-				public void info(String s)
-				{
-
-				}
-
-				@Override
-				public void error(String s)
-				{
-
-				}
-			});
+			field.set(this.t, new NullLogger());
 		});
 	}
 
