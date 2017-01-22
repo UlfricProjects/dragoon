@@ -19,7 +19,7 @@ import com.ulfric.verify.Verify;
 @RunWith(JUnitPlatform.class)
 public class ContainerTest {
 
-	private final Component component = Mockito.mock(Component.class);
+	final Component component = Mockito.mock(Component.class);
 
 	private ObjectFactory factory;
 	private Container container;
@@ -35,7 +35,7 @@ public class ContainerTest {
 		{
 			Field field = Container.class.getDeclaredField("COMPONENT_WRAPPERS");
 			field.setAccessible(true);
-			Map map = (Map) field.get(null);
+			Map<?, ?> map = (Map<?, ?>) field.get(null);
 			map.clear();
 		});
 	}
@@ -182,7 +182,9 @@ public class ContainerTest {
 		return Try.to(() -> {
 			Method method = MethodUtils.getMatchingMethod(Container.class, "getComponentWrapper", Class.class);
 			method.setAccessible(true);
-			return (ComponentWrapper<T>) method.invoke(null, request);
+			@SuppressWarnings("unchecked")
+			ComponentWrapper<T> casted = (ComponentWrapper<T>) method.invoke(null, request);
+			return casted;
 		});
 	}
 

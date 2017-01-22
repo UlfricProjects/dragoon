@@ -93,7 +93,7 @@ public class StateInterceptorTest {
 	}
 
 	@Name(value = "foo")
-	private final class StateInterceptorImpl extends StateInterceptor implements Named
+	static final class StateInterceptorImpl extends StateInterceptor implements Named
 	{
 
 		@Override

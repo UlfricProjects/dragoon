@@ -5,7 +5,6 @@ import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
 import com.ulfric.commons.naming.Name;
-import com.ulfric.commons.naming.Named;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
@@ -44,7 +43,7 @@ public class ComponentTest {
 		Verify.that(this.componentNamed.isUnloaded()).isFalse();
 	}
 
-	private final class ComponentImpl implements Component
+	static final class ComponentImpl implements Component
 	{
 
 		@Override
@@ -79,7 +78,7 @@ public class ComponentTest {
 	}
 
 	@Name(value = "name")
-	private final class ComponentNamed implements Component, Named
+	static final class ComponentNamed implements Component
 	{
 
 		@Override
