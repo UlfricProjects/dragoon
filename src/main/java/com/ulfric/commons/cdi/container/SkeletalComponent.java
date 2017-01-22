@@ -1,6 +1,6 @@
 package com.ulfric.commons.cdi.container;
 
-abstract class SkeletalComponent implements Component {
+public abstract class SkeletalComponent implements Component {
 
 	public SkeletalComponent(Component parent)
 	{
