@@ -88,6 +88,21 @@ public class ObjectFactory extends Child<ObjectFactory> {
 		return this.getInjectedObject(implementation);
 	}
 
+	public <T> T requestExact(Class<T> request)
+	{
+		Object value = this.request(request);
+
+		if (!request.isInstance(value))
+		{
+			throw new IllegalStateException("Wrong request type");
+		}
+
+		@SuppressWarnings("unchecked")
+		T t = (T) value;
+
+		return t;
+	}
+
 	private Object getInjectedObject(Class<?> implementation)
 	{
 		Scoped<?> scoped = this.scopes.getScopedObject(implementation);

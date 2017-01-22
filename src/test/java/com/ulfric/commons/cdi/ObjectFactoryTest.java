@@ -96,6 +96,19 @@ public class ObjectFactoryTest {
 		Verify.that(hello.inject).isNotNull();
 	}
 
+	@Test
+	void testRequestExact_correctInstance()
+	{
+		Verify.that(this.factory.requestExact(HelloImpl.class)).isInstanceOf(HelloImpl.class);
+	}
+
+	@Test
+	void testRequestExact_incorrectInstance()
+	{
+		this.factory.bind(Hello.class).to(HelloSibling.class);
+		Verify.that(() -> this.factory.requestExact(Hello.class)).doesThrow(IllegalStateException.class);
+	}
+
 	interface Hello
 	{
 		
@@ -104,6 +117,11 @@ public class ObjectFactoryTest {
 	static class HelloImpl implements Hello
 	{
 		
+	}
+
+	static class HelloSibling
+	{
+
 	}
 
 	static class HelloInject
