@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import com.ulfric.commons.cdi.intercept.Interceptor;
-import com.ulfric.commons.cdi.intercept.Invocation;
+import com.ulfric.commons.cdi.intercept.Context;
 
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
@@ -32,7 +32,7 @@ final class BytebuddyInterceptor {
 							@AllArguments Object[] arguments,
 							@SuperCall Callable<?> finalDestination)
 	{
-		return Invocation.createInvocation(owner, this.pipeline, finalDestination, arguments).proceed();
+		return Context.createInvocation(owner, this.pipeline, finalDestination, arguments).proceed();
 	}
 
 }

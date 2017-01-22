@@ -6,9 +6,9 @@ import java.util.concurrent.Callable;
 
 import com.ulfric.commons.exception.Try;
 
-public final class Invocation {
+public final class Context {
 
-	public static Invocation createInvocation(
+	public static Context createInvocation(
 			Object owner,
 			Iterable<Interceptor> pipeline,
 			Callable<?> finalDestination,
@@ -22,7 +22,7 @@ public final class Invocation {
 		Iterator<Interceptor> pipelineIterator = pipeline.iterator();
 		Objects.requireNonNull(pipelineIterator);
 
-		return new Invocation(owner, pipelineIterator, finalDestination, arguments);
+		return new Context(owner, pipelineIterator, finalDestination, arguments);
 	}
 
 	private final Object owner;
@@ -30,7 +30,7 @@ public final class Invocation {
 	private final Callable<?> finalDestination;
 	private final Object[] arguments;
 
-	private Invocation(Object owner, Iterator<Interceptor> pipeline, Callable<?> finalDestination, Object[] arguments)
+	private Context(Object owner, Iterator<Interceptor> pipeline, Callable<?> finalDestination, Object[] arguments)
 	{
 		this.owner = owner;
 		this.pipeline = pipeline;

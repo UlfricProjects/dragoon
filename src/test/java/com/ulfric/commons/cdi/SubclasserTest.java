@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 
 import com.ulfric.commons.cdi.intercept.Intercept;
 import com.ulfric.commons.cdi.intercept.Interceptor;
-import com.ulfric.commons.cdi.intercept.Invocation;
+import com.ulfric.commons.cdi.intercept.Context;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
@@ -141,7 +141,7 @@ public class SubclasserTest {
 	static class PassthroughInterceptor implements Interceptor
 	{
 		@Override
-		public Object intercept(Invocation invocation)
+		public Object intercept(Context invocation)
 		{
 			return invocation.proceed();
 		}
@@ -150,7 +150,7 @@ public class SubclasserTest {
 	static class GoodInterceptor implements Interceptor
 	{
 		@Override
-		public Object intercept(Invocation invocation)
+		public Object intercept(Context invocation)
 		{
 			return "good";
 		}

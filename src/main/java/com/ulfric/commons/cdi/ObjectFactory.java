@@ -3,6 +3,12 @@ package com.ulfric.commons.cdi;
 import java.lang.annotation.Annotation;
 import java.util.Objects;
 
+import com.ulfric.commons.cdi.intercept.Disable;
+import com.ulfric.commons.cdi.intercept.DisableInterceptor;
+import com.ulfric.commons.cdi.intercept.Enable;
+import com.ulfric.commons.cdi.intercept.EnableInterceptor;
+import com.ulfric.commons.cdi.intercept.Load;
+import com.ulfric.commons.cdi.intercept.LoadInterceptor;
 import com.ulfric.commons.cdi.scope.Default;
 import com.ulfric.commons.cdi.scope.DefaultScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scoped;
@@ -43,6 +49,10 @@ public class ObjectFactory extends Child<ObjectFactory> {
 	{
 		this.scopes.registerBinding(Default.class, DefaultScopeStrategy.class);
 		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
+
+		this.bindings.registerBinding(Load.class, LoadInterceptor.class);
+		this.bindings.registerBinding(Enable.class, EnableInterceptor.class);
+		this.bindings.registerBinding(Disable.class, DisableInterceptor.class);
 	}
 
 	public Binding bind(Class<?> request)

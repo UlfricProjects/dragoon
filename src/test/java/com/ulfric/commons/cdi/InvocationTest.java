@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.ulfric.commons.cdi.intercept.Interceptor;
-import com.ulfric.commons.cdi.intercept.Invocation;
+import com.ulfric.commons.cdi.intercept.Context;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
@@ -29,14 +29,14 @@ public class InvocationTest {
 
 	private Object[] arguments = new Object[0];
 
-	private Invocation invocation;
+	private Context invocation;
 
 	@BeforeEach
 	void init()
 	{
 		MockitoAnnotations.initMocks(this);
 		Mockito.when(this.pipeline.iterator()).thenReturn(this.pipelineIterator);
-		this.invocation = Invocation.createInvocation(this.owner, this.pipeline, this.finalDestination, this.arguments);
+		this.invocation = Context.createInvocation(this.owner, this.pipeline, this.finalDestination, this.arguments);
 	}
 
 	@Test
