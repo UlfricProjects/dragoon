@@ -3,12 +3,12 @@ package com.ulfric.commons.cdi;
 import java.lang.annotation.Annotation;
 import java.util.Objects;
 
-import com.ulfric.commons.cdi.container.Disable;
-import com.ulfric.commons.cdi.container.DisableInterceptor;
-import com.ulfric.commons.cdi.container.Enable;
-import com.ulfric.commons.cdi.container.EnableInterceptor;
-import com.ulfric.commons.cdi.container.Load;
-import com.ulfric.commons.cdi.container.LoadInterceptor;
+import com.ulfric.commons.cdi.container.LogDisable;
+import com.ulfric.commons.cdi.container.LogDisableInterceptor;
+import com.ulfric.commons.cdi.container.LogEnable;
+import com.ulfric.commons.cdi.container.LogEnableInterceptor;
+import com.ulfric.commons.cdi.container.LogLoad;
+import com.ulfric.commons.cdi.container.LogLoadInterceptor;
 import com.ulfric.commons.cdi.scope.Default;
 import com.ulfric.commons.cdi.scope.DefaultScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scoped;
@@ -50,9 +50,9 @@ public class ObjectFactory extends Child<ObjectFactory> {
 		this.scopes.registerBinding(Default.class, DefaultScopeStrategy.class);
 		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
 
-		this.bindings.registerBinding(Load.class, LoadInterceptor.class);
-		this.bindings.registerBinding(Enable.class, EnableInterceptor.class);
-		this.bindings.registerBinding(Disable.class, DisableInterceptor.class);
+		this.bindings.registerBinding(LogLoad.class, LogLoadInterceptor.class);
+		this.bindings.registerBinding(LogEnable.class, LogEnableInterceptor.class);
+		this.bindings.registerBinding(LogDisable.class, LogDisableInterceptor.class);
 	}
 
 	public Binding bind(Class<?> request)

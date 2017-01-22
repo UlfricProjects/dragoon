@@ -10,6 +10,6 @@ import com.ulfric.commons.cdi.intercept.Intercept;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Intercept
-public @interface Load {
+public @interface LogEnable {
 
 }

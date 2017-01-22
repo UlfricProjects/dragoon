@@ -123,9 +123,15 @@ public class Container implements Component {
 	{
 		this.verify(this::isUnloaded);
 
-		this.load();
+		this.onLoad();
 		this.loaded = true;
 		this.notifyComponents();
+	}
+
+	@LogLoad
+	protected void onLoad()
+	{
+
 	}
 
 	@Override
@@ -135,9 +141,15 @@ public class Container implements Component {
 
 		this.loadIfNotLoaded();
 
-		this.enable();
+		this.onEnable();
 		this.enabled = true;
 		this.notifyComponents();
+	}
+
+	@LogEnable
+	protected void onEnable()
+	{
+
 	}
 
 	private void loadIfNotLoaded()
@@ -153,9 +165,15 @@ public class Container implements Component {
 	{
 		this.verify(this::isEnabled);
 
-		this.disable();
+		this.onDisable();
 		this.enabled = false;
 		this.notifyComponents();
+	}
+
+	@LogDisable
+	protected void onDisable()
+	{
+
 	}
 
 	private void verify(BooleanSupplier flag)
