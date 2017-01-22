@@ -16,9 +16,12 @@ import com.ulfric.commons.cdi.scope.Shared;
 import com.ulfric.commons.cdi.scope.SharedScopeStrategy;
 import com.ulfric.commons.cdi.scope.Supplied;
 import com.ulfric.commons.cdi.scope.SuppliedScopeStrategy;
+import com.ulfric.commons.naming.Name;
+import com.ulfric.commons.service.Service;
 
+@Name("ObjectFactory")
 @Supplied
-public final class ObjectFactory extends Child<ObjectFactory> {
+public final class ObjectFactory extends Child<ObjectFactory> implements Service {
 
 	public static ObjectFactory newInstance()
 	{
