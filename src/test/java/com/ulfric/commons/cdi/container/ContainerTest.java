@@ -20,14 +20,7 @@ public class ContainerTest {
 	@BeforeEach
 	void init()
 	{
-		try
-		{
-			this.container = (Container) this.factory.request(Container.class);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		this.container = this.factory.requestExact(Container.class);
 	}
 
 	@Test

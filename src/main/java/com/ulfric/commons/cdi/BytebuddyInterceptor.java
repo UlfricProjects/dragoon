@@ -12,7 +12,7 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.implementation.bind.annotation.This;
 
-final class BytebuddyInterceptor {
+public final class BytebuddyInterceptor {
 
 	public static BytebuddyInterceptor newInstance(List<Interceptor> pipeline)
 	{
