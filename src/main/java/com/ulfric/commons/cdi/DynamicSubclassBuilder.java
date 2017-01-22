@@ -92,7 +92,7 @@ final class DynamicSubclassBuilder<T> {
 	private boolean isOverridable(Method method)
 	{
 		int modifier = method.getModifiers();
-		return !Modifier.isPrivate(modifier) && !Modifier.isFinal(modifier);
+		return !Modifier.isPrivate(modifier) && !Modifier.isFinal(modifier) && !Modifier.isStatic(modifier);
 	}
 
 	private List<Interceptor> getInterceptors(Method method)
