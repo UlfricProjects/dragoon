@@ -14,35 +14,35 @@ final class ComponentStateController {
 		this.owner = owner;
 	}
 
-	public void install(Component state)
+	public void install(Component component)
 	{
-		Objects.requireNonNull(state);
+		Objects.requireNonNull(component);
 
-		if (this.states.add(state))
+		if (this.states.add(component))
 		{
-			this.refreshState(state);
+			this.refreshComponent(component);
 		}
 	}
 
 	public void refresh()
 	{
-		this.states.forEach(this::refreshState);
+		this.states.forEach(this::refreshComponent);
 	}
 
-	private void refreshState(Component state)
+	private void refreshComponent(Component component)
 	{
-		if (this.owner.isLoaded() && !state.isLoaded())
+		if (this.owner.isLoaded() && !component.isLoaded())
 		{
-			state.load();
+			component.load();
 		}
 
-		if (this.owner.isEnabled() && !state.isEnabled())
+		if (this.owner.isEnabled() && !component.isEnabled())
 		{
-			state.enable();
+			component.enable();
 		}
-		else if (this.owner.isDisabled() && !state.isDisabled())
+		else if (this.owner.isDisabled() && !component.isDisabled())
 		{
-			state.disable();
+			component.disable();
 		}
 	}
 
