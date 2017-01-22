@@ -6,6 +6,8 @@ import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
 import com.ulfric.commons.cdi.scope.ScopeNotPresentException;
+import com.ulfric.commons.cdi.scope.ScopeStrategy;
+import com.ulfric.commons.cdi.scope.Scoped;
 import com.ulfric.commons.cdi.scope.Shared;
 import com.ulfric.commons.cdi.scope.SharedScopeStrategy;
 import com.ulfric.verify.Verify;
@@ -47,6 +49,32 @@ public class ScopesTest {
 	}
 
 	@Test
+	void testGetScopedObject_fromParent()
+	{
+		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
+		Scopes scopes = this.scopes.createChild();
+		Verify.that(scopes.getScope(Shared.class)).isNotNull();
+	}
+
+	@Test
+	void testGetScopedObject_fromSelfWithParent()
+	{
+		this.scopes.registerBinding(Shared.class, RandomStrategy.class);
+
+		Scopes scopes = this.scopes.createChild();
+
+		scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
+
+		Verify.that(scopes.getScope(Shared.class)).isInstanceOf(SharedScopeStrategy.class);
+	}
+
+	@Test
+	void testGetScope_unimplementedScope_returnsNull()
+	{
+		Verify.that(this.scopes.getScope(Random.class)).isNull();
+	}
+
+	@Test
 	void testGetScopedObject_unimplementedScope_throwsException()
 	{
 		Verify.that(() -> this.scopes.getScopedObject(Example.class).read()).doesThrow(ScopeNotPresentException.class);
@@ -56,6 +84,22 @@ public class ScopesTest {
 	static class Example
 	{
 		
+	}
+
+	@interface Random
+	{
+
+	}
+
+	static class RandomStrategy implements ScopeStrategy
+	{
+
+		@Override
+		public <T> Scoped<T> getOrCreate(Class<T> request)
+		{
+			return null;
+		}
+
 	}
 
 }
