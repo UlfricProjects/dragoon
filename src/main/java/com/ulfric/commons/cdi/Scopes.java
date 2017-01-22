@@ -1,8 +1,6 @@
 package com.ulfric.commons.cdi;
 
 import java.lang.annotation.Annotation;
-import java.util.IdentityHashMap;
-import java.util.Map;
 
 import com.ulfric.commons.cdi.construct.InstanceUtils;
 import com.ulfric.commons.cdi.scope.DefaultScopeStrategy;
@@ -13,8 +11,6 @@ import com.ulfric.commons.cdi.scope.Scoped;
 import com.ulfric.commons.reflect.AnnotationUtils;
 
 final class Scopes extends Registry<Scopes, ScopeStrategy> {
-
-	private final Map<Class<?>, ScopeStrategy> scopedTypes = new IdentityHashMap<>();
 
 	Scopes()
 	{
@@ -28,8 +24,20 @@ final class Scopes extends Registry<Scopes, ScopeStrategy> {
 
 	public <T> Scoped<T> getScopedObject(Class<T> request)
 	{
-		ScopeStrategy scope = this.scopedTypes.computeIfAbsent(request, this::resolveScopeType);
+		ScopeStrategy scope = this.registered.computeIfAbsent(request, this::resolveScopeType);
 		return scope.getOrCreate(request);
+	}
+
+	public ScopeStrategy getScope(Class<?> scope)
+	{
+		ScopeStrategy strategy = this.registered.get(scope);
+
+		if (strategy == null && this.hasParent())
+		{
+			strategy = this.getParent().getScope(scope);
+		}
+
+		return strategy;
 	}
 
 	private ScopeStrategy resolveScopeType(Class<?> request)

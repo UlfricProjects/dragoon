@@ -14,8 +14,11 @@ import com.ulfric.commons.cdi.scope.DefaultScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scoped;
 import com.ulfric.commons.cdi.scope.Shared;
 import com.ulfric.commons.cdi.scope.SharedScopeStrategy;
+import com.ulfric.commons.cdi.scope.Supplied;
+import com.ulfric.commons.cdi.scope.SuppliedScopeStrategy;
 
-public class ObjectFactory extends Child<ObjectFactory> {
+@Supplied
+public final class ObjectFactory extends Child<ObjectFactory> {
 
 	public static ObjectFactory newInstance()
 	{
@@ -49,10 +52,14 @@ public class ObjectFactory extends Child<ObjectFactory> {
 	{
 		this.scopes.registerBinding(Default.class, DefaultScopeStrategy.class);
 		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
+		this.scopes.registerBinding(Supplied.class, SuppliedScopeStrategy.class);
 
 		this.bindings.registerBinding(LogLoad.class, LogLoadInterceptor.class);
 		this.bindings.registerBinding(LogEnable.class, LogEnableInterceptor.class);
 		this.bindings.registerBinding(LogDisable.class, LogDisableInterceptor.class);
+
+		SuppliedScopeStrategy strategy = (SuppliedScopeStrategy) this.request(Supplied.class);
+		strategy.register(ObjectFactory.class, this::createChild);
 	}
 
 	public Binding bind(Class<?> request)
@@ -81,11 +88,21 @@ public class ObjectFactory extends Child<ObjectFactory> {
 
 			if (implementation == null)
 			{
+				if (this.couldBeScope(request))
+				{
+					return this.scopes.getScope(request);
+				}
+
 				return null;
 			}
 		}
 
 		return this.getInjectedObject(implementation);
+	}
+
+	private boolean couldBeScope(Class<?> request)
+	{
+		return request.isAnnotation();
 	}
 
 	public <T> T requestExact(Class<T> request)
