@@ -109,18 +109,6 @@ public class ObjectFactoryTest {
 		Verify.that(() -> this.factory.requestExact(Hello.class)).doesThrow(IllegalArgumentException.class);
 	}
 
-	@Test
-	void testRequest_privateClass()
-	{
-		Verify.that(() -> this.factory.request(PrivateClass.class)).doesThrow(IllegalArgumentException.class);
-	}
-
-	@Test
-	void testRequest_nonStaticInnerClass()
-	{
-		Verify.that(() -> this.factory.request(NonStaticClass.class)).doesThrow(IllegalArgumentException.class);
-	}
-
 	interface Hello
 	{
 		
@@ -140,16 +128,6 @@ public class ObjectFactoryTest {
 	{
 		@Inject
 		Hello inject;
-	}
-
-	private static class PrivateClass
-	{
-
-	}
-
-	public class NonStaticClass
-	{
-
 	}
 
 }
