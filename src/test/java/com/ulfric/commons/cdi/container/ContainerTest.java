@@ -43,7 +43,7 @@ public class ContainerTest {
 	@Test
 	void testRegisterComponentWrapper_nullRequest()
 	{
-		Verify.that(() -> Container.registerComponentWrapper(null, o -> Mockito.mock(Component.class))).doesThrow(NullPointerException.class);
+		Verify.that(() -> Container.registerComponentWrapper(null, (ignore, o) -> Mockito.mock(Component.class))).doesThrow(NullPointerException.class);
 	}
 
 	@Test
@@ -202,7 +202,7 @@ public class ContainerTest {
 	{
 
 		@Override
-		public Component apply(Hello hello)
+		public Component apply(Component parent, Hello hello)
 		{
 			return ContainerTest.this.component;
 		}
