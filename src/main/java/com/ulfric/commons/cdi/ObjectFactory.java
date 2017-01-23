@@ -1,6 +1,7 @@
 package com.ulfric.commons.cdi;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 import java.util.Objects;
 
 import com.ulfric.commons.cdi.container.LogDisable;
@@ -83,6 +84,17 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Service
 	{
 		Objects.requireNonNull(request);
 
+		int modifiers = request.getModifiers();
+		if (Modifier.isPrivate(modifiers))
+		{
+			throw new IllegalArgumentException("Class is private");
+		}
+
+		if (request.getEnclosingClass() != null && !Modifier.isStatic(modifiers))
+		{
+			throw new IllegalArgumentException("Inner class is not static");
+		}
+
 		Class<?> implementation = this.bindings.getRegisteredBinding(request);
 
 		if (implementation == null)
@@ -114,7 +126,7 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Service
 
 		if (!request.isInstance(value))
 		{
-			throw new IllegalStateException("Wrong request type");
+			throw new IllegalArgumentException("Wrong request type");
 		}
 
 		@SuppressWarnings("unchecked")
