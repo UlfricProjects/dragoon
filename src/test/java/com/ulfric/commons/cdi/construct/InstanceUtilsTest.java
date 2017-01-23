@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
+import com.ulfric.commons.cdi.construct.InstanceUtils;
 import com.ulfric.testing.Util;
 import com.ulfric.testing.UtilTestBase;
 import com.ulfric.verify.Verify;
@@ -13,41 +14,48 @@ import com.ulfric.verify.Verify;
 public class InstanceUtilsTest extends UtilTestBase {
 
 	@Test
-	public void test_getInstance_illegalArgument()
+	void testCreateInstanceOrNull_valid_nonnull()
 	{
-		Verify.that(() -> InstanceUtils.getInstance(NoConstant.class)).doesThrow(IllegalArgumentException.class);
+		Verify.that(InstanceUtils.createOrNull(Object.class)).isNotNull();
 	}
 
 	@Test
-	public void test_getInstance_returnsOneConstEnum()
+	void testCreateInstanceOrNull_interface_null()
 	{
-		Verify.that(InstanceUtils.getInstance(OneConstant.class)).isSameAs(OneConstant.A);
+		Verify.that(InstanceUtils.createOrNull(Hello.class)).isNull();
 	}
 
 	@Test
-	public void test_getInstance_invalidConstructor()
+	void testCreateInstanceOrNull_null_null()
 	{
-		Verify.that(() -> InstanceUtils.getInstance(OneArg.class)).doesThrow(RuntimeException.class);
+		Verify.that(() -> InstanceUtils.createOrNull(null)).doesThrow(NullPointerException.class);
 	}
 
-	public enum NoConstant
+	@Test
+	void testCreateInstanceOrNull_enumNotEmpty_nonnull()
 	{
-		;
+		Verify.that(InstanceUtils.createOrNull(Greeting.class)).isSameAs(Greeting.HELLO);
 	}
 
-	public enum OneConstant
+	@Test
+	void testCreateInstanceOrNull_enumEmpty_null()
 	{
-		A;
+		Verify.that(InstanceUtils.createOrNull(Empty.class)).isNull();
 	}
 
-	public static class OneArg
+	private interface Hello
 	{
-		public Object object;
+		
+	}
 
-		public OneArg(Object object)
-		{
-			this.object = object;
-		}
+	private enum Greeting
+	{
+		HELLO;
+	}
+
+	private enum Empty
+	{
+		
 	}
 
 }
