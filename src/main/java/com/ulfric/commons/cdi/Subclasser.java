@@ -6,12 +6,12 @@ final class Subclasser {
 
 	private final ObjectFactory factory;
 
-	public Subclasser(ObjectFactory factory)
+	Subclasser(ObjectFactory factory)
 	{
 		this.factory = factory;
 	}
 
-	public <T> Class<? extends T> createImplementationClass(Class<T> parent)
+	<T> Class<? extends T> createImplementationClass(Class<T> parent)
 	{
 		if (!this.isInstantiable(parent))
 		{

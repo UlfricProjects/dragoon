@@ -24,7 +24,7 @@ final class Injector {
 		this.factory = factory;
 	}
 
-	public void injectFields(Scoped<?> scoped)
+	void injectFields(Scoped<?> scoped)
 	{
 		if (scoped.isRead())
 		{

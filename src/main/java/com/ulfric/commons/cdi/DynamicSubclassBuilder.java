@@ -26,7 +26,7 @@ final class DynamicSubclassBuilder<T> {
 	private final Class<T> parent;
 	private DynamicType.Builder<T> builder;
 
-	public DynamicSubclassBuilder(ObjectFactory factory, Class<T> parent)
+	DynamicSubclassBuilder(ObjectFactory factory, Class<T> parent)
 	{
 		this.factory = factory;
 		this.parent = parent;
@@ -38,7 +38,7 @@ final class DynamicSubclassBuilder<T> {
 		return new ByteBuddy().subclass(this.parent);
 	}
 
-	public Class<? extends T> build()
+	Class<? extends T> build()
 	{
 		this.make();
 		return this.builder.make().load(this.getParentLoader()).getLoaded();

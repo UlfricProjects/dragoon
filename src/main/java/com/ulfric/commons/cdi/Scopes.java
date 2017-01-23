@@ -22,13 +22,13 @@ final class Scopes extends Registry<Scopes, ScopeStrategy> {
 		super(parent);
 	}
 
-	public <T> Scoped<T> getScopedObject(Class<T> request)
+	<T> Scoped<T> getScopedObject(Class<T> request)
 	{
 		ScopeStrategy scope = this.registered.computeIfAbsent(request, this::resolveScopeType);
 		return scope.getOrCreate(request);
 	}
 
-	public ScopeStrategy getScope(Class<?> scope)
+	ScopeStrategy getScope(Class<?> scope)
 	{
 		ScopeStrategy strategy = this.registered.get(scope);
 

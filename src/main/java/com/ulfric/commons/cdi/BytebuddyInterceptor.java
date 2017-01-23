@@ -14,7 +14,7 @@ import net.bytebuddy.implementation.bind.annotation.This;
 
 public final class BytebuddyInterceptor {
 
-	public static BytebuddyInterceptor newInstance(List<Interceptor> pipeline)
+	static BytebuddyInterceptor newInstance(List<Interceptor> pipeline)
 	{
 		List<Interceptor> defensivePipeline = new ArrayList<>(pipeline);
 		return new BytebuddyInterceptor(defensivePipeline);

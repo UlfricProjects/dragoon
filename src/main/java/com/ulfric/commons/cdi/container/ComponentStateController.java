@@ -9,12 +9,12 @@ final class ComponentStateController {
 	private final Component owner;
 	private final Set<Component> states = new LinkedHashSet<>();
 
-	public ComponentStateController(Component owner)
+	ComponentStateController(Component owner)
 	{
 		this.owner = owner;
 	}
 
-	public void install(Component component)
+	void install(Component component)
 	{
 		Objects.requireNonNull(component);
 
@@ -24,7 +24,7 @@ final class ComponentStateController {
 		}
 	}
 
-	public void refresh()
+	void refresh()
 	{
 		this.states.forEach(this::refreshComponent);
 	}

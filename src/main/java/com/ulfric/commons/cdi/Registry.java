@@ -7,12 +7,12 @@ abstract class Registry<T extends Registry<T, R>, R> extends Child<T> {
 
 	final Map<Class<?>, R> registered = new IdentityHashMap<>();
 
-	public Registry()
+	Registry()
 	{
 		
 	}
 
-	public Registry(T parent)
+	Registry(T parent)
 	{
 		super(parent);
 	}
