@@ -89,7 +89,7 @@ public class Container implements Component {
 			throw new ComponentWrapperMissingException(component);
 		}
 
-		Component instance = wrapper.apply(genericImplementation);
+		Component instance = wrapper.apply(this, genericImplementation);
 		Objects.requireNonNull(instance);
 		this.components.install(instance);
 	}
