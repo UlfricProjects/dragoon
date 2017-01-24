@@ -25,6 +25,7 @@ final class DynamicSubclassBuilder<T> {
 	private final ObjectFactory factory;
 	private final Class<T> parent;
 	private DynamicType.Builder<T> builder;
+	private boolean overloadedMethods;
 
 	DynamicSubclassBuilder(ObjectFactory factory, Class<T> parent)
 	{
@@ -41,6 +42,12 @@ final class DynamicSubclassBuilder<T> {
 	Class<? extends T> build()
 	{
 		this.make();
+
+		if (!this.overloadedMethods)
+		{
+			return this.parent;
+		}
+
 		return this.builder.make().load(this.getParentLoader()).getLoaded();
 	}
 
@@ -81,8 +88,9 @@ final class DynamicSubclassBuilder<T> {
 				continue;
 			}
 
-			BytebuddyInterceptor pipeline = BytebuddyInterceptor.newInstance(interceptors);
+			this.overloadedMethods = true;
 
+			BytebuddyInterceptor pipeline = BytebuddyInterceptor.newInstance(interceptors);
 			this.builder = this.builder.method(ElementMatchers.is(method))
 				.intercept(MethodDelegation.to(pipeline))
 				.annotateMethod(method.getAnnotations());

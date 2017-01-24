@@ -26,6 +26,7 @@ public class SubclasserTest {
 	{
 		this.factory = ObjectFactory.newInstance();
 		this.subclasser = new Subclasser(this.factory);
+		this.factory.bind(InterceptMe.class).to(PassthroughInterceptor.class);
 	}
 
 	@Test
@@ -47,7 +48,13 @@ public class SubclasserTest {
 	}
 
 	@Test
-	void testCreateImplementationClass_concrete_notSameAsParent()
+	void testCreateImplementationClass_concreteNoInterceptors_sameAsParent()
+	{
+		Verify.that(this.subclasser.createImplementationClass(NoInterceptors.class)).isSameAs(NoInterceptors.class);
+	}
+
+	@Test
+	void testCreateImplementationClass_concreteInterceptors_notSameAsParent()
 	{
 		Verify.that(this.subclasser.createImplementationClass(Hello.class)).isNotSameAs(Hello.class);
 	}
@@ -96,7 +103,6 @@ public class SubclasserTest {
 	@Test
 	void testCreateImplementationClass_interceptors_finalDestinationIsCalled()
 	{
-		this.factory.bind(InterceptMe.class).to(PassthroughInterceptor.class);
 		Verify.that(() -> this.subclasser.createImplementationClass(Bad.class).newInstance().bad())
 				.valueIsEqualTo("bad");
 	}
@@ -114,10 +120,19 @@ public class SubclasserTest {
 	@AnnoHello
 	static class Hello extends AHello
 	{
-		
+		@InterceptMe
+		public void interceptMe()
+		{
+			
+		}
 	}
 
 	final static class FHello extends Hello
+	{
+		
+	}
+
+	static class NoInterceptors
 	{
 		
 	}
