@@ -104,53 +104,23 @@ public class ContainerTest {
 	}
 
 	@Test
-	void testLoad()
-	{
-		Verify.that(() -> this.container.load()).runsWithoutExceptions();
-	}
-
-	@Test
 	void testLoad_alreadyLoaded()
 	{
-		Try.to(() ->
-		{
-			Field loadedField = Container.class.getDeclaredField("loaded");
-			loadedField.setAccessible(true);
-			loadedField.set(this.container, true);
-		});
-
+		this.container.load();
 		Verify.that(() -> this.container.load()).doesThrow(IllegalStateException.class);
-	}
-
-	@Test
-	void testEnable()
-	{
-		Verify.that(() -> this.container.enable()).runsWithoutExceptions();
 	}
 
 	@Test
 	void testLoad_alreadyEnabled()
 	{
-		Try.to(() ->
-		{
-			Field loadedField = Container.class.getDeclaredField("enabled");
-			loadedField.setAccessible(true);
-			loadedField.set(this.container, true);
-		});
-
+		this.container.enable();
 		Verify.that(() -> this.container.enable()).doesThrow(IllegalStateException.class);
 	}
 
 	@Test
 	void testDisable()
 	{
-		Try.to(() ->
-		{
-			Field loadedField = Container.class.getDeclaredField("enabled");
-			loadedField.setAccessible(true);
-			loadedField.set(this.container, true);
-		});
-
+		this.container.enable();
 		Verify.that(() -> this.container.disable()).runsWithoutExceptions();
 	}
 
@@ -158,23 +128,6 @@ public class ContainerTest {
 	void testLoad_alreadyDisabled()
 	{
 		Verify.that(() -> this.container.disable()).doesThrow(IllegalStateException.class);
-	}
-
-	@Test
-	void testLoadIfNotLoaded_alreadyLoaded()
-	{
-		Try.to(() ->
-		{
-			Field loadedField = Container.class.getDeclaredField("loaded");
-			loadedField.setAccessible(true);
-			loadedField.set(this.container, true);
-
-			Method method = Container.class.getDeclaredMethod("loadIfNotLoaded");
-			method.setAccessible(true);
-
-			Verify.that(() -> method.invoke(this.container)).runsWithoutExceptions();
-			Verify.that((boolean) loadedField.get(this.container)).isTrue();
-		});
 	}
 
 	private <T> ComponentWrapper<T> getComponentWrapper(Class<T> request)

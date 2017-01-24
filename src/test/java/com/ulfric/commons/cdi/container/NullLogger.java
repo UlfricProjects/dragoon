@@ -6,7 +6,7 @@ public class NullLogger extends Logger {
 
 	public NullLogger()
 	{
-		super("null", null);
+		super(null, null);
 	}
 
 }

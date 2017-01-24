@@ -31,6 +31,13 @@ final class ComponentStateController {
 
 	private void refreshComponent(Component component)
 	{
+		System.out.println("#################################");
+		System.out.println("Owner: " + this.owner);
+		System.out.println("Component: " + component);
+		System.out.println("Owner is loaded: " + this.owner.isLoaded());
+		System.out.println("Owner is enabled: " + this.owner.isEnabled());
+		System.out.println("Component is loaded: " + component.isLoaded());
+		System.out.println("Component is enabled: " + component.isEnabled());
 		if (this.owner.isLoaded() && !component.isLoaded())
 		{
 			component.load();
@@ -44,6 +51,12 @@ final class ComponentStateController {
 		{
 			component.disable();
 		}
+		System.out.println("--------------");
+		System.out.println("Owner is loaded: " + this.owner.isLoaded());
+		System.out.println("Owner is enabled: " + this.owner.isEnabled());
+		System.out.println("Component is loaded: " + component.isLoaded());
+		System.out.println("Component is enabled: " + component.isEnabled());
+		System.out.println("#################################");
 	}
 
 }

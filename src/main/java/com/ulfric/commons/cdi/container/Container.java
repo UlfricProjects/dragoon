@@ -3,7 +3,6 @@ package com.ulfric.commons.cdi.container;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BooleanSupplier;
 
 import org.apache.commons.lang3.ClassUtils;
 
@@ -11,7 +10,7 @@ import com.ulfric.commons.cdi.ObjectFactory;
 import com.ulfric.commons.cdi.inject.Inject;
 import com.ulfric.commons.collect.MapUtils;
 
-public class Container implements Component {
+public class Container extends SkeletalComponent {
 
 	private static final Map<Class<?>, ComponentWrapper<?>> COMPONENT_WRAPPERS =
 			MapUtils.newSynchronizedIdentityHashMap();
@@ -66,8 +65,6 @@ public class Container implements Component {
 	}
 
 	private final ComponentStateController components = new ComponentStateController(this);
-	private boolean loaded;
-	private boolean enabled;
 
 	@Inject
 	private ObjectFactory factory;
@@ -107,27 +104,12 @@ public class Container implements Component {
 	}
 
 	@Override
-	public final boolean isLoaded()
+	public final void onStateChange()
 	{
-		return this.loaded;
+		this.components.refresh();
 	}
 
 	@Override
-	public final boolean isEnabled()
-	{
-		return this.enabled;
-	}
-
-	@Override
-	public final void load()
-	{
-		this.verify(this::isUnloaded);
-
-		this.onLoad();
-		this.loaded = true;
-		this.notifyComponents();
-	}
-
 	@LogLoad
 	public void onLoad()
 	{
@@ -135,25 +117,6 @@ public class Container implements Component {
 	}
 
 	@Override
-	public final void enable()
-	{
-		this.verify(this::isDisabled);
-
-		this.loadIfNotLoaded();
-
-		this.onEnable();
-		this.enabled = true;
-		this.notifyComponents();
-	}
-
-	private void loadIfNotLoaded()
-	{
-		if (!this.isLoaded())
-		{
-			this.load();
-		}
-	}
-
 	@LogEnable
 	public void onEnable()
 	{
@@ -161,39 +124,10 @@ public class Container implements Component {
 	}
 
 	@Override
-	public final void disable()
-	{
-		this.verify(this::isEnabled);
-
-		this.onDisable();
-		this.enabled = false;
-		this.notifyComponents();
-	}
-
 	@LogDisable
 	public void onDisable()
 	{
 
-	}
-
-	private void verify(BooleanSupplier flag)
-	{
-		if (flag.getAsBoolean())
-		{
-			return;
-		}
-
-		throw new IllegalStateException("Failed to verify state: " + this.getVerifyCallerMethodName());
-	}
-
-	private String getVerifyCallerMethodName()
-	{
-		return Thread.currentThread().getStackTrace()[3].getMethodName();
-	}
-
-	private void notifyComponents()
-	{
-		this.components.refresh();
 	}
 
 }
