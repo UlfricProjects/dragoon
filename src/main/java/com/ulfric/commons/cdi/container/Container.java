@@ -1,5 +1,7 @@
 package com.ulfric.commons.cdi.container;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -8,12 +10,11 @@ import org.apache.commons.lang3.ClassUtils;
 
 import com.ulfric.commons.cdi.ObjectFactory;
 import com.ulfric.commons.cdi.inject.Inject;
-import com.ulfric.commons.collect.MapUtils;
 
 public class Container extends SkeletalComponent {
 
 	private static final Map<Class<?>, ComponentWrapper<?>> COMPONENT_WRAPPERS =
-			MapUtils.newSynchronizedIdentityHashMap();
+			Collections.synchronizedMap(new LinkedHashMap<>());
 
 	public static <T> void registerComponentWrapper(Class<T> request, ComponentWrapper<T> wrapper)
 	{

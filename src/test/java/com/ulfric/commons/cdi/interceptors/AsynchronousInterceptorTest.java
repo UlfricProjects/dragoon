@@ -1,0 +1,59 @@
+package com.ulfric.commons.cdi.interceptors;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+
+import org.apache.commons.collections4.IterableUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.runner.RunWith;
+
+import com.ulfric.commons.cdi.intercept.Context;
+import com.ulfric.commons.exception.Try;
+import com.ulfric.verify.Verify;
+
+@RunWith(JUnitPlatform.class)
+public class AsynchronousInterceptorTest {
+
+	private AsynchronousInterceptor interceptor;
+	private Context context;
+
+	@BeforeEach
+	void init()
+	{
+		this.interceptor = new AsynchronousInterceptor();
+		this.context(() -> CompletableFuture.completedFuture("hello"));
+	}
+
+	@Test
+	void testReturnsResult()
+	{
+		Future<String> future = this.call();
+		String result = Try.to(() -> { return future.get(); });
+		Verify.that(result).isEqualTo("hello");
+	}
+
+	@Test
+	void testExecutesAsync()
+	{
+		this.context(Thread::currentThread);
+		Future<Thread> future = this.call();
+		Thread ranOn = Try.to(() -> { return future.get(); });
+		Verify.that(ranOn).isNotSameAs(Thread.currentThread());
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> Future<T> call()
+	{
+		return (Future<T>) this.interceptor.intercept(this.context);
+	}
+
+	private void context(Callable<?> callable)
+	{
+		this.context = Context.createInvocation(this, IterableUtils.emptyIterable(),
+				callable, new Object[0]);
+	}
+
+}
