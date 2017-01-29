@@ -1,13 +1,13 @@
 package com.ulfric.commons.cdi.interceptors;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import com.ulfric.commons.cdi.intercept.Context;
 import com.ulfric.commons.cdi.intercept.Interceptor;
+import com.ulfric.commons.exception.Try;
 
 public final class AsynchronousInterceptor implements Interceptor {
 
@@ -19,15 +19,7 @@ public final class AsynchronousInterceptor implements Interceptor {
 		return CompletableFuture.supplyAsync(() ->
 		{
 			Object future = context.proceed();
-
-			try
-			{
-				return future instanceof Future ? ((Future<?>) future).get() : null;
-			}
-			catch (InterruptedException | ExecutionException caught)
-			{
-				throw new RuntimeException(caught);
-			}
+			return future instanceof Future ? Try.to(((Future<?>) future)) : null;
 		}, this.service);
 	}
 

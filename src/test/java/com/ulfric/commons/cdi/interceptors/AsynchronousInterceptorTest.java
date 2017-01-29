@@ -2,6 +2,7 @@ package com.ulfric.commons.cdi.interceptors;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.apache.commons.collections4.IterableUtils;
@@ -42,6 +43,20 @@ public class AsynchronousInterceptorTest {
 		Future<Thread> future = this.call();
 		Thread ranOn = Try.to(() -> { return future.get(); });
 		Verify.that(ranOn).isNotSameAs(Thread.currentThread());
+	}
+
+	@Test
+	void testThrowsExecutionExceptionThrowsRuntimeException()
+	{
+		this.context(() -> { throw new ExecutionException(null); });
+		Verify.that(this.call()::get).doesThrow(RuntimeException.class);
+	}
+
+	@Test
+	void testThrowsInterruptedExceptionThrowsRuntimeException()
+	{
+		this.context(() -> { throw new InterruptedException(); });
+		Verify.that(this.call()::get).doesThrow(RuntimeException.class);
 	}
 
 	@SuppressWarnings("unchecked")
