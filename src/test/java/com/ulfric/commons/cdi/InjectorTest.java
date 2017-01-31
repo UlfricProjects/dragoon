@@ -39,6 +39,13 @@ public class InjectorTest {
 		Verify.that(scoped.read().value).isNotNull();
 	}
 
+	@Test
+	void testInjectFields_empty()
+	{
+		Scoped<Example> scoped = new Scoped<>(null);
+		Verify.that(() -> this.injector.injectFields(scoped)).runsWithoutExceptions();
+	}
+
 	static final class Example
 	{
 		@Inject

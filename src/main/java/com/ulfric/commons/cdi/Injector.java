@@ -26,7 +26,7 @@ final class Injector {
 
 	void injectFields(Scoped<?> scoped)
 	{
-		if (scoped.isRead())
+		if (scoped.isRead() || scoped.isEmpty())
 		{
 			return;
 		}

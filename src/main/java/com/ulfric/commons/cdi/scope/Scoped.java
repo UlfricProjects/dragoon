@@ -15,6 +15,11 @@ public final class Scoped<T> {
 		return this.read;
 	}
 
+	public boolean isEmpty()
+	{
+		return this.value == null;
+	}
+
 	public T read()
 	{
 		this.read = true;
