@@ -14,7 +14,7 @@ public final class SharedScopeStrategy implements ScopeStrategy {
 	{
 		@SuppressWarnings("unchecked")
 		T instance = (T) this.sharedObjects.computeIfAbsent(request, InstanceUtils::createOrNull);
-		return new Scoped<>(instance);
+		return new Scoped<>(request, instance);
 	}
 
 }

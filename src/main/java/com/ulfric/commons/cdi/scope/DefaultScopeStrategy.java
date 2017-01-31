@@ -10,7 +10,7 @@ public enum DefaultScopeStrategy implements ScopeStrategy {
 	public <T> Scoped<T> getOrCreate(Class<T> request)
 	{
 		T instance = InstanceUtils.createOrNull(request);
-		return new Scoped<>(instance);
+		return new Scoped<>(request, instance);
 	}
 
 }

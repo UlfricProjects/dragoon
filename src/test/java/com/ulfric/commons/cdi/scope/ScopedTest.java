@@ -15,7 +15,7 @@ public class ScopedTest {
 	@BeforeEach
 	void init()
 	{
-		this.scoped = new Scoped<>(new Object());
+		this.scoped = new Scoped<>(Object.class, new Object());
 	}
 
 	@Test

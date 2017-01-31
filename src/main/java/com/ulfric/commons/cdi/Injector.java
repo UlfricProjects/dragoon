@@ -26,9 +26,14 @@ final class Injector {
 
 	void injectFields(Scoped<?> scoped)
 	{
-		if (scoped.isRead() || scoped.isEmpty())
+		if (scoped.isRead())
 		{
 			return;
+		}
+
+		if (scoped.isEmpty())
+		{
+			throw new IllegalStateException("Failed to create object: " + scoped.getRequest());
 		}
 
 		Object injectInto = scoped.read();

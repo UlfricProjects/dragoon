@@ -24,12 +24,12 @@ public final class SuppliedScopeStrategy implements ScopeStrategy {
 
 		if (supplier == null)
 		{
-			return new Scoped<>(null);
+			return new Scoped<>(request, null);
 		}
 
 		@SuppressWarnings("unchecked")
 		T object = (T) supplier.get();
-		return new Scoped<>(object);
+		return new Scoped<>(request, object);
 	}
 
 }

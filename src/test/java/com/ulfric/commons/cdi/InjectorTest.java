@@ -25,7 +25,7 @@ public class InjectorTest {
 	@Test
 	void testInjectFields_isRead_isNotInjected()
 	{
-		Scoped<Example> scoped = new Scoped<>(new Example());
+		Scoped<Example> scoped = new Scoped<>(Example.class, new Example());
 		scoped.read();
 		this.injector.injectFields(scoped);
 		Verify.that(scoped.read().value).isNull();
@@ -34,7 +34,7 @@ public class InjectorTest {
 	@Test
 	void testInjectFields_notIsRead_isInjected()
 	{
-		Scoped<Example> scoped = new Scoped<>(new Example());
+		Scoped<Example> scoped = new Scoped<>(Example.class, new Example());
 		this.injector.injectFields(scoped);
 		Verify.that(scoped.read().value).isNotNull();
 	}
@@ -42,8 +42,8 @@ public class InjectorTest {
 	@Test
 	void testInjectFields_empty()
 	{
-		Scoped<Example> scoped = new Scoped<>(null);
-		Verify.that(() -> this.injector.injectFields(scoped)).runsWithoutExceptions();
+		Scoped<Example> scoped = new Scoped<>(Example.class, null);
+		Verify.that(() -> this.injector.injectFields(scoped)).doesThrow(IllegalStateException.class);
 	}
 
 	static final class Example
