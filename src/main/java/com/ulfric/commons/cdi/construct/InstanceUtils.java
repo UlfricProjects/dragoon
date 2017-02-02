@@ -64,9 +64,13 @@ public enum InstanceUtils {
 		try
 		{
 			Constructor<?> constructor;
-			if (clazz.getDeclaredConstructors().length != 0) {
-				constructor = clazz.getDeclaredConstructors()[0];
-			} else {
+			Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
+			if (declaredConstructors.length != 0) 
+			{
+				constructor = declaredConstructors[0];
+			} 
+			else 
+			{
 				constructor = clazz.getDeclaredConstructor();
 			}
 			constructor.setAccessible(true);
