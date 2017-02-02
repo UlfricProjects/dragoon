@@ -52,6 +52,17 @@ public class ScopesTest {
 	void testGetScopedObject_fromParent()
 	{
 		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
+		SharedScopeStrategy pool = (SharedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
+		Verify.that(() -> pool.getOrCreate(Example.class).read()).suppliesNonUniqueValues();
+		Scopes scopes = this.scopes.createChild();
+		scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
+		Verify.that(scopes.getScopedObject(Example.class).read()).isSameAs(pool.getOrCreate(Example.class).read());
+	}
+
+	@Test
+	void testGetScopeStrategy_fromParent()
+	{
+		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
 		Scopes scopes = this.scopes.createChild();
 		Verify.that(scopes.getScope(Shared.class)).isNotNull();
 	}
