@@ -1,11 +1,11 @@
 package com.ulfric.commons.cdi.container;
 
+import com.ulfric.commons.naming.Name;
+import com.ulfric.verify.Verify;
+
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
-
-import com.ulfric.commons.naming.Name;
-import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
 public class ComponentTest {

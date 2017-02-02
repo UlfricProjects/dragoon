@@ -1,13 +1,12 @@
 package com.ulfric.commons.cdi.construct;
 
+import com.ulfric.commons.collect.MapUtils;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.Objects;
-
-import com.ulfric.commons.collect.MapUtils;
 
 public enum InstanceUtils {
 
@@ -23,9 +22,23 @@ public enum InstanceUtils {
 		{
 			return InstanceUtils.getFirstEnumValueOrNull(clazz);
 		}
-
-		@SuppressWarnings("unchecked")
-		T instance = (T) InstanceUtils.getOrCreateConstructor(clazz).invoke();
+		ConstructorHandle constructor = InstanceUtils.getOrCreateConstructor(clazz);
+		@SuppressWarnings("unchecked") 
+		T instance = (T) constructor.invoke();
+		return instance;
+	}
+	
+	// TODO: 2/2/2017 Cleanup 
+	public static <T> T createOrNullArgs(Class<T> clazz, Object... args) 
+	{
+		Objects.requireNonNull(clazz);
+		
+		if (clazz.isEnum())
+		{
+			return InstanceUtils.getFirstEnumValueOrNull(clazz);
+		}
+		
+		T instance = (T) InstanceUtils.getOrCreateConstructor(clazz).invoke(args);
 		return instance;
 	}
 
@@ -50,10 +63,15 @@ public enum InstanceUtils {
 	{
 		try
 		{
-			Constructor<?> constructor = clazz.getDeclaredConstructor();
+			Constructor<?> constructor;
+			if (clazz.getDeclaredConstructors().length != 0) {
+				constructor = clazz.getDeclaredConstructors()[0];
+			} else {
+				constructor = clazz.getDeclaredConstructor();
+			}
 			constructor.setAccessible(true);
 			MethodHandle handle = MethodHandles.lookup().unreflectConstructor(constructor);
-			handle = handle.asType(MethodType.methodType(Object.class));
+//			handle = handle.asType(MethodType.methodType(Object.class));
 			return new MethodHandleConstructorHandle(handle);
 		}
 		catch (NoSuchMethodException | SecurityException | IllegalAccessException ignore)

@@ -9,5 +9,10 @@ enum EmptyConstructorHandle implements ConstructorHandle {
 	{
 		return null;
 	}
-
+	
+	@Override
+	public Object invoke(Object... args)
+	{
+		return null;
+	}
 }

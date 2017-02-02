@@ -1,10 +1,5 @@
 package com.ulfric.commons.cdi;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
-
 import com.ulfric.commons.cdi.scope.ScopeNotPresentException;
 import com.ulfric.commons.cdi.scope.ScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scoped;
@@ -12,6 +7,11 @@ import com.ulfric.commons.cdi.scope.Shared;
 import com.ulfric.commons.cdi.scope.SharedScopeStrategy;
 import com.ulfric.commons.cdi.scope.SuppliedScopeStrategy;
 import com.ulfric.verify.Verify;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.runner.RunWith;
 
 @RunWith(JUnitPlatform.class)
 public class ScopesTest {
@@ -53,13 +53,21 @@ public class ScopesTest {
 	void testGetScopedObject_fromParent()
 	{
 		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
-		SharedScopeStrategy pool = (SharedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
-		Verify.that(() -> pool.getOrCreate(Example.class).read()).suppliesNonUniqueValues();
+		SharedScopeStrategy sss = (SharedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
+		Verify.that(() -> sss.getOrCreate(Example.class).read()).suppliesNonUniqueValues();
 		Scopes scopes = this.scopes.createChild();
 		scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
-		Verify.that(scopes.getScopedObject(Example.class).read()).isSameAs(pool.getOrCreate(Example.class).read());
+		Verify.that(scopes.getScopedObject(Example.class).read()).isSameAs(sss.get(Example.class).read());
 	}
 
+	@Test
+	public void testGetScopedObject_resolveEmpty()
+	{
+		this.scopes.registerBinding(Shared.class, SuppliedScopeStrategy.class);
+		SuppliedScopeStrategy pool = (SuppliedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
+		Verify.that(pool.getOrEmpty(Example.class).isEmpty()).isTrue();
+	}
+	
 	@Test
 	void testGetScopedObject_fromParentSupplied()
 	{
@@ -114,15 +122,24 @@ public class ScopesTest {
 
 	}
 
-	static class RandomStrategy implements ScopeStrategy
-	{
-
+	static class RandomStrategy extends ScopeStrategy {
+		
+		protected RandomStrategy(Scopes parent)
+		{
+			super(parent);
+		}
+		
 		@Override
 		public <T> Scoped<T> getOrCreate(Class<T> request)
 		{
 			return null;
 		}
-
+		
+		@Override
+		public <T> Scoped<T> getOrEmpty(Class<T> request) {
+			return null;
+		}
+		
 	}
 
 }

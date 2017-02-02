@@ -1,19 +1,19 @@
 package com.ulfric.commons.cdi.scope;
 
+import com.ulfric.verify.Verify;
+
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
-import com.ulfric.verify.Verify;
-
 @RunWith(JUnitPlatform.class)
 public class DefaultScopeStrategyTest {
 
-	@Test
-	void testValueOf_forJacoco()
-	{
-		DefaultScopeStrategy.valueOf("INSTANCE");
-	}
+//	@Test
+//	void testValueOf_forJacoco()
+//	{
+//		DefaultScopeStrategy.valueOf("INSTANCE");
+//	}
 
 	@Test
 	void testGetOrCreate_null_throwsNPE()

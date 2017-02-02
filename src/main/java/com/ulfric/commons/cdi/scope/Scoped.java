@@ -32,5 +32,9 @@ public final class Scoped<T> {
 		this.read = true;
 		return this.value;
 	}
-
+	
+	public static <R> Scoped<R> createEmptyScope(Class<R> request) 
+	{
+		return new Scoped<>(request, null);
+	}
 }
