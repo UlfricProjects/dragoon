@@ -10,6 +10,7 @@ import com.ulfric.commons.cdi.scope.ScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scoped;
 import com.ulfric.commons.cdi.scope.Shared;
 import com.ulfric.commons.cdi.scope.SharedScopeStrategy;
+import com.ulfric.commons.cdi.scope.SuppliedScopeStrategy;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
@@ -57,6 +58,17 @@ public class ScopesTest {
 		Scopes scopes = this.scopes.createChild();
 		scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
 		Verify.that(scopes.getScopedObject(Example.class).read()).isSameAs(pool.getOrCreate(Example.class).read());
+	}
+
+	@Test
+	void testGetScopedObject_fromParentSupplied()
+	{
+		this.scopes.registerBinding(Shared.class, SuppliedScopeStrategy.class);
+		SuppliedScopeStrategy pool = (SuppliedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
+		pool.register(Example.class, Example::new);
+		Scopes scopes = this.scopes.createChild();
+		scopes.registerBinding(Shared.class, SuppliedScopeStrategy.class);
+		Verify.that(scopes.getScopedObject(Example.class).read()).isNotNull();
 	}
 
 	@Test
