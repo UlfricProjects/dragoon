@@ -1,7 +1,5 @@
 package com.ulfric.commons.cdi;
 
-import java.lang.annotation.Annotation;
-
 import com.ulfric.commons.cdi.construct.InstanceUtils;
 import com.ulfric.commons.cdi.scope.DefaultScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scope;
@@ -9,6 +7,8 @@ import com.ulfric.commons.cdi.scope.ScopeNotPresentException;
 import com.ulfric.commons.cdi.scope.ScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scoped;
 import com.ulfric.commons.reflect.AnnotationUtils;
+
+import java.lang.annotation.Annotation;
 
 final class Scopes extends Registry<Scopes, ScopeStrategy> {
 
@@ -25,7 +25,11 @@ final class Scopes extends Registry<Scopes, ScopeStrategy> {
 	<T> Scoped<T> getScopedObject(Class<T> request)
 	{
 		ScopeStrategy scope = this.registered.computeIfAbsent(request, this::resolveScopeType);
-		return scope.getOrCreate(request);
+		Scoped<T> scoped = scope.getOrCreate(request);
+		if (scoped.read() == null && hasParent()) {
+			scoped = getParent().getScopedObject(request);
+		}
+		return scoped;
 	}
 
 	ScopeStrategy getScope(Class<?> scope)
