@@ -50,17 +50,6 @@ public class ScopesTest {
 	}
 
 	@Test
-	void testGetScopedObject_fromParent()
-	{
-		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
-		SharedScopeStrategy pool = (SharedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
-		Verify.that(() -> pool.getOrCreate(Example.class).read()).suppliesNonUniqueValues();
-		Scopes scopes = this.scopes.createChild();
-		scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
-		Verify.that(scopes.getScopedObject(Example.class).read()).isSameAs(pool.getOrCreate(Example.class).read());
-	}
-
-	@Test
 	void testGetScopedObject_fromParentSupplied()
 	{
 		this.scopes.registerBinding(Shared.class, SuppliedScopeStrategy.class);
@@ -69,6 +58,13 @@ public class ScopesTest {
 		Scopes scopes = this.scopes.createChild();
 		scopes.registerBinding(Shared.class, SuppliedScopeStrategy.class);
 		Verify.that(scopes.getScopedObject(Example.class).read()).isNotNull();
+	}
+
+	@Test
+	void testGetScopedObject_nonRegisteredNoParent()
+	{
+		this.scopes.registerBinding(Shared.class, EmptyStrategy.class);
+		Verify.that(this.scopes.getScopedObject(Example.class).read()).isNull();
 	}
 
 	@Test
@@ -82,7 +78,7 @@ public class ScopesTest {
 	@Test
 	void testGetScopedObject_fromSelfWithParent()
 	{
-		this.scopes.registerBinding(Shared.class, RandomStrategy.class);
+		this.scopes.registerBinding(Shared.class, EmptyStrategy.class);
 
 		Scopes scopes = this.scopes.createChild();
 
@@ -94,7 +90,7 @@ public class ScopesTest {
 	@Test
 	void testGetScope_unimplementedScope_returnsNull()
 	{
-		Verify.that(this.scopes.getScope(Random.class)).isNull();
+		Verify.that(this.scopes.getScope(Empty.class)).isNull();
 	}
 
 	@Test
@@ -109,18 +105,18 @@ public class ScopesTest {
 		
 	}
 
-	@interface Random
+	@interface Empty
 	{
 
 	}
 
-	static class RandomStrategy implements ScopeStrategy
+	static class EmptyStrategy implements ScopeStrategy
 	{
 
 		@Override
 		public <T> Scoped<T> getOrCreate(Class<T> request)
 		{
-			return null;
+			return new Scoped<>(request, null);
 		}
 
 	}

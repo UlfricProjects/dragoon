@@ -28,7 +28,7 @@ final class Scopes extends Registry<Scopes, ScopeStrategy> {
 		Scoped<T> scoped = scope.getOrCreate(request);
 		if (scoped.isEmpty() && this.hasParent())
 		{
-			scoped = getParent().getScopedObject(request);
+			scoped = this.getParent().getScopedObject(request);
 		}
 		return scoped;
 	}
