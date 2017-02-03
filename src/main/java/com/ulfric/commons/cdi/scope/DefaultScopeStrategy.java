@@ -19,8 +19,6 @@ public class DefaultScopeStrategy extends ScopeStrategy {
 		return new Scoped<>(request, instance);
 	}
 	
-	
-	// TODO: 2/2/2017 Odd flow between #getOrCreate and #getOrEmpty
 	@Override
 	public <T> Scoped<T> getOrEmpty(Class<T> request)
 	{

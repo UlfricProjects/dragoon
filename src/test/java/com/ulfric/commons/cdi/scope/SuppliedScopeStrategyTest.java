@@ -1,13 +1,14 @@
 package com.ulfric.commons.cdi.scope;
 
-import java.util.function.Supplier;
+import com.ulfric.verify.Verify;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
-import com.ulfric.verify.Verify;
+import java.util.function.Supplier;
 
 @RunWith(JUnitPlatform.class)
 public class SuppliedScopeStrategyTest {
@@ -30,7 +31,8 @@ public class SuppliedScopeStrategyTest {
 	@Test
 	void testGetOrCreate_unregistered_returnsNullScope()
 	{
-		Verify.that(this.strategy.getOrCreate(Unregistered.class).read()).isNull();
+		Assertions.assertThrows(SuppliedScopeStrategy.EmptyScopeException.class, 
+		                        () -> this.strategy.getOrCreate(Unregistered.class).read());
 	}
 
 	public static class Unregistered

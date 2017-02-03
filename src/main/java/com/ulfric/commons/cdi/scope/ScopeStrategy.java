@@ -18,9 +18,12 @@ public abstract class ScopeStrategy {
 	public <T> Scoped<T> get(Class<T> request) 
 	{
 		Scoped<T> scoped = getOrEmpty(request);	
-		if (scoped.isEmpty() && parent != null) {
-			return parent.getScopedObject(request);
-		} else {
+		if (scoped.isEmpty() && this.parent != null) 
+		{
+			return this.parent.getScopedObject(request);
+		} 
+		else
+		{
 			return scoped;
 		}
 	}

@@ -9,12 +9,6 @@ import org.junit.runner.RunWith;
 @RunWith(JUnitPlatform.class)
 public class DefaultScopeStrategyTest {
 
-//	@Test
-//	void testValueOf_forJacoco()
-//	{
-//		DefaultScopeStrategy.valueOf("INSTANCE");
-//	}
-
 	@Test
 	void testGetOrCreate_null_throwsNPE()
 	{

@@ -28,7 +28,6 @@ public enum InstanceUtils {
 		return instance;
 	}
 	
-	// TODO: 2/2/2017 Cleanup 
 	public static <T> T createOrNullArgs(Class<T> clazz, Object... args) 
 	{
 		Objects.requireNonNull(clazz);
@@ -37,9 +36,10 @@ public enum InstanceUtils {
 		{
 			return InstanceUtils.getFirstEnumValueOrNull(clazz);
 		}
-		
-		T instance = (T) InstanceUtils.getOrCreateConstructor(clazz).invoke(args);
-		return instance;
+		else
+		{
+			return (T) InstanceUtils.getOrCreateConstructor(clazz).invoke(args);
+		}
 	}
 
 	private static <E> E getFirstEnumValueOrNull(Class<E> clazz)
@@ -75,6 +75,7 @@ public enum InstanceUtils {
 			}
 			constructor.setAccessible(true);
 			MethodHandle handle = MethodHandles.lookup().unreflectConstructor(constructor);
+			// TODO: 2/3/2017 Forget what I'm meant to do here???? 
 //			handle = handle.asType(MethodType.methodType(Object.class));
 			return new MethodHandleConstructorHandle(handle);
 		}

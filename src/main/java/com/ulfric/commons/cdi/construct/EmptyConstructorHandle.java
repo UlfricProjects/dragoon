@@ -5,12 +5,6 @@ enum EmptyConstructorHandle implements ConstructorHandle {
 	INSTANCE;
 
 	@Override
-	public Object invoke()
-	{
-		return null;
-	}
-	
-	@Override
 	public Object invoke(Object... args)
 	{
 		return null;
