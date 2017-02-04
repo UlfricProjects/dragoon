@@ -49,7 +49,8 @@ public class InstanceUtilsTest extends UtilTestBase {
 	}
 
 	@Test
-	public void testCreateInstanceOrNullArgs_valid_nonnull() {
+	public void testCreateInstanceOrNullArgs_valid_nonnull()
+	{
 	    Verify.that(InstanceUtils.createOrNullArgs(Object.class)).isNotNull();
 	}
 	

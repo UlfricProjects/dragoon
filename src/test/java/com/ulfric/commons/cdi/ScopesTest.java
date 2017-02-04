@@ -61,7 +61,8 @@ public class ScopesTest {
 	}
 	
 	@Test
-	public void testGetScopeParent() {
+	public void testGetScopeParent()
+	{
 		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
 		SharedScopeStrategy strategy = (SharedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
 		Verify.that(() -> strategy.getOrCreate(Example.class).read()).suppliesNonUniqueValues();
