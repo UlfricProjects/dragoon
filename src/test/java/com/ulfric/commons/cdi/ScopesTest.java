@@ -53,13 +53,23 @@ public class ScopesTest {
 	void testGetScopedObject_fromParent()
 	{
 		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
-		SharedScopeStrategy sss = (SharedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
-		Verify.that(() -> sss.getOrCreate(Example.class).read()).suppliesNonUniqueValues();
+		SharedScopeStrategy strategy = (SharedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
+		Verify.that(() -> strategy.getOrCreate(Example.class).read()).suppliesNonUniqueValues();
 		Scopes scopes = this.scopes.createChild();
 		scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
-		Verify.that(scopes.getScopedObject(Example.class).read()).isSameAs(sss.get(Example.class).read());
+		Verify.that(scopes.getScopedObject(Example.class).read()).isSameAs(strategy.getOrEmpty(Example.class).read());
 	}
-
+	
+	@Test
+	public void testGetScopeParent() {
+		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
+		SharedScopeStrategy strategy = (SharedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
+		Verify.that(() -> strategy.getOrCreate(Example.class).read()).suppliesNonUniqueValues();
+		Scopes scopes = this.scopes.createChild();
+		Example read = scopes.createChild().getScope(Shared.class).getOrEmpty(Example.class).read();
+		Verify.that(read).isSameAs(strategy.getOrEmpty(Example.class).read());
+	}
+	
 	@Test
 	public void testGetScopedObject_resolveEmpty()
 	{
@@ -78,7 +88,7 @@ public class ScopesTest {
 		scopes.registerBinding(Shared.class, SuppliedScopeStrategy.class);
 		Verify.that(scopes.getScopedObject(Example.class).read()).isNotNull();
 	}
-
+	
 	@Test
 	void testGetScopeStrategy_fromParent()
 	{
@@ -86,7 +96,7 @@ public class ScopesTest {
 		Scopes scopes = this.scopes.createChild();
 		Verify.that(scopes.getScope(Shared.class)).isNotNull();
 	}
-
+	
 	@Test
 	void testGetScopedObject_fromSelfWithParent()
 	{
@@ -98,7 +108,7 @@ public class ScopesTest {
 
 		Verify.that(scopes.getScope(Shared.class)).isInstanceOf(SharedScopeStrategy.class);
 	}
-
+	
 	@Test
 	void testGetScope_unimplementedScope_returnsNull()
 	{

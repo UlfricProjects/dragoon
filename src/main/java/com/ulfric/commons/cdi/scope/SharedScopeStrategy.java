@@ -26,6 +26,7 @@ public final class SharedScopeStrategy extends ScopeStrategy {
 	@Override
 	public <T> Scoped<T> getOrEmpty(Class<T> request)
 	{
+		@SuppressWarnings("unchecked")
 		T instance = (T) this.sharedObjects.getOrDefault(request, null);
 		if (instance == null) 
 		{

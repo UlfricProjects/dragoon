@@ -1,13 +1,12 @@
 package com.ulfric.commons.cdi.construct;
 
-import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
-
-import com.ulfric.commons.cdi.construct.InstanceUtils;
 import com.ulfric.testing.Util;
 import com.ulfric.testing.UtilTestBase;
 import com.ulfric.verify.Verify;
+
+import org.junit.jupiter.api.Test;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.runner.RunWith;
 
 @RunWith(JUnitPlatform.class)
 @Util(InstanceUtils.class)
@@ -36,6 +35,12 @@ public class InstanceUtilsTest extends UtilTestBase {
 	{
 		Verify.that(InstanceUtils.createOrNull(Greeting.class)).isSameAs(Greeting.HELLO);
 	}
+	
+	@Test
+	void testCreateInstanceOrNullArgs_enumNotEmpty_nonnull()
+	{
+		Verify.that(InstanceUtils.createOrNullArgs(Greeting.class)).isSameAs(Greeting.HELLO);
+	}
 
 	@Test
 	void testCreateInstanceOrNull_enumEmpty_null()
@@ -43,6 +48,11 @@ public class InstanceUtilsTest extends UtilTestBase {
 		Verify.that(InstanceUtils.createOrNull(Empty.class)).isNull();
 	}
 
+	@Test
+	public void testCreateInstanceOrNullArgs_valid_nonnull() {
+	    Verify.that(InstanceUtils.createOrNullArgs(Object.class)).isNotNull();
+	}
+	
 	private interface Hello
 	{
 		

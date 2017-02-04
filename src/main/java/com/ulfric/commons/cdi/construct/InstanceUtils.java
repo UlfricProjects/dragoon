@@ -38,7 +38,9 @@ public enum InstanceUtils {
 		}
 		else
 		{
-			return (T) InstanceUtils.getOrCreateConstructor(clazz).invoke(args);
+			@SuppressWarnings("unchecked")
+			T instance = (T) InstanceUtils.getOrCreateConstructor(clazz).invoke(args);
+			return instance;
 		}
 	}
 
