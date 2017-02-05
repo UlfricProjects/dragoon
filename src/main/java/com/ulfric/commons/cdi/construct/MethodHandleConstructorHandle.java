@@ -14,8 +14,14 @@ final class MethodHandleConstructorHandle implements ConstructorHandle {
 	}
 	
 	@Override
-	public Object invoke(Object... args)
+	public Object invoke()
 	{
-		return Try.to(() -> this.handle.invokeWithArguments(args));
+		return Try.to(this::invokeWithoutAmbiguousType);
 	}
+	
+	private Object invokeWithoutAmbiguousType() throws Throwable
+	{
+		return this.handle.invokeExact();
+	}
+	
 }

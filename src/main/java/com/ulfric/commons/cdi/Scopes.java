@@ -76,8 +76,9 @@ public final class Scopes extends Registry<Scopes, ScopeStrategy> {
 		{
 			throw new IllegalArgumentException(implementation + " is not a ScopeStrategy!");
 		}
-		
-		this.registered.put(request, (ScopeStrategy) InstanceUtils.createOrNullArgs(implementation, this));
+		ScopeStrategy strategy = (ScopeStrategy) InstanceUtils.createOrNull(implementation);
+		strategy.setParent(this);
+		this.registered.put(request, strategy);
 	}
 
 }

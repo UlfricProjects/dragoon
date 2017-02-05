@@ -15,12 +15,13 @@ public class SharedScopeStrategyTest {
 	@BeforeEach
 	void init()
 	{
-		this.scope = new SharedScopeStrategy(null);
+		this.scope = new SharedScopeStrategy();
 	}
 	
 	@Test
 	public void testParentScope() {
-	    this.scope = new SharedScopeStrategy(scope.parent);
+	    this.scope = new SharedScopeStrategy();
+	    this.scope.setParent(scope.getParent());
 	}
 	
 	@Test

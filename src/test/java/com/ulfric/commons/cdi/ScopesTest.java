@@ -130,6 +130,13 @@ public class ScopesTest {
 	{
 		Verify.that(() -> this.scopes.getScopedObject(Example.class).read()).doesThrow(ScopeNotPresentException.class);
 	}
+	
+	@Test
+	public void testScopesSetParent_nullConstruction() {
+	}
+	
+	enum None {
+	}
 
 	@Shared
 	static class Example
@@ -145,14 +152,21 @@ public class ScopesTest {
 
 	static class RandomStrategy extends ScopeStrategy {
 		
-		protected RandomStrategy(Scopes parent)
+		@Override
+		public <T> Scoped<T> getOrCreate(Class<T> request)
 		{
-			super(parent);
+			return null;
 		}
-
-	static class EmptyStrategy implements ScopeStrategy
-	{
-
+		
+		@Override
+		public <T> Scoped<T> getOrEmpty(Class<T> request)
+		{
+			return null;
+		}
+	}
+	
+	static class EmptyStrategy extends ScopeStrategy {
+		
 		@Override
 		public <T> Scoped<T> getOrCreate(Class<T> request)
 		{
@@ -161,9 +175,10 @@ public class ScopesTest {
 		
 		@Override
 		public <T> Scoped<T> getOrEmpty(Class<T> request) {
-			return null;
+			return Scoped.createEmptyScope(request);
 		}
 		
 	}
-
+	
+	
 }

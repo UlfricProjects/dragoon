@@ -39,7 +39,7 @@ public class InstanceUtilsTest extends UtilTestBase {
 	@Test
 	void testCreateInstanceOrNullArgs_enumNotEmpty_nonnull()
 	{
-		Verify.that(InstanceUtils.createOrNullArgs(Greeting.class)).isSameAs(Greeting.HELLO);
+		Verify.that(InstanceUtils.createOrNull(Greeting.class)).isSameAs(Greeting.HELLO);
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class InstanceUtilsTest extends UtilTestBase {
 	@Test
 	public void testCreateInstanceOrNullArgs_valid_nonnull()
 	{
-	    Verify.that(InstanceUtils.createOrNullArgs(Object.class)).isNotNull();
+	    Verify.that(InstanceUtils.createOrNull(Object.class)).isNotNull();
 	}
 	
 	private interface Hello

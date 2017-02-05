@@ -1,6 +1,5 @@
 package com.ulfric.commons.cdi.scope;
 
-import com.ulfric.commons.cdi.Scopes;
 import com.ulfric.commons.cdi.construct.InstanceUtils;
 
 import java.util.IdentityHashMap;
@@ -9,11 +8,6 @@ import java.util.Map;
 public final class SharedScopeStrategy extends ScopeStrategy {
 
 	private final Map<Class<?>, Object> sharedObjects = new IdentityHashMap<>();
-	
-	protected SharedScopeStrategy(Scopes parent)
-	{
-		super(parent);
-	}
 	
 	@Override
 	public <T> Scoped<T> getOrCreate(Class<T> request)

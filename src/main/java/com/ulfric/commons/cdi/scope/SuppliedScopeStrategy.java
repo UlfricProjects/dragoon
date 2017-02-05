@@ -1,8 +1,6 @@
 package com.ulfric.commons.cdi.scope;
 
 
-import com.ulfric.commons.cdi.Scopes;
-
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -12,14 +10,9 @@ public final class SuppliedScopeStrategy extends ScopeStrategy {
 
 	private final Map<Class<?>, Supplier<?>> objectSuppliers = new IdentityHashMap<>();
 	
-	protected SuppliedScopeStrategy(Scopes parent)
+	protected SuppliedScopeStrategy() 
 	{
-		super(parent);
-	}
-	
-	protected SuppliedScopeStrategy()
-	{
-		super(null);
+		
 	}
 	
 	public <T> void register(Class<T> request, Supplier<T> supplier)
