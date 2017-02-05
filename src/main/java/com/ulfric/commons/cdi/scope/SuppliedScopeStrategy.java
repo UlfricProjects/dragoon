@@ -10,7 +10,7 @@ public final class SuppliedScopeStrategy extends ScopeStrategy {
 
 	private final Map<Class<?>, Supplier<?>> objectSuppliers = new IdentityHashMap<>();
 	
-	protected SuppliedScopeStrategy() 
+	protected SuppliedScopeStrategy()
 	{
 		
 	}
