@@ -1,6 +1,7 @@
 package com.ulfric.commons.cdi.construct;
 
 import com.ulfric.commons.collect.MapUtils;
+import com.ulfric.commons.exception.Try;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -63,28 +64,22 @@ public enum InstanceUtils {
 
 	private static ConstructorHandle createConstructor(Class<?> clazz)
 	{
-		try
-		{
+		return Try.to(()->{
 			Constructor<?> constructor;
 			Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
-			if (declaredConstructors.length != 0) 
+			if (declaredConstructors.length != 0)
 			{
 				constructor = declaredConstructors[0];
-			} 
-			else 
-			{
-				constructor = clazz.getDeclaredConstructor();
+				constructor.setAccessible(true);
+				MethodHandle handle = MethodHandles.lookup().unreflectConstructor(constructor);
+				// TODO: 2/3/2017 Forget what I'm meant to do here???? 
+				//			handle = handle.asType(MethodType.methodType(Object.class));
+				return new MethodHandleConstructorHandle(handle);
 			}
-			constructor.setAccessible(true);
-			MethodHandle handle = MethodHandles.lookup().unreflectConstructor(constructor);
-			// TODO: 2/3/2017 Forget what I'm meant to do here???? 
-//			handle = handle.asType(MethodType.methodType(Object.class));
-			return new MethodHandleConstructorHandle(handle);
-		}
-		catch (NoSuchMethodException | SecurityException | IllegalAccessException ignore)
-		{
-			return EmptyConstructorHandle.INSTANCE;
-		}
+			else
+			{
+				return EmptyConstructorHandle.INSTANCE;
+			}
+		});
 	}
-
 }
