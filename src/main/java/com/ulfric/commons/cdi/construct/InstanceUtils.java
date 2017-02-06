@@ -10,29 +10,28 @@ import java.util.Map;
 import java.util.Objects;
 
 public enum InstanceUtils {
-	
+
 	;
-	
+
 	private static final Map<Class<?>, ConstructorHandle> CONSTRUCTORS = MapUtils.newSynchronizedIdentityHashMap();
-	
+
 	public static <T> T createOrNull(Class<T> clazz)
 	{
 		Objects.requireNonNull(clazz);
-		
+
 		if (clazz.isEnum())
 		{
 			return InstanceUtils.getFirstEnumValueOrNull(clazz);
 		}
-		
-		@SuppressWarnings("unchecked")
-		T instance = (T) InstanceUtils.getOrCreateConstructor(clazz).invoke();
+
+		@SuppressWarnings("unchecked") T instance = (T) InstanceUtils.getOrCreateConstructor(clazz).invoke();
 		return instance;
 	}
-	
+
 	private static <E> E getFirstEnumValueOrNull(Class<E> clazz)
 	{
 		E[] constants = clazz.getEnumConstants();
-		
+
 		if (constants.length == 0)
 		{
 			return null;
@@ -40,12 +39,12 @@ public enum InstanceUtils {
 		
 		return constants[0];
 	}
-	
+
 	private static ConstructorHandle getOrCreateConstructor(Class<?> clazz)
 	{
 		return InstanceUtils.CONSTRUCTORS.computeIfAbsent(clazz, InstanceUtils::createConstructor);
 	}
-	
+
 	private static ConstructorHandle createConstructor(Class<?> clazz)
 	{
 		try
@@ -61,5 +60,5 @@ public enum InstanceUtils {
 			return EmptyConstructorHandle.INSTANCE;
 		}
 	}
-	
+
 }
