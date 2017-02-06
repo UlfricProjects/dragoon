@@ -21,7 +21,6 @@ public class SharedScopeStrategyTest {
 	@Test
 	public void testParentScope() {
 	    this.scope = new SharedScopeStrategy();
-	    this.scope.setParent(scope.getParent());
 	}
 	
 	@Test

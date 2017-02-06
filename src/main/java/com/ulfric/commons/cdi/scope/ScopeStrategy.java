@@ -1,22 +1,9 @@
 package com.ulfric.commons.cdi.scope;
 
-import com.ulfric.commons.cdi.Scopes;
-
-public abstract class ScopeStrategy {
+public interface ScopeStrategy {
 	
-	private Scopes parent;
+	<T> Scoped<T> getOrCreate(Class<T> request);
 	
-	public abstract <T> Scoped<T> getOrCreate(Class<T> request);
+	<T> Scoped<T> getOrEmpty(Class<T> request);
 	
-	public abstract <T> Scoped<T> getOrEmpty(Class<T> request);
-	
-	public Scopes getParent()
-	{
-		return parent;
-	}
-	
-	public void setParent(Scopes parent)
-	{
-		this.parent = parent;
-	}
 }

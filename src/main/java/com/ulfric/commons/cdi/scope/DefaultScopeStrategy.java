@@ -2,7 +2,7 @@ package com.ulfric.commons.cdi.scope;
 
 import com.ulfric.commons.cdi.construct.InstanceUtils;
 
-public class DefaultScopeStrategy extends ScopeStrategy {
+public class DefaultScopeStrategy implements ScopeStrategy {
 	
 	public static final DefaultScopeStrategy INSTANCE = new DefaultScopeStrategy();
 	

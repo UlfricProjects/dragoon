@@ -5,7 +5,7 @@ import com.ulfric.commons.cdi.construct.InstanceUtils;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-public final class SharedScopeStrategy extends ScopeStrategy {
+public final class SharedScopeStrategy implements ScopeStrategy {
 
 	private final Map<Class<?>, Object> sharedObjects = new IdentityHashMap<>();
 	

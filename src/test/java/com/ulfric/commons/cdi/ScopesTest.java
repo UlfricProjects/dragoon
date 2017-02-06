@@ -150,7 +150,7 @@ public class ScopesTest {
 	}
 
 
-	static class RandomStrategy extends ScopeStrategy {
+	static class RandomStrategy implements ScopeStrategy {
 		
 		@Override
 		public <T> Scoped<T> getOrCreate(Class<T> request)
@@ -165,7 +165,7 @@ public class ScopesTest {
 		}
 	}
 	
-	static class EmptyStrategy extends ScopeStrategy {
+	static class EmptyStrategy implements ScopeStrategy {
 		
 		@Override
 		public <T> Scoped<T> getOrCreate(Class<T> request)

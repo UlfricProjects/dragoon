@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public final class SuppliedScopeStrategy extends ScopeStrategy {
+public final class SuppliedScopeStrategy implements ScopeStrategy {
 
 	private final Map<Class<?>, Supplier<?>> objectSuppliers = new IdentityHashMap<>();
 	
