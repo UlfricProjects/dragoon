@@ -1,10 +1,10 @@
 package com.ulfric.commons.cdi.scope;
 
-import com.ulfric.verify.Verify;
-
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
+
+import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
 public class DefaultScopeStrategyTest {
@@ -21,9 +21,9 @@ public class DefaultScopeStrategyTest {
 		Verify.that(DefaultScopeStrategy.INSTANCE.getOrCreate(Example.class)).isNotNull();
 	}
 
-	private static final class Example
+	private static final class Example 
 	{
-		
+
 	}
 
 }

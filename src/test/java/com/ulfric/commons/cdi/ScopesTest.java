@@ -1,5 +1,10 @@
 package com.ulfric.commons.cdi;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.runner.RunWith;
+
 import com.ulfric.commons.cdi.scope.ScopeNotPresentException;
 import com.ulfric.commons.cdi.scope.ScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scoped;
@@ -7,11 +12,6 @@ import com.ulfric.commons.cdi.scope.Shared;
 import com.ulfric.commons.cdi.scope.SharedScopeStrategy;
 import com.ulfric.commons.cdi.scope.SuppliedScopeStrategy;
 import com.ulfric.verify.Verify;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
 
 @RunWith(JUnitPlatform.class)
 public class ScopesTest {
@@ -50,7 +50,6 @@ public class ScopesTest {
 	}
 
 	@Test
-
 	void testGetScopedObject_fromParent()
 	{
 		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
@@ -60,7 +59,7 @@ public class ScopesTest {
 		scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
 		Verify.that(scopes.getScopedObject(Example.class).read()).isSameAs(strategy.getOrEmpty(Example.class).read());
 	}
-	
+
 	@Test
 	public void testGetScopeParent()
 	{
@@ -71,7 +70,7 @@ public class ScopesTest {
 		Example read = scopes.createChild().getScope(Shared.class).getOrEmpty(Example.class).read();
 		Verify.that(read).isSameAs(strategy.getOrEmpty(Example.class).read());
 	}
-	
+
 	@Test
 	public void testGetScopedObject_resolveEmpty()
 	{
@@ -79,9 +78,8 @@ public class ScopesTest {
 		SuppliedScopeStrategy pool = (SuppliedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
 		Verify.that(pool.getOrEmpty(Example.class).isEmpty()).isTrue();
 	}
-	
-	@Test
 
+	@Test
 	void testGetScopedObject_fromParentSupplied()
 	{
 		this.scopes.registerBinding(Shared.class, SuppliedScopeStrategy.class);
@@ -91,7 +89,7 @@ public class ScopesTest {
 		scopes.registerBinding(Shared.class, SuppliedScopeStrategy.class);
 		Verify.that(scopes.getScopedObject(Example.class).read()).isNotNull();
 	}
-	
+
 	@Test
 	void testGetScopedObject_nonRegisteredNoParent()
 	{
@@ -106,7 +104,7 @@ public class ScopesTest {
 		Scopes scopes = this.scopes.createChild();
 		Verify.that(scopes.getScope(Shared.class)).isNotNull();
 	}
-	
+
 	@Test
 	void testGetScopedObject_fromSelfWithParent()
 	{
@@ -118,7 +116,7 @@ public class ScopesTest {
 
 		Verify.that(scopes.getScope(Shared.class)).isInstanceOf(SharedScopeStrategy.class);
 	}
-	
+
 	@Test
 	void testGetScope_unimplementedScope_returnsNull()
 	{
@@ -130,18 +128,18 @@ public class ScopesTest {
 	{
 		Verify.that(() -> this.scopes.getScopedObject(Example.class).read()).doesThrow(ScopeNotPresentException.class);
 	}
-	
+
 	@Test
 	public void testScopesSetParent_nullConstruction() {
 	}
-	
+
 	enum None {
 	}
 
 	@Shared
 	static class Example
 	{
-		
+
 	}
 
 	@interface Empty
@@ -151,34 +149,33 @@ public class ScopesTest {
 
 
 	static class RandomStrategy implements ScopeStrategy {
-		
+
 		@Override
 		public <T> Scoped<T> getOrCreate(Class<T> request)
 		{
 			return null;
 		}
-		
+
 		@Override
 		public <T> Scoped<T> getOrEmpty(Class<T> request)
 		{
 			return null;
 		}
 	}
-	
+
 	static class EmptyStrategy implements ScopeStrategy {
-		
+
 		@Override
 		public <T> Scoped<T> getOrCreate(Class<T> request)
 		{
 			return new Scoped<>(request, null);
 		}
-		
+
 		@Override
 		public <T> Scoped<T> getOrEmpty(Class<T> request) {
 			return Scoped.createEmptyScope(request);
 		}
-		
+
 	}
-	
-	
+
 }

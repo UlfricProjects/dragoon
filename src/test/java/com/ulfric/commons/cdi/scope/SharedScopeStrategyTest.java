@@ -17,7 +17,7 @@ public class SharedScopeStrategyTest {
 	{
 		this.scope = new SharedScopeStrategy();
 	}
-	
+
 	@Test
 	void testGetOrCreate_nonnull_returnsSameValue()
 	{

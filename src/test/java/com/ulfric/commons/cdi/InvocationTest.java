@@ -11,8 +11,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.ulfric.commons.cdi.intercept.Interceptor;
 import com.ulfric.commons.cdi.intercept.Context;
+import com.ulfric.commons.cdi.intercept.Interceptor;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)

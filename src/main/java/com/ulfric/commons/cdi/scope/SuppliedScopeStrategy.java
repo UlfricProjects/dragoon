@@ -9,12 +9,12 @@ import java.util.function.Supplier;
 public final class SuppliedScopeStrategy implements ScopeStrategy {
 
 	private final Map<Class<?>, Supplier<?>> objectSuppliers = new IdentityHashMap<>();
-	
+
 	protected SuppliedScopeStrategy()
 	{
-		
+
 	}
-	
+
 	public <T> void register(Class<T> request, Supplier<T> supplier)
 	{
 		Objects.requireNonNull(request);
@@ -27,7 +27,7 @@ public final class SuppliedScopeStrategy implements ScopeStrategy {
 	public <T> Scoped<T> getOrCreate(Class<T> request)
 	{
 		Supplier<?> supplier = this.objectSuppliers.get(request);
-		
+
 		if (supplier == null)
 		{
 			throw new EmptyScopeException("Cannot get value for " + request.getName());
@@ -39,12 +39,12 @@ public final class SuppliedScopeStrategy implements ScopeStrategy {
 			return new Scoped<>(request, object);
 		}
 	}
-	
+
 	@Override
 	public <T> Scoped<T> getOrEmpty(Class<T> request)
 	{
 		Supplier<?> supplier = this.objectSuppliers.get(request);
-		
+
 		if (supplier == null)
 		{
 			return Scoped.createEmptyScope(request);
@@ -56,9 +56,9 @@ public final class SuppliedScopeStrategy implements ScopeStrategy {
 			return new Scoped<>(request, object);
 		}
 	}
-	
+
 	public class EmptyScopeException extends RuntimeException {
-		
+
 		public EmptyScopeException(String message)
 		{
 			super(message);
