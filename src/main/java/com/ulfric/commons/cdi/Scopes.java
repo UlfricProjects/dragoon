@@ -1,5 +1,7 @@
 package com.ulfric.commons.cdi;
 
+import java.lang.annotation.Annotation;
+
 import com.ulfric.commons.cdi.construct.InstanceUtils;
 import com.ulfric.commons.cdi.scope.DefaultScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scope;
@@ -8,13 +10,11 @@ import com.ulfric.commons.cdi.scope.ScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scoped;
 import com.ulfric.commons.reflect.AnnotationUtils;
 
-import java.lang.annotation.Annotation;
-
 public final class Scopes extends Registry<Scopes, ScopeStrategy> {
 
 	Scopes()
 	{
-		
+
 	}
 
 	Scopes(Scopes parent)

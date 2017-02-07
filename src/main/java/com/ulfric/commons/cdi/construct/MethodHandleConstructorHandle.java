@@ -1,8 +1,8 @@
 package com.ulfric.commons.cdi.construct;
 
-import com.ulfric.commons.exception.Try;
-
 import java.lang.invoke.MethodHandle;
+
+import com.ulfric.commons.exception.Try;
 
 final class MethodHandleConstructorHandle implements ConstructorHandle {
 

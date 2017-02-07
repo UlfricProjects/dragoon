@@ -1,13 +1,13 @@
 package com.ulfric.commons.cdi.construct;
 
-import com.ulfric.commons.collect.MapUtils;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.Objects;
+
+import com.ulfric.commons.collect.MapUtils;
 
 public enum InstanceUtils {
 
@@ -24,7 +24,8 @@ public enum InstanceUtils {
 			return InstanceUtils.getFirstEnumValueOrNull(clazz);
 		}
 
-		@SuppressWarnings("unchecked") T instance = (T) InstanceUtils.getOrCreateConstructor(clazz).invoke();
+		@SuppressWarnings("unchecked")
+		T instance = (T) InstanceUtils.getOrCreateConstructor(clazz).invoke();
 		return instance;
 	}
 
@@ -36,7 +37,7 @@ public enum InstanceUtils {
 		{
 			return null;
 		}
-		
+
 		return constants[0];
 	}
 
