@@ -88,22 +88,22 @@ public class SkeletalComponent implements Component {
 
 	public void onStateChange()
 	{
-		
+
 	}
 
 	public void onLoad()
 	{
-		
+
 	}
 
 	public void onEnable()
 	{
-		
+
 	}
 
 	public void onDisable()
 	{
-		
+
 	}
 
 }

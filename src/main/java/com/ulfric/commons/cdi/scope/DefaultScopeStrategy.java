@@ -2,9 +2,9 @@ package com.ulfric.commons.cdi.scope;
 
 import com.ulfric.commons.cdi.construct.InstanceUtils;
 
-public enum DefaultScopeStrategy implements ScopeStrategy {
+public class DefaultScopeStrategy implements ScopeStrategy {
 
-	INSTANCE;
+	public static final DefaultScopeStrategy INSTANCE = new DefaultScopeStrategy();
 
 	@Override
 	public <T> Scoped<T> getOrCreate(Class<T> request)
@@ -13,4 +13,9 @@ public enum DefaultScopeStrategy implements ScopeStrategy {
 		return new Scoped<>(request, instance);
 	}
 
+	@Override
+	public <T> Scoped<T> getOrEmpty(Class<T> request)
+	{
+		return getOrCreate(request);
+	}
 }

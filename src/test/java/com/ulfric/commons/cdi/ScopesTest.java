@@ -50,6 +50,36 @@ public class ScopesTest {
 	}
 
 	@Test
+	void testGetScopedObject_fromParent()
+	{
+		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
+		SharedScopeStrategy strategy = (SharedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
+		Verify.that(() -> strategy.getOrCreate(Example.class).read()).suppliesNonUniqueValues();
+		Scopes scopes = this.scopes.createChild();
+		scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
+		Verify.that(scopes.getScopedObject(Example.class).read()).isSameAs(strategy.getOrEmpty(Example.class).read());
+	}
+
+	@Test
+	public void testGetScopeParent()
+	{
+		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
+		SharedScopeStrategy strategy = (SharedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
+		Verify.that(() -> strategy.getOrCreate(Example.class).read()).suppliesNonUniqueValues();
+		Scopes scopes = this.scopes.createChild();
+		Example read = scopes.createChild().getScope(Shared.class).getOrEmpty(Example.class).read();
+		Verify.that(read).isSameAs(strategy.getOrEmpty(Example.class).read());
+	}
+
+	@Test
+	public void testGetScopedObject_resolveEmpty()
+	{
+		this.scopes.registerBinding(Shared.class, SuppliedScopeStrategy.class);
+		SuppliedScopeStrategy pool = (SuppliedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
+		Verify.that(pool.getOrEmpty(Example.class).isEmpty()).isTrue();
+	}
+
+	@Test
 	void testGetScopedObject_fromParentSupplied()
 	{
 		this.scopes.registerBinding(Shared.class, SuppliedScopeStrategy.class);
@@ -99,10 +129,17 @@ public class ScopesTest {
 		Verify.that(() -> this.scopes.getScopedObject(Example.class).read()).doesThrow(ScopeNotPresentException.class);
 	}
 
+	@Test
+	public void testScopesSetParent_nullConstruction() {
+	}
+
+	enum None {
+	}
+
 	@Shared
 	static class Example
 	{
-		
+
 	}
 
 	@interface Empty
@@ -110,13 +147,33 @@ public class ScopesTest {
 
 	}
 
-	static class EmptyStrategy implements ScopeStrategy
-	{
+
+	static class RandomStrategy implements ScopeStrategy {
+
+		@Override
+		public <T> Scoped<T> getOrCreate(Class<T> request)
+		{
+			return null;
+		}
+
+		@Override
+		public <T> Scoped<T> getOrEmpty(Class<T> request)
+		{
+			return null;
+		}
+	}
+
+	static class EmptyStrategy implements ScopeStrategy {
 
 		@Override
 		public <T> Scoped<T> getOrCreate(Class<T> request)
 		{
 			return new Scoped<>(request, null);
+		}
+
+		@Override
+		public <T> Scoped<T> getOrEmpty(Class<T> request) {
+			return Scoped.createEmptyScope(request);
 		}
 
 	}

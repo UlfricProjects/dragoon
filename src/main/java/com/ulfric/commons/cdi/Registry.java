@@ -9,7 +9,7 @@ abstract class Registry<T extends Registry<T, R>, R> extends Child<T> {
 
 	Registry()
 	{
-		
+
 	}
 
 	Registry(T parent)

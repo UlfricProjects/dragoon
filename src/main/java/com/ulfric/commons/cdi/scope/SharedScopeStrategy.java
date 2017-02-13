@@ -17,4 +17,18 @@ public final class SharedScopeStrategy implements ScopeStrategy {
 		return new Scoped<>(request, instance);
 	}
 
+	@Override
+	public <T> Scoped<T> getOrEmpty(Class<T> request)
+	{
+		@SuppressWarnings("unchecked")
+		T instance = (T) this.sharedObjects.getOrDefault(request, null);
+		if (instance == null)
+		{
+			return Scoped.createEmptyScope(request);
+		}
+		else
+		{
+			return new Scoped<>(request, instance);
+		}
+	}
 }

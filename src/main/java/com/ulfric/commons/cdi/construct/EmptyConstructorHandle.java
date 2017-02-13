@@ -9,5 +9,4 @@ enum EmptyConstructorHandle implements ConstructorHandle {
 	{
 		return null;
 	}
-
 }
