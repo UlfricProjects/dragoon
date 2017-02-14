@@ -2,13 +2,11 @@ package com.ulfric.commons.cdi.scope;
 
 public final class Scoped<T> {
 
-	private final Class<T> request;
 	private final T value;
 	private volatile boolean read;
 
-	public Scoped(Class<T> request, T value)
+	public Scoped(T value)
 	{
-		this.request = request;
 		this.value = value;
 	}
 
@@ -34,9 +32,9 @@ public final class Scoped<T> {
 		return this.value == null;
 	}
 
-	public static <R> Scoped<R> createEmptyScope(Class<R> request)
+	public static <R> Scoped<R> createEmptyScope()
 	{
-		return new Scoped<>(request, null);
+		return new Scoped<>(null);
 	}
 
 }

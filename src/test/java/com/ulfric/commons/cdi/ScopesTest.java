@@ -168,12 +168,12 @@ public class ScopesTest {
 		@Override
 		public <T> Scoped<T> getOrCreate(Class<T> request)
 		{
-			return new Scoped<>(request, null);
+			return new Scoped<>(null);
 		}
 
 		@Override
 		public <T> Scoped<T> getOrEmpty(Class<T> request) {
-			return Scoped.createEmptyScope(request);
+			return Scoped.createEmptyScope();
 		}
 
 	}
