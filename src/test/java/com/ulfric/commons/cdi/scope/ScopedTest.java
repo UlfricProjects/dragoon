@@ -15,7 +15,7 @@ public class ScopedTest {
 	@BeforeEach
 	void init()
 	{
-		this.scoped = new Scoped<>(new Object());
+		this.scoped = new Scoped<>(Object.class, new Object());
 	}
 
 	@Test
@@ -24,6 +24,11 @@ public class ScopedTest {
 		Verify.that(this.scoped.isRead()).isFalse();
 		this.scoped.read();
 		Verify.that(this.scoped.isRead()).isTrue();
+	}
+	
+	@Test
+	public void testGetRequestType() {
+	    Verify.that(this.scoped.getRequest()).isEqualTo(Object.class);
 	}
 
 	@Test
