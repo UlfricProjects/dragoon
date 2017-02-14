@@ -17,24 +17,26 @@ public final class Scoped<T> {
 		return this.read;
 	}
 
-	public boolean isEmpty()
+	public T readOrThrow()
 	{
+		if (isEmpty())
+		{
+			throw new IllegalStateException("Failed to create object for request");
+		}
+		else
+		{
+			this.read = true;
+			return this.value;
+		}
+	}
+	
+	public boolean isEmpty() {
 		return this.value == null;
-	}
-
-	public Class<T> getRequest()
-	{
-		return this.request;
-	}
-
-	public T read()
-	{
-		this.read = true;
-		return this.value;
 	}
 
 	public static <R> Scoped<R> createEmptyScope(Class<R> request)
 	{
 		return new Scoped<>(request, null);
 	}
+
 }

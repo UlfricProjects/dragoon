@@ -1,6 +1,6 @@
 package com.ulfric.commons.cdi.scope;
 
-import com.ulfric.verify.Verify;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
-import java.util.function.Supplier;
+import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
 public class SuppliedScopeStrategyTest {
@@ -32,7 +32,7 @@ public class SuppliedScopeStrategyTest {
 	void testGetOrCreate_unregistered_returnsNullScope()
 	{
 		Assertions.assertThrows(SuppliedScopeStrategy.EmptyScopeException.class, 
-		                        () -> this.strategy.getOrCreate(Unregistered.class).read());
+		                        () -> this.strategy.getOrCreate(Unregistered.class).readOrThrow());
 	}
 
 	public static class Unregistered

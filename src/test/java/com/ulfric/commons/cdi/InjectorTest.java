@@ -26,9 +26,9 @@ public class InjectorTest {
 	void testInjectFields_isRead_isNotInjected()
 	{
 		Scoped<Example> scoped = new Scoped<>(Example.class, new Example());
-		scoped.read();
+		scoped.readOrThrow();
 		this.injector.injectFields(scoped);
-		Verify.that(scoped.read().value).isNull();
+		Verify.that(scoped.readOrThrow().value).isNull();
 	}
 
 	@Test
@@ -36,7 +36,7 @@ public class InjectorTest {
 	{
 		Scoped<Example> scoped = new Scoped<>(Example.class, new Example());
 		this.injector.injectFields(scoped);
-		Verify.that(scoped.read().value).isNotNull();
+		Verify.that(scoped.readOrThrow().value).isNotNull();
 	}
 
 	@Test
