@@ -4,7 +4,13 @@ import java.util.NoSuchElementException;
 
 public final class Scoped<T> {
 
+	public static <R> Scoped<R> createEmptyScope()
+	{
+		return new Scoped<>(null);
+	}
+	
 	private final T value;
+
 	private volatile boolean read;
 
 	public Scoped(T value)
@@ -19,7 +25,7 @@ public final class Scoped<T> {
 
 	public T read() throws NoSuchElementException
 	{
-		if (!isEmpty())
+		if (!this.isEmpty())
 		{
 			this.read = true;
 			return this.value;
@@ -33,11 +39,6 @@ public final class Scoped<T> {
 	public boolean isEmpty()
 	{
 		return this.value == null;
-	}
-
-	public static <R> Scoped<R> createEmptyScope()
-	{
-		return new Scoped<>(null);
 	}
 
 }
