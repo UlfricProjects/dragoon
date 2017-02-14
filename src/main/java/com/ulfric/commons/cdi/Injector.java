@@ -82,12 +82,4 @@ final class Injector {
 			this.fieldHandle.invokeExact(holder, value);
 		}
 	}
-
-	public static class InjectException extends RuntimeException 
-	{
-		public InjectException(String message)
-		{
-			super(message);
-		}
-	}
 }
