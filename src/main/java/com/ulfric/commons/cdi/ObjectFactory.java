@@ -126,7 +126,7 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Service
 	{
 		Scoped<?> scoped = this.scopes.getScopedObject(implementation);
 		this.injector.injectFields(scoped);
-		return scoped.readOrThrow();
+		return scoped.read();
 	}
 
 	private Class<?> tryToCreateAndRegisterImplementation(Class<?> request)

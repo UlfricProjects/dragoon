@@ -32,7 +32,7 @@ public class SuppliedScopeStrategyTest {
 	void testGetOrCreate_unregistered_returnsNullScope()
 	{
 		Assertions.assertThrows(SuppliedScopeStrategy.EmptyScopeException.class, 
-		                        () -> this.strategy.getOrCreate(Unregistered.class).readOrThrow());
+		                        () -> this.strategy.getOrCreate(Unregistered.class).read());
 	}
 
 	public static class Unregistered

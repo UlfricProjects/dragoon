@@ -1,5 +1,7 @@
 package com.ulfric.commons.cdi.scope;
 
+import java.util.NoSuchElementException;
+
 public final class Scoped<T> {
 
 	private final T value;
@@ -15,20 +17,21 @@ public final class Scoped<T> {
 		return this.read;
 	}
 
-	public T readOrThrow()
+	public T read() throws NoSuchElementException
 	{
-		if (isEmpty())
-		{
-			throw new IllegalStateException("Failed to create object for request");
-		}
-		else
+		if (!isEmpty())
 		{
 			this.read = true;
 			return this.value;
 		}
+		else
+		{
+			throw new NoSuchElementException();
+		}
 	}
-	
-	public boolean isEmpty() {
+
+	public boolean isEmpty()
+	{
 		return this.value == null;
 	}
 

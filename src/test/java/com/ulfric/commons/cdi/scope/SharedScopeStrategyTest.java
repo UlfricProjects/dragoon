@@ -21,7 +21,7 @@ public class SharedScopeStrategyTest {
 	@Test
 	void testGetOrCreate_nonnull_returnsSameValue()
 	{
-		Verify.that(() -> this.scope.getOrCreate(Object.class).readOrThrow()).suppliesNonUniqueValues();
+		Verify.that(() -> this.scope.getOrCreate(Object.class).read()).suppliesNonUniqueValues();
 	}
 
 }

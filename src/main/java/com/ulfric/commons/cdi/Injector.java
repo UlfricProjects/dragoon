@@ -31,7 +31,7 @@ final class Injector {
 			return;
 		}
 
-		Object injectInto = scoped.readOrThrow();
+		Object injectInto = scoped.read();
 		this.injectValuesIntoObject(injectInto);
 	}
 
@@ -83,4 +83,11 @@ final class Injector {
 		}
 	}
 
+	public static class InjectException extends RuntimeException 
+	{
+		public InjectException(String message)
+		{
+			super(message);
+		}
+	}
 }

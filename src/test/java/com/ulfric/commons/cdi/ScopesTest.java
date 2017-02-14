@@ -46,7 +46,7 @@ public class ScopesTest {
 	void testGetScopedObject_shared()
 	{
 		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
-		Verify.that(() -> this.scopes.getScopedObject(Example.class).readOrThrow()).doesThrow(IllegalStateException.class);
+		Verify.that(() -> this.scopes.getScopedObject(Example.class).read()).doesThrow(IllegalStateException.class);
 	}
 
 	@Test
@@ -54,10 +54,10 @@ public class ScopesTest {
 	{
 		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
 		SharedScopeStrategy strategy = (SharedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
-		Verify.that(() -> strategy.getOrCreate(Example.class).readOrThrow()).suppliesNonUniqueValues();
+		Verify.that(() -> strategy.getOrCreate(Example.class).read()).suppliesNonUniqueValues();
 		Scopes scopes = this.scopes.createChild();
 		scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
-		Verify.that(scopes.getScopedObject(Example.class).readOrThrow()).isSameAs(strategy.getOrEmpty(Example.class).readOrThrow());
+		Verify.that(scopes.getScopedObject(Example.class).read()).isSameAs(strategy.getOrEmpty(Example.class).read());
 	}
 
 	@Test
@@ -65,10 +65,10 @@ public class ScopesTest {
 	{
 		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
 		SharedScopeStrategy strategy = (SharedScopeStrategy) this.scopes.getRegisteredBinding(Shared.class);
-		Verify.that(() -> strategy.getOrCreate(Example.class).readOrThrow()).suppliesNonUniqueValues();
+		Verify.that(() -> strategy.getOrCreate(Example.class).read()).suppliesNonUniqueValues();
 		Scopes scopes = this.scopes.createChild();
-		Example read = scopes.createChild().getScope(Shared.class).getOrEmpty(Example.class).readOrThrow();
-		Verify.that(read).isSameAs(strategy.getOrEmpty(Example.class).readOrThrow());
+		Example read = scopes.createChild().getScope(Shared.class).getOrEmpty(Example.class).read();
+		Verify.that(read).isSameAs(strategy.getOrEmpty(Example.class).read());
 	}
 
 	@Test
@@ -87,14 +87,14 @@ public class ScopesTest {
 		pool.register(Example.class, Example::new);
 		Scopes scopes = this.scopes.createChild();
 		scopes.registerBinding(Shared.class, SuppliedScopeStrategy.class);
-		Verify.that(scopes.getScopedObject(Example.class).readOrThrow()).isNotNull();
+		Verify.that(scopes.getScopedObject(Example.class).read()).isNotNull();
 	}
 
 	@Test
 	void testGetScopedObject_nonRegisteredNoParent()
 	{
 		this.scopes.registerBinding(Shared.class, EmptyStrategy.class);
-		Verify.that(()->this.scopes.getScopedObject(Example.class).readOrThrow()).doesThrow(IllegalStateException.class);
+		Verify.that(()->this.scopes.getScopedObject(Example.class).read()).doesThrow(IllegalStateException.class);
 	}
 
 	@Test
@@ -126,7 +126,7 @@ public class ScopesTest {
 	@Test
 	void testGetScopedObject_unimplementedScope_throwsException()
 	{
-		Verify.that(() -> this.scopes.getScopedObject(Example.class).readOrThrow()).doesThrow(ScopeNotPresentException.class);
+		Verify.that(() -> this.scopes.getScopedObject(Example.class).read()).doesThrow(ScopeNotPresentException.class);
 	}
 
 	@Test

@@ -22,14 +22,14 @@ public class ScopedTest {
 	void testReadChangesIsRead()
 	{
 		Verify.that(this.scoped.isRead()).isFalse();
-		this.scoped.readOrThrow();
+		this.scoped.read();
 		Verify.that(this.scoped.isRead()).isTrue();
 	}
 
 	@Test
 	void testReadIsNotNull()
 	{
-		Verify.that(this.scoped.readOrThrow()).isNotNull();
+		Verify.that(this.scoped.read()).isNotNull();
 	}
 
 }
