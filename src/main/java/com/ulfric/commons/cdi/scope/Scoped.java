@@ -4,17 +4,19 @@ import java.util.NoSuchElementException;
 
 public final class Scoped<T> {
 
-	public static <R> Scoped<R> createEmptyScope()
+	public static <R> Scoped<R> createEmptyScope(Class<R> request)
 	{
-		return new Scoped<>(null);
+		return new Scoped<>(request, null);
 	}
-	
+
+	private final Class<T> request;
 	private final T value;
 
 	private volatile boolean read;
 
-	public Scoped(T value)
+	public Scoped(Class<T> request, T value)
 	{
+		this.request = request;
 		this.value = value;
 	}
 
@@ -41,4 +43,8 @@ public final class Scoped<T> {
 		return this.value == null;
 	}
 
+	public Class<T> getRequest()
+	{
+		return request;
+	}
 }

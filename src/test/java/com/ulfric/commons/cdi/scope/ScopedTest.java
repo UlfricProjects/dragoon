@@ -27,6 +27,11 @@ public class ScopedTest {
 	}
 	
 	@Test
+	public void testGetRequest() {
+	    Verify.that(this.scoped.getRequest()).isEqualTo(Object.class);
+	}
+	
+	@Test
 	public void testGetRequestType() {
 	    Verify.that(this.scoped.getRequest()).isEqualTo(Object.class);
 	}
