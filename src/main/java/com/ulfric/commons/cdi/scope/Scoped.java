@@ -25,7 +25,7 @@ public final class Scoped<T> {
 		return this.read;
 	}
 
-	public T read() throws NoSuchElementException
+	public T read()
 	{
 		if (!this.isEmpty())
 		{
@@ -43,7 +43,7 @@ public final class Scoped<T> {
 		return this.value == null;
 	}
 
-	public Class<T> getRequest()
+	protected Class<T> getRequest()
 	{
 		return request;
 	}
