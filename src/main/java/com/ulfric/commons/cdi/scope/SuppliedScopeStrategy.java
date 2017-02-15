@@ -1,6 +1,5 @@
 package com.ulfric.commons.cdi.scope;
 
-
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -30,14 +29,12 @@ public final class SuppliedScopeStrategy implements ScopeStrategy {
 
 		if (supplier == null)
 		{
-			throw new EmptyScopeException("Cannot get value for " + request.getName());
+			return new Scoped<>(request, null);
 		}
-		else
-		{
-			@SuppressWarnings("unchecked")
-			T object = (T) supplier.get();
-			return new Scoped<>(request, object);
-		}
+
+		@SuppressWarnings("unchecked")
+		T object = (T) supplier.get();
+		return new Scoped<>(request, object);
 	}
 
 	@Override
@@ -57,11 +54,4 @@ public final class SuppliedScopeStrategy implements ScopeStrategy {
 		}
 	}
 
-	public class EmptyScopeException extends RuntimeException {
-
-		public EmptyScopeException(String message)
-		{
-			super(message);
-		}
-	}
 }
