@@ -9,11 +9,6 @@ public final class SuppliedScopeStrategy implements ScopeStrategy {
 
 	private final Map<Class<?>, Supplier<?>> objectSuppliers = new IdentityHashMap<>();
 
-	protected SuppliedScopeStrategy()
-	{
-
-	}
-
 	public <T> void register(Class<T> request, Supplier<T> supplier)
 	{
 		Objects.requireNonNull(request);
