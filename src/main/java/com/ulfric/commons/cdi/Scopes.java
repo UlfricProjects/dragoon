@@ -1,5 +1,7 @@
 package com.ulfric.commons.cdi;
 
+import java.lang.annotation.Annotation;
+
 import com.ulfric.commons.cdi.construct.InstanceUtils;
 import com.ulfric.commons.cdi.scope.DefaultScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scope;
@@ -8,13 +10,11 @@ import com.ulfric.commons.cdi.scope.ScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scoped;
 import com.ulfric.commons.reflect.AnnotationUtils;
 
-import java.lang.annotation.Annotation;
-
-final class Scopes extends Registry<Scopes, ScopeStrategy> {
+public final class Scopes extends Registry<Scopes, ScopeStrategy> {
 
 	Scopes()
 	{
-		
+
 	}
 
 	Scopes(Scopes parent)
@@ -22,10 +22,10 @@ final class Scopes extends Registry<Scopes, ScopeStrategy> {
 		super(parent);
 	}
 
-	<T> Scoped<T> getScopedObject(Class<T> request)
+	public <T> Scoped<T> getScopedObject(Class<T> request)
 	{
 		ScopeStrategy scope = this.registered.computeIfAbsent(request, this::resolveScopeType);
-		Scoped<T> scoped = scope.getOrCreate(request);
+		Scoped<T> scoped = scope.getOrEmpty(request);
 		if (scoped.isEmpty() && this.hasParent())
 		{
 			scoped = this.getParent().getScopedObject(request);
@@ -76,8 +76,8 @@ final class Scopes extends Registry<Scopes, ScopeStrategy> {
 		{
 			throw new IllegalArgumentException(implementation + " is not a ScopeStrategy!");
 		}
-
-		this.registered.put(request, (ScopeStrategy) InstanceUtils.createOrNull(implementation));
+		ScopeStrategy strategy = (ScopeStrategy) InstanceUtils.createOrNull(implementation);
+		this.registered.put(request, strategy);
 	}
 
 }

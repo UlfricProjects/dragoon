@@ -4,7 +4,7 @@ final class Bindings extends Registry<Bindings, Class<?>> {
 
 	Bindings()
 	{
-		
+
 	}
 
 	Bindings(Bindings parent)
