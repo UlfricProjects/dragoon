@@ -1,5 +1,7 @@
 package com.ulfric.commons.cdi;
 
+import java.util.NoSuchElementException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
@@ -43,7 +45,7 @@ public class InjectorTest {
 	void testInjectFields_empty()
 	{
 		Scoped<Example> scoped = new Scoped<>(Example.class, null);
-		Verify.that(() -> this.injector.injectFields(scoped)).doesThrow(IllegalStateException.class);
+		Verify.that(() -> this.injector.injectFields(scoped)).doesThrow(NoSuchElementException.class);
 	}
 
 	static final class Example
