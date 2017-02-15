@@ -26,6 +26,7 @@ public final class Scopes extends Registry<Scopes, ScopeStrategy> {
 	{
 		ScopeStrategy scope = this.registered.computeIfAbsent(request, this::resolveScopeType);
 		Scoped<T> scoped = scope.getOrEmpty(request);
+		
 		if (scoped.isEmpty() && this.hasParent())
 		{
 			scoped = this.getParent().getScopedObject(request);

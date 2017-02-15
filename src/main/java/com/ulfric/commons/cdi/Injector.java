@@ -31,11 +31,6 @@ final class Injector {
 			return;
 		}
 
-		if (scoped.isEmpty())
-		{
-			throw new IllegalStateException("Failed to create object: " + scoped.getRequest());
-		}
-
 		Object injectInto = scoped.read();
 		this.injectValuesIntoObject(injectInto);
 	}
@@ -87,5 +82,4 @@ final class Injector {
 			this.fieldHandle.invokeExact(holder, value);
 		}
 	}
-
 }
