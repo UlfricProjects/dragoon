@@ -19,11 +19,6 @@ final class Initializer {
 
 	void initializeScoped(Scoped<?> scoped)
 	{
-		if (scoped.isEmpty())
-		{
-			throw new IllegalStateException("Failed to create object: " + scoped.getRequest());
-		}
-
 		Object toInitialize = scoped.read();
 		this.initializeObject(toInitialize);
 	}
