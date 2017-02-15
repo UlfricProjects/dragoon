@@ -34,7 +34,7 @@ public final class Scoped<T> {
 		}
 		else
 		{
-			throw new NoSuchElementException();
+			throw new NoSuchElementException("Could read scoped for request: " + request.getName());
 		}
 	}
 
@@ -43,8 +43,4 @@ public final class Scoped<T> {
 		return this.value == null;
 	}
 
-	protected Class<T> getRequest()
-	{
-		return request;
-	}
 }

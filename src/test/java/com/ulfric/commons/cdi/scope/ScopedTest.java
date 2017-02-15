@@ -27,11 +27,6 @@ public class ScopedTest {
 	}
 	
 	@Test
-	public void testGetRequestType() {
-	    Verify.that(this.scoped.getRequest()).isEqualTo(Object.class);
-	}
-
-	@Test
 	void testReadIsNotNull()
 	{
 		Verify.that(this.scoped.read()).isNotNull();
