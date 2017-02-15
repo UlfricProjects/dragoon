@@ -15,7 +15,7 @@ import com.ulfric.commons.reflect.HandleUtils;
 
 final class Initializer {
 
-	private static final Map<Class<?>, List<Initializable>> METHODS = new IdentityHashMap<>();
+	private static final Map<Class<?>, List<Initializable>> INITIALIZE_METHODS = new IdentityHashMap<>();
 
 	void initializeScoped(Scoped<?> scoped)
 	{
@@ -31,7 +31,7 @@ final class Initializer {
 
 	private static List<Initializable> getInitializables(Class<?> clazz)
 	{
-		return Initializer.METHODS.computeIfAbsent(clazz, Initializer::createInitializables);
+		return Initializer.INITIALIZE_METHODS.computeIfAbsent(clazz, Initializer::createInitializables);
 	}
 
 	private static List<Initializable> createInitializables(Class<?> clazz)

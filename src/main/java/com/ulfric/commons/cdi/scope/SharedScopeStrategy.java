@@ -31,4 +31,5 @@ public final class SharedScopeStrategy implements ScopeStrategy {
 			return new Scoped<>(request, instance);
 		}
 	}
+
 }

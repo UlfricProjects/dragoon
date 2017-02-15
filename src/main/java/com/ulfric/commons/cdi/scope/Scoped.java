@@ -20,22 +20,20 @@ public final class Scoped<T> {
 		this.value = value;
 	}
 
-	public boolean isRead()
-	{
-		return this.read;
-	}
-
 	public T read()
 	{
-		if (!this.isEmpty())
-		{
-			this.read = true;
-			return this.value;
-		}
-		else
+		if (this.isEmpty())
 		{
 			throw new NoSuchElementException("Could read scoped for request: " + request.getName());
 		}
+
+		this.read = true;
+		return this.value;
+	}
+
+	public boolean isRead()
+	{
+		return this.read;
 	}
 
 	public boolean isEmpty()

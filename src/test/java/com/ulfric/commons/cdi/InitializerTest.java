@@ -24,17 +24,10 @@ public class InitializerTest {
 	}
 
 	@Test
-	void testInitializeScoped_emptyScope()
+	void testInitializeScoped_doNotInit()
 	{
-		Scoped<?> scoped = new Scoped<>(null, null);
-		Verify.that(() -> this.initializer.initializeScoped(scoped)).doesThrow(IllegalStateException.class);
-	}
-
-	@Test
-	void testInitializeScoped_dontInit()
-	{
-		DontInit init = new DontInit();
-		Scoped<?> scoped = new Scoped<>(DontInit.class, init);
+		DoNotInit init = new DoNotInit();
+		Scoped<?> scoped = new Scoped<>(DoNotInit.class, init);
 		Verify.that(() -> this.initializer.initializeScoped(scoped)).runsWithoutExceptions();
 		Verify.that(init.initialized).isFalse();
 	}
@@ -54,7 +47,7 @@ public class InitializerTest {
 		Verify.that(() -> this.factory.requestExact(CanReadInjectables.class)).runsWithoutExceptions();
 	}
 
-	public static class DontInit
+	public static class DoNotInit
 	{
 		private boolean initialized = false;
 
@@ -62,7 +55,6 @@ public class InitializerTest {
 		{
 			this.initialized = true;
 		}
-
 	}
 
 	public static class DoInit
@@ -90,7 +82,6 @@ public class InitializerTest {
 		{
 			Verify.that(this.factory).isNotNull();
 		}
-
 	}
 
 }
