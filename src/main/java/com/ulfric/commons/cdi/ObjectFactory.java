@@ -32,6 +32,7 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Service
 	private final Scopes scopes;
 	private final Subclasser implementationFactory = new Subclasser(this);
 	private final Injector injector = new Injector(this);
+	private final Initializer initializer = new Initializer();
 
 	private ObjectFactory()
 	{
@@ -126,6 +127,7 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Service
 	{
 		Scoped<?> scoped = this.scopes.getScopedObject(implementation);
 		this.injector.injectFields(scoped);
+		this.initializer.initializeScoped(scoped);
 		return scoped.read();
 	}
 
