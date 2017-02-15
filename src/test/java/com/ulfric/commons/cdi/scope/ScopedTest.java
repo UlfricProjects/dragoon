@@ -25,7 +25,7 @@ public class ScopedTest {
 		this.scoped.read();
 		Verify.that(this.scoped.isRead()).isTrue();
 	}
-	
+
 	@Test
 	void testReadIsNotNull()
 	{

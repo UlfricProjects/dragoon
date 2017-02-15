@@ -96,7 +96,7 @@ public class ScopesTest {
 	void testGetScopedObject_nonRegisteredNoParent()
 	{
 		this.scopes.registerBinding(Shared.class, EmptyStrategy.class);
-		Verify.that(()->this.scopes.getScopedObject(Example.class).read()).doesThrow(NoSuchElementException.class);
+		Verify.that(() -> this.scopes.getScopedObject(Example.class).read()).doesThrow(NoSuchElementException.class);
 	}
 
 	@Test
