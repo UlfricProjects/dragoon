@@ -2,7 +2,7 @@ package com.ulfric.commons.cdi.container;
 
 import java.util.function.BooleanSupplier;
 
-public class SkeletalComponent implements Component {
+public class SkeletalFeature implements Feature {
 
 	protected boolean loaded;
 	protected boolean enabled;
@@ -16,7 +16,7 @@ public class SkeletalComponent implements Component {
 	@Override
 	public final boolean isUnloaded()
 	{
-		return Component.super.isUnloaded();
+		return Feature.super.isUnloaded();
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class SkeletalComponent implements Component {
 	@Override
 	public final boolean isDisabled()
 	{
-		return Component.super.isDisabled();
+		return Feature.super.isDisabled();
 	}
 
 	@Override

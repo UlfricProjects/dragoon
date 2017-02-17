@@ -7,12 +7,12 @@ import org.junit.runner.RunWith;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
-public class ChildComponentTest {
+public class ChildFeatureTest {
 
 	@Test
 	void testNew()
 	{
-		Verify.that(() -> new ChildComponent(null)).runsWithoutExceptions();
+		Verify.that(() -> new ChildFeature(null)).runsWithoutExceptions();
 	}
 
 }

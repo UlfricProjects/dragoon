@@ -7,16 +7,16 @@ import org.junit.runner.RunWith;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
-public class ComponentWrapperMissingExceptionTest {
+public class FeatureWrapperMissingExceptionTest {
 
 	@Test
 	void testException_construction()
 	{
-		Verify.that(() -> new ComponentWrapperMissingException(null)).runsWithoutExceptions();
+		Verify.that(() -> new FeatureWrapperMissingException(null)).runsWithoutExceptions();
 		Verify.that(() ->
 		{
-			throw new ComponentWrapperMissingException(Object.class);
-		}).doesThrow(ComponentWrapperMissingException.class);
+			throw new FeatureWrapperMissingException(Object.class);
+		}).doesThrow(FeatureWrapperMissingException.class);
 	}
 
 }

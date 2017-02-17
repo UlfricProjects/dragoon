@@ -11,43 +11,43 @@ import org.apache.commons.lang3.ClassUtils;
 import com.ulfric.commons.cdi.ObjectFactory;
 import com.ulfric.commons.cdi.inject.Inject;
 
-public class Container extends SkeletalComponent {
+public class Container extends SkeletalFeature {
 
-	private static final Map<Class<?>, ComponentWrapper<?>> COMPONENT_WRAPPERS =
+	private static final Map<Class<?>, FeatureWrapper<?>> FEATURE_WRAPPERS =
 			Collections.synchronizedMap(new LinkedHashMap<>());
 
-	public static <T> void registerComponentWrapper(Class<T> request, ComponentWrapper<T> wrapper)
+	public static <T> void registerFeatureWrapper(Class<T> request, FeatureWrapper<T> wrapper)
 	{
 		Objects.requireNonNull(request);
 		Objects.requireNonNull(wrapper);
 
-		Container.COMPONENT_WRAPPERS.put(request, wrapper);
+		Container.FEATURE_WRAPPERS.put(request, wrapper);
 	}
 
-	private static <T> ComponentWrapper<T> getComponentWrapper(Class<T> request)
+	private static <T> FeatureWrapper<T> getFeatureWrapper(Class<T> request)
 	{
-		ComponentWrapper<T> wrapper = Container.getExactComponentWrapper(request);
+		FeatureWrapper<T> wrapper = Container.getExactFeatureWrapper(request);
 		if (wrapper != null)
 		{
 			return wrapper;
 		}
 
-		wrapper = Container.getExactComponentWrapperFromOneOf(ClassUtils.getAllSuperclasses(request));
+		wrapper = Container.getExactFeatureWrapperFromOneOf(ClassUtils.getAllSuperclasses(request));
 		if (wrapper != null)
 		{
 			return wrapper;
 		}
 
-		wrapper = Container.getExactComponentWrapperFromOneOf(ClassUtils.getAllInterfaces(request));
+		wrapper = Container.getExactFeatureWrapperFromOneOf(ClassUtils.getAllInterfaces(request));
 		return wrapper;
 	}
 
-	private static <T> ComponentWrapper<T> getExactComponentWrapperFromOneOf(List<Class<?>> requests)
+	private static <T> FeatureWrapper<T> getExactFeatureWrapperFromOneOf(List<Class<?>> requests)
 	{
 		for (Class<?> request : requests)
 		{
 			@SuppressWarnings("unchecked")
-			ComponentWrapper<T> wrapper = (ComponentWrapper<T>) Container.getExactComponentWrapper(request);
+			FeatureWrapper<T> wrapper = (FeatureWrapper<T>) Container.getExactFeatureWrapper(request);
 
 			if (wrapper != null)
 			{
@@ -58,46 +58,46 @@ public class Container extends SkeletalComponent {
 		return null;
 	}
 
-	private static <T> ComponentWrapper<T> getExactComponentWrapper(Class<T> request)
+	private static <T> FeatureWrapper<T> getExactFeatureWrapper(Class<T> request)
 	{
 		@SuppressWarnings("unchecked")
-		ComponentWrapper<T> wrapper = (ComponentWrapper<T>) Container.COMPONENT_WRAPPERS.get(request);
+		FeatureWrapper<T> wrapper = (FeatureWrapper<T>) Container.FEATURE_WRAPPERS.get(request);
 		return wrapper;
 	}
 
-	private final ComponentStateController components = new ComponentStateController(this);
+	private final FeatureStateController features = new FeatureStateController(this);
 
 	@Inject
 	private ObjectFactory factory;
 
-	public void install(Class<?> component)
+	public void install(Class<?> feature)
 	{
-		Objects.requireNonNull(component);
+		Objects.requireNonNull(feature);
 
-		Object genericImplementation = this.factory.request(component);
+		Object genericImplementation = this.factory.request(feature);
 		if (this.installDirectly(genericImplementation))
 		{
 			return;
 		}
 
 		@SuppressWarnings("unchecked")
-		ComponentWrapper<Object> wrapper = (ComponentWrapper<Object>) Container.getComponentWrapper(component);
+		FeatureWrapper<Object> wrapper = (FeatureWrapper<Object>) Container.getFeatureWrapper(feature);
 		if (wrapper == null)
 		{
-			throw new ComponentWrapperMissingException(component);
+			throw new FeatureWrapperMissingException(feature);
 		}
 
-		Component instance = wrapper.apply(this, genericImplementation);
+		Feature instance = wrapper.apply(this, genericImplementation);
 		Objects.requireNonNull(instance);
-		this.components.install(instance);
+		this.features.install(instance);
 	}
 
 	private boolean installDirectly(Object genericImplementation)
 	{
-		if (genericImplementation instanceof Component)
+		if (genericImplementation instanceof Feature)
 		{
-			Component instance = (Component) genericImplementation;
-			this.components.install(instance);
+			Feature instance = (Feature) genericImplementation;
+			this.features.install(instance);
 			return true;
 		}
 
@@ -107,7 +107,7 @@ public class Container extends SkeletalComponent {
 	@Override
 	public final void onStateChange()
 	{
-		this.components.refresh();
+		this.features.refresh();
 	}
 
 	@Override

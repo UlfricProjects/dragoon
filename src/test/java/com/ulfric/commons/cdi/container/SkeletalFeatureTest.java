@@ -11,11 +11,11 @@ import com.ulfric.commons.cdi.ObjectFactory;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
-public class SkeletalComponentTest {
+public class SkeletalFeatureTest {
 
 	private ObjectFactory factory;
 	private Container parent;
-	private Component child;
+	private Feature child;
 
 	@BeforeEach
 	void init()
@@ -23,8 +23,8 @@ public class SkeletalComponentTest {
 		this.factory = ObjectFactory.newInstance();
 		this.factory.bind(Logger.class).to(NullLogger.class);
 		this.parent = this.factory.requestExact(Container.class);
-		this.parent.install(TestingComponent.class);
-		this.child = TestingComponent.lastInstance;
+		this.parent.install(TestingFeature.class);
+		this.child = TestingFeature.lastInstance;
 	}
 
 	@Test
@@ -52,13 +52,13 @@ public class SkeletalComponentTest {
 		Verify.that(this.child.isDisabled()).isTrue();
 	}
 
-	static class TestingComponent extends SkeletalComponent
+	static class TestingFeature extends SkeletalFeature
 	{
-		static TestingComponent lastInstance;
+		static TestingFeature lastInstance;
 
-		public TestingComponent()
+		public TestingFeature()
 		{
-			TestingComponent.lastInstance = this;
+			TestingFeature.lastInstance = this;
 		}
 	}
 
