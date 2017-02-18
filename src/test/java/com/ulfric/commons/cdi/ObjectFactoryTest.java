@@ -5,8 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
+import com.ulfric.commons.cdi.initialize.Initialize;
 import com.ulfric.commons.cdi.inject.Inject;
 import com.ulfric.commons.cdi.scope.Default;
+import com.ulfric.commons.cdi.scope.Scoped;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
@@ -109,6 +111,29 @@ public class ObjectFactoryTest {
 		Verify.that(() -> this.factory.requestExact(Hello.class)).doesThrow(IllegalArgumentException.class);
 	}
 
+	@Test
+	void testInitialize_null_throwsNPE()
+	{
+		Verify.that(() -> this.factory.initialize(null)).doesThrow(NullPointerException.class);
+	}
+
+	@Test
+	void testInitialize_ObjectWithInitializers()
+	{
+		HelloInitializer hello = new HelloInitializer();
+		this.factory.initialize(hello);
+		Verify.that(hello.ran).isTrue();
+	}
+
+	@Test
+	void testInitialize_ScopedWithInitializers()
+	{
+		HelloInitializer hello = new HelloInitializer();
+		Scoped<HelloInitializer> scoped = new Scoped<>(HelloInitializer.class, hello);
+		this.factory.initialize(scoped);
+		Verify.that(hello.ran).isTrue();
+	}
+
 	interface Hello
 	{
 		
@@ -128,6 +153,16 @@ public class ObjectFactoryTest {
 	{
 		@Inject
 		Hello inject;
+	}
+
+	static class HelloInitializer
+	{
+		boolean ran = false;
+		@Initialize
+		public void init()
+		{
+			this.ran = true;
+		}
 	}
 
 }

@@ -23,7 +23,7 @@ final class Initializer {
 		this.initializeObject(toInitialize);
 	}
 
-	private void initializeObject(Object object)
+	void initializeObject(Object object)
 	{
 		Class<?> type = object.getClass();
 		Initializer.getInitializables(type).forEach(initializable -> initializable.initialize(object));
@@ -36,7 +36,8 @@ final class Initializer {
 
 	private static List<Initializable> createInitializables(Class<?> clazz)
 	{
-		return Stream.of(clazz.getDeclaredMethods())
+		return Stream.concat(Stream.of(clazz.getDeclaredMethods()), Stream.of(clazz.getMethods()))
+				.distinct()
 				.filter(Initializer::isInitializable)
 				.map(Initializable::new)
 				.collect(Collectors.toList());
@@ -54,7 +55,7 @@ final class Initializer {
 		Initializable(Method method)
 		{
 			method.setAccessible(true);
-			this.methodHandle = HandleUtils.getMethod(method);
+			this.methodHandle = HandleUtils.getGenericMethod(method);
 		}
 
 		void initialize(Object holder)
@@ -64,7 +65,7 @@ final class Initializer {
 
 		private void invoke(Object holder) throws Throwable
 		{
-			this.methodHandle.invoke(holder);
+			this.methodHandle.invokeExact(holder);
 		}
 	}
 

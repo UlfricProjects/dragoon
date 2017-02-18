@@ -12,13 +12,14 @@ import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
 import com.ulfric.commons.cdi.intercept.Context;
+import com.ulfric.commons.cdi.intercept.Interceptor;
 import com.ulfric.commons.exception.Try;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
 public class AsynchronousInterceptorTest {
 
-	private AsynchronousInterceptor interceptor;
+	private Interceptor interceptor;
 	private Context context;
 
 	@BeforeEach
