@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
+import com.ulfric.commons.cdi.initialize.Initialize;
 import com.ulfric.commons.cdi.inject.Inject;
 import com.ulfric.commons.cdi.scope.Default;
 import com.ulfric.verify.Verify;
@@ -128,6 +129,16 @@ public class ObjectFactoryTest {
 	{
 		@Inject
 		Hello inject;
+	}
+
+	static class HelloInitializer
+	{
+		boolean ran = false;
+		@Initialize
+		public void init()
+		{
+			this.ran = true;
+		}
 	}
 
 }

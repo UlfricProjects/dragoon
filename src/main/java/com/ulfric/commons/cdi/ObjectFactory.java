@@ -9,6 +9,10 @@ import com.ulfric.commons.cdi.container.LogEnable;
 import com.ulfric.commons.cdi.container.LogEnableInterceptor;
 import com.ulfric.commons.cdi.container.LogLoad;
 import com.ulfric.commons.cdi.container.LogLoadInterceptor;
+import com.ulfric.commons.cdi.initialize.Initialize;
+import com.ulfric.commons.cdi.interceptors.Asynchronous;
+import com.ulfric.commons.cdi.interceptors.AsynchronousInterceptor;
+import com.ulfric.commons.cdi.interceptors.InitializeInterceptor;
 import com.ulfric.commons.cdi.scope.Default;
 import com.ulfric.commons.cdi.scope.DefaultScopeStrategy;
 import com.ulfric.commons.cdi.scope.Scoped;
@@ -62,6 +66,9 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Service
 		this.bindings.registerBinding(LogEnable.class, LogEnableInterceptor.class);
 		this.bindings.registerBinding(LogDisable.class, LogDisableInterceptor.class);
 
+		this.bindings.registerBinding(Initialize.class, InitializeInterceptor.class);
+		this.bindings.registerBinding(Asynchronous.class, AsynchronousInterceptor.class);
+
 		SuppliedScopeStrategy strategy = (SuppliedScopeStrategy) this.request(Supplied.class);
 		strategy.register(ObjectFactory.class, this::createChild);
 	}
@@ -78,6 +85,20 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Service
 		Objects.requireNonNull(request);
 
 		return this.scopes.createBinding(request);
+	}
+
+	public <T> T requestExact(Class<T> request)
+	{
+		Object value = this.request(request);
+
+		if (!request.isInstance(value))
+		{
+			throw new IllegalArgumentException("Wrong request type");
+		}
+
+		@SuppressWarnings("unchecked")
+		T casted = (T) value;
+		return casted;
 	}
 
 	public Object request(Class<?> request)
@@ -107,20 +128,6 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Service
 	private boolean couldBeScope(Class<?> request)
 	{
 		return request.isAnnotation();
-	}
-
-	public <T> T requestExact(Class<T> request)
-	{
-		Object value = this.request(request);
-
-		if (!request.isInstance(value))
-		{
-			throw new IllegalArgumentException("Wrong request type");
-		}
-
-		@SuppressWarnings("unchecked")
-		T casted = (T) value;
-		return casted;
 	}
 
 	private Object getInjectedObject(Class<?> implementation)
