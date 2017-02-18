@@ -125,19 +125,6 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Service
 		return this.getInjectedObject(implementation);
 	}
 
-	public void initialize(Object object)
-	{
-		Objects.requireNonNull(object);
-
-		if (object instanceof Scoped)
-		{
-			this.initializer.initializeScoped((Scoped<?>) object);
-			return;
-		}
-
-		this.initializer.initializeObject(object);
-	}
-
 	private boolean couldBeScope(Class<?> request)
 	{
 		return request.isAnnotation();
