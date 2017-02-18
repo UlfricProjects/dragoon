@@ -13,26 +13,26 @@ import com.ulfric.commons.exception.Try;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
-public class ComponentStateControllerTest {
+public class FeatureStateControllerTest {
 
-	private Component parent;
-	private ComponentStateController controller;
+	private Feature parent;
+	private FeatureStateController controller;
 
-	private Component toInstall;
-	private Component secondInstall;
+	private Feature toInstall;
+	private Feature secondInstall;
 
 	@BeforeEach
 	void init()
 	{
-		this.parent = Mockito.mock(Component.class);
+		this.parent = Mockito.mock(Feature.class);
 
 		Mockito.when(this.parent.isLoaded()).thenReturn(true);
 		Mockito.when(this.parent.isEnabled()).thenReturn(true);
 
-		this.toInstall = Mockito.mock(Component.class);
-		this.secondInstall = Mockito.mock(Component.class);
+		this.toInstall = Mockito.mock(Feature.class);
+		this.secondInstall = Mockito.mock(Feature.class);
 
-		this.controller = new ComponentStateController(this.parent);
+		this.controller = new FeatureStateController(this.parent);
 	}
 
 	@Test
@@ -49,7 +49,7 @@ public class ComponentStateControllerTest {
 
 		Verify.that(() -> this.controller.install(this.toInstall)).runsWithoutExceptions();
 
-		Set<Component> states = this.getControllerStatesField();
+		Set<Feature> states = this.getControllerStatesField();
 
 		Verify.that(states.contains(this.toInstall));
 
@@ -59,12 +59,12 @@ public class ComponentStateControllerTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Set<Component> getControllerStatesField()
+	private Set<Feature> getControllerStatesField()
 	{
-		Field statesField = Try.to(() -> ComponentStateController.class.getDeclaredField("states"));
+		Field statesField = Try.to(() -> FeatureStateController.class.getDeclaredField("states"));
 		statesField.setAccessible(true);
 
-		return Try.to(() -> (Set<Component>) statesField.get(this.controller));
+		return Try.to(() -> (Set<Feature>) statesField.get(this.controller));
 	}
 
 	@Test

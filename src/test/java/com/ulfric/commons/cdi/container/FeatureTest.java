@@ -8,42 +8,42 @@ import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
 @RunWith(JUnitPlatform.class)
-public class ComponentTest {
+public class FeatureTest {
 
-	private final ComponentImpl component = new ComponentImpl();
-	private final ComponentNamed componentNamed = new ComponentNamed();
+	private final FeatureImpl feature = new FeatureImpl();
+	private final FeatureNamed featureNamed = new FeatureNamed();
 
 	@Test
 	void testIsUnloaded_invertsIsLoaded()
 	{
-		Verify.that(this.component.isUnloaded()).isTrue();
+		Verify.that(this.feature.isUnloaded()).isTrue();
 	}
 
 	@Test
 	void testIsDisabled_invertsIsEnabled()
 	{
-		Verify.that(this.component.isDisabled()).isFalse();
+		Verify.that(this.feature.isDisabled()).isFalse();
 	}
 
 	@Test
 	void testGetName_className()
 	{
-		Verify.that(this.component.getName()).isEqualTo(ComponentImpl.class.getSimpleName());
+		Verify.that(this.feature.getName()).isEqualTo(FeatureImpl.class.getSimpleName());
 	}
 
 	@Test
 	void testGetName_named()
 	{
-		Verify.that(this.componentNamed.getName()).isEqualTo("name");
+		Verify.that(this.featureNamed.getName()).isEqualTo("name");
 	}
 
 	@Test
 	void testIsUnloaded_whenFalse()
 	{
-		Verify.that(this.componentNamed.isUnloaded()).isFalse();
+		Verify.that(this.featureNamed.isUnloaded()).isFalse();
 	}
 
-	static final class ComponentImpl implements Component
+	static final class FeatureImpl implements Feature
 	{
 
 		@Override
@@ -78,7 +78,7 @@ public class ComponentTest {
 	}
 
 	@Name(value = "name")
-	static final class ComponentNamed implements Component
+	static final class FeatureNamed implements Feature
 	{
 
 		@Override

@@ -2,7 +2,7 @@ package com.ulfric.commons.cdi.container;
 
 import com.ulfric.commons.naming.Named;
 
-public interface Component extends Named {
+public interface Feature extends Named {
 
 	default boolean isUnloaded()
 	{
