@@ -1,5 +1,6 @@
 package com.ulfric.commons.cdi.interceptors;
 
+import java.lang.reflect.Executable;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.collections4.IterableUtils;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import com.ulfric.commons.cdi.intercept.Context;
 import com.ulfric.commons.cdi.intercept.Interceptor;
@@ -46,7 +48,7 @@ public class InitializeInterceptorTest {
 	private void context(Callable<?> callable)
 	{
 		this.context = Context.createInvocation(this, IterableUtils.emptyIterable(),
-				callable, new Object[0]);
+				callable, Mockito.mock(Executable.class), new Object[0]);
 	}
 
 }

@@ -77,7 +77,7 @@ public class FeatureTest {
 		}
 	}
 
-	@Name(value = "name")
+	@Name("name")
 	static final class FeatureNamed implements Feature
 	{
 
