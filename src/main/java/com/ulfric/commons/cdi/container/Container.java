@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ClassUtils;
 
 import com.ulfric.commons.cdi.ObjectFactory;
 import com.ulfric.commons.cdi.inject.Inject;
+import com.ulfric.commons.cdi.interceptors.Audit;
 
 public class Container extends SkeletalFeature {
 
@@ -70,7 +71,7 @@ public class Container extends SkeletalFeature {
 	@Inject
 	private ObjectFactory factory;
 
-	public void install(Class<?> feature)
+	public final void install(Class<?> feature)
 	{
 		Objects.requireNonNull(feature);
 
@@ -111,21 +112,21 @@ public class Container extends SkeletalFeature {
 	}
 
 	@Override
-	@LogLoad
+	@Audit("Load")
 	public void onLoad()
 	{
 
 	}
 
 	@Override
-	@LogEnable
+	@Audit("Enable")
 	public void onEnable()
 	{
 
 	}
 
 	@Override
-	@LogDisable
+	@Audit("Disable")
 	public void onDisable()
 	{
 

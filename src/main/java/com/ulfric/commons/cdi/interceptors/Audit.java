@@ -1,4 +1,4 @@
-package com.ulfric.commons.cdi.container;
+package com.ulfric.commons.cdi.interceptors;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,6 +10,8 @@ import com.ulfric.commons.cdi.intercept.Intercept;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Intercept
-public @interface LogEnable {
+public @interface Audit {
+
+	String value();
 
 }

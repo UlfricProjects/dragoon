@@ -1,5 +1,6 @@
 package com.ulfric.commons.cdi;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -10,6 +11,7 @@ import com.ulfric.commons.cdi.intercept.Interceptor;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
+import net.bytebuddy.implementation.bind.annotation.SuperMethod;
 import net.bytebuddy.implementation.bind.annotation.This;
 
 public final class BytebuddyInterceptor {
@@ -30,9 +32,11 @@ public final class BytebuddyInterceptor {
 	@RuntimeType
 	public Object intercept(@This Object owner,
 	                        @AllArguments Object[] arguments,
-	                        @SuperCall Callable<?> finalDestination)
+	                        @SuperCall Callable<?> finalDestination,
+	                        @SuperMethod Method destinationExecutable)
 	{
-		return Context.createInvocation(owner, this.pipeline, finalDestination, arguments).proceed();
+		return Context.createInvocation(owner, this.pipeline, finalDestination, destinationExecutable, arguments)
+				.proceed();
 	}
 
 }
