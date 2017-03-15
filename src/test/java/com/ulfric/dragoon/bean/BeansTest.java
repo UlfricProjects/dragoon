@@ -38,6 +38,8 @@ public class BeansTest extends UtilTestBase {
 		Verify.that(bean::notAGetter).doesThrow(AbstractMethodError.class);
 		Verify.that(bean::getKiddingItsVoid).doesThrow(AbstractMethodError.class);
 		Verify.that(() -> bean.getWaitIsThisASetter(null)).doesThrow(AbstractMethodError.class);
+
+		Verify.that(Beans.create(InterfaceBean.class).getClass()).isEqualTo(bean.getClass());
 	}
 
 	public static class NotABean
