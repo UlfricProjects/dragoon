@@ -46,7 +46,7 @@ final class BeanBuilder<T> {
 
 	private void makeFields()
 	{
-		this.findGetters().forEach(this::createFieldFromGetter);
+		this.findGetters().forEach(this::addFieldFromGetter);
 	}
 
 	private Stream<Getter> findGetters()
@@ -56,7 +56,7 @@ final class BeanBuilder<T> {
 						.map(BeanBuilder.GETTER_MAPPER);
 	}
 
-	private void createFieldFromGetter(Getter getter)
+	private void addFieldFromGetter(Getter getter)
 	{
 		this.builder = this.builder.defineField(getter.getFieldName(), getter.getType(), Visibility.PRIVATE);
 	}
