@@ -3,7 +3,6 @@ package com.ulfric.dragoon.bean;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ClassUtils;
@@ -85,8 +84,7 @@ final class BeanBuilder<T> {
 		return description.getParameters()
 					.stream()
 					.map(this::unwrapParameter)
-					.collect(Collectors.toList())
-					.toArray(new Class[0]);
+					.toArray(Class<?>[]::new);
 	}
 
 	private Class<?> unwrapParameter(ParameterDescription description)
