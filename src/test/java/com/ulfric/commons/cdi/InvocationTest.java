@@ -1,5 +1,6 @@
 package com.ulfric.commons.cdi;
 
+import java.lang.reflect.Executable;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
 
@@ -25,6 +26,8 @@ public class InvocationTest {
 	@Mock
 	private Callable<?> finalDestination;
 	@Mock
+	private Executable destinationExecutable;
+	@Mock
 	private Iterator<Interceptor> pipelineIterator;
 
 	private Object[] arguments = new Object[0];
@@ -36,7 +39,8 @@ public class InvocationTest {
 	{
 		MockitoAnnotations.initMocks(this);
 		Mockito.when(this.pipeline.iterator()).thenReturn(this.pipelineIterator);
-		this.invocation = Context.createInvocation(this.owner, this.pipeline, this.finalDestination, this.arguments);
+		this.invocation = Context.createInvocation(this.owner, this.pipeline,
+				this.finalDestination, this.destinationExecutable, this.arguments);
 	}
 
 	@Test

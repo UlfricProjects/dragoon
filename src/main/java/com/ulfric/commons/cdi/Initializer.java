@@ -15,20 +15,15 @@ import com.ulfric.commons.reflect.HandleUtils;
 
 final class Initializer {
 
-	private static final Map<Class<?>, List<Initializable>> METHODS = new IdentityHashMap<>();
+	private static final Map<Class<?>, List<Initializable>> INITIALIZE_METHODS = new IdentityHashMap<>();
 
 	void initializeScoped(Scoped<?> scoped)
 	{
-		if (scoped.isEmpty())
-		{
-			throw new IllegalStateException("Failed to create object: " + scoped.getRequest());
-		}
-
 		Object toInitialize = scoped.read();
 		this.initializeObject(toInitialize);
 	}
 
-	private void initializeObject(Object object)
+	void initializeObject(Object object)
 	{
 		Class<?> type = object.getClass();
 		Initializer.getInitializables(type).forEach(initializable -> initializable.initialize(object));
@@ -36,12 +31,13 @@ final class Initializer {
 
 	private static List<Initializable> getInitializables(Class<?> clazz)
 	{
-		return Initializer.METHODS.computeIfAbsent(clazz, Initializer::createInitializables);
+		return Initializer.INITIALIZE_METHODS.computeIfAbsent(clazz, Initializer::createInitializables);
 	}
 
 	private static List<Initializable> createInitializables(Class<?> clazz)
 	{
-		return Stream.of(clazz.getDeclaredMethods())
+		return Stream.concat(Stream.of(clazz.getDeclaredMethods()), Stream.of(clazz.getMethods()))
+				.distinct()
 				.filter(Initializer::isInitializable)
 				.map(Initializable::new)
 				.collect(Collectors.toList());
@@ -59,7 +55,7 @@ final class Initializer {
 		Initializable(Method method)
 		{
 			method.setAccessible(true);
-			this.methodHandle = HandleUtils.getMethod(method);
+			this.methodHandle = HandleUtils.getGenericMethod(method);
 		}
 
 		void initialize(Object holder)
@@ -69,7 +65,7 @@ final class Initializer {
 
 		private void invoke(Object holder) throws Throwable
 		{
-			this.methodHandle.invoke(holder);
+			this.methodHandle.invokeExact(holder);
 		}
 	}
 

@@ -1,5 +1,6 @@
 package com.ulfric.commons.cdi.interceptors;
 
+import java.lang.reflect.Executable;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -10,15 +11,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import com.ulfric.commons.cdi.intercept.Context;
+import com.ulfric.commons.cdi.intercept.Interceptor;
 import com.ulfric.commons.exception.Try;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
 public class AsynchronousInterceptorTest {
 
-	private AsynchronousInterceptor interceptor;
+	private Interceptor interceptor;
 	private Context context;
 
 	@BeforeEach
@@ -68,7 +71,7 @@ public class AsynchronousInterceptorTest {
 	private void context(Callable<?> callable)
 	{
 		this.context = Context.createInvocation(this, IterableUtils.emptyIterable(),
-				callable, new Object[0]);
+				callable, Mockito.mock(Executable.class), new Object[0]);
 	}
 
 }

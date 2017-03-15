@@ -19,7 +19,7 @@ import com.ulfric.verify.Verify;
 @RunWith(JUnitPlatform.class)
 public class ContainerTest {
 
-	final Component component = Mockito.mock(Component.class);
+	final Feature feature = Mockito.mock(Feature.class);
 
 	private ObjectFactory factory;
 	private Container container;
@@ -33,7 +33,7 @@ public class ContainerTest {
 
 		Try.to(() ->
 		{
-			Field field = Container.class.getDeclaredField("COMPONENT_WRAPPERS");
+			Field field = Container.class.getDeclaredField("FEATURE_WRAPPERS");
 			field.setAccessible(true);
 			Map<?, ?> map = (Map<?, ?>) field.get(null);
 			map.clear();
@@ -41,45 +41,45 @@ public class ContainerTest {
 	}
 
 	@Test
-	void testRegisterComponentWrapper_nullRequest()
+	void testRegisterFeatureWrapper_nullRequest()
 	{
-		Verify.that(() -> Container.registerComponentWrapper(null, (ignore, o) -> Mockito.mock(Component.class))).doesThrow(NullPointerException.class);
+		Verify.that(() -> Container.registerFeatureWrapper(null, (ignore, o) -> Mockito.mock(Feature.class))).doesThrow(NullPointerException.class);
 	}
 
 	@Test
-	void testRegisterComponentWrapper_nullWrapper()
+	void testRegisterFeatureWrapper_nullWrapper()
 	{
-		Verify.that(() -> Container.registerComponentWrapper(Hello.class, null)).doesThrow(NullPointerException.class);
+		Verify.that(() -> Container.registerFeatureWrapper(Hello.class, null)).doesThrow(NullPointerException.class);
 	}
 
 	@Test
-	void testRegisterComponentWrapper_validValues()
+	void testRegisterFeatureWrapper_validValues()
 	{
-		Verify.that(() -> Container.registerComponentWrapper(Hello.class, new HelloComponent())).runsWithoutExceptions();
+		Verify.that(() -> Container.registerFeatureWrapper(Hello.class, new HelloFeature())).runsWithoutExceptions();
 	}
 
 	@Test
-	void testGetComponentWrapper_unregisteredRequest()
+	void testGetFeatureWrapper_unregisteredRequest()
 	{
-		Verify.that(this.getComponentWrapper(Hello.class)).isNull();
+		Verify.that(this.getFeatureWrapper(Hello.class)).isNull();
 	}
 
 	@Test
-	void testGetComponentWrapper_superclassRequest()
+	void testGetFeatureWrapper_superclassRequest()
 	{
-		Container.registerComponentWrapper(Hello.class, new HelloComponent());
-		Verify.that(this.getComponentWrapper(SubHello.class)).isInstanceOf(HelloComponent.class);
+		Container.registerFeatureWrapper(Hello.class, new HelloFeature());
+		Verify.that(this.getFeatureWrapper(SubHello.class)).isInstanceOf(HelloFeature.class);
 	}
 
 	@Test
-	void testGetComponentWrapper_exactRequest()
+	void testGetFeatureWrapper_exactRequest()
 	{
-		Container.registerComponentWrapper(Hello.class, new HelloComponent());
-		Verify.that(this.getComponentWrapper(Hello.class)).isInstanceOf(HelloComponent.class);
+		Container.registerFeatureWrapper(Hello.class, new HelloFeature());
+		Verify.that(this.getFeatureWrapper(Hello.class)).isInstanceOf(HelloFeature.class);
 	}
 
 	@Test
-	void testInstall_nullComponent()
+	void testInstall_nullFeature()
 	{
 		Verify.that(() -> this.container.install(null)).doesThrow(NullPointerException.class);
 	}
@@ -93,13 +93,13 @@ public class ContainerTest {
 	@Test
 	void testInstall_arbitraryClass()
 	{
-		Verify.that(() -> this.container.install(Hello.class)).doesThrow(ComponentWrapperMissingException.class);
+		Verify.that(() -> this.container.install(Hello.class)).doesThrow(FeatureWrapperMissingException.class);
 	}
 
 	@Test
 	void testInstall_wrappedClass()
 	{
-		Container.registerComponentWrapper(Hello.class, new HelloComponent());
+		Container.registerFeatureWrapper(Hello.class, new HelloFeature());
 		Verify.that(() -> this.container.install(Hello.class)).runsWithoutExceptions();
 	}
 
@@ -130,13 +130,13 @@ public class ContainerTest {
 		Verify.that(() -> this.container.disable()).doesThrow(IllegalStateException.class);
 	}
 
-	private <T> ComponentWrapper<T> getComponentWrapper(Class<T> request)
+	private <T> FeatureWrapper<T> getFeatureWrapper(Class<T> request)
 	{
 		return Try.to(() -> {
-			Method method = MethodUtils.getMatchingMethod(Container.class, "getComponentWrapper", Class.class);
+			Method method = MethodUtils.getMatchingMethod(Container.class, "getFeatureWrapper", Class.class);
 			method.setAccessible(true);
 			@SuppressWarnings("unchecked")
-			ComponentWrapper<T> casted = (ComponentWrapper<T>) method.invoke(null, request);
+			FeatureWrapper<T> casted = (FeatureWrapper<T>) method.invoke(null, request);
 			return casted;
 		});
 	}
@@ -151,13 +151,13 @@ public class ContainerTest {
 
 	}
 
-	public final class HelloComponent implements ComponentWrapper<Hello>
+	public final class HelloFeature implements FeatureWrapper<Hello>
 	{
 
 		@Override
-		public Component apply(Component parent, Hello hello)
+		public Feature apply(Feature parent, Hello hello)
 		{
-			return ContainerTest.this.component;
+			return ContainerTest.this.feature;
 		}
 
 	}

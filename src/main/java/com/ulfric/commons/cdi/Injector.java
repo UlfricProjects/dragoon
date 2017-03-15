@@ -16,7 +16,7 @@ import com.ulfric.commons.reflect.HandleUtils;
 
 final class Injector {
 
-	private static final Map<Class<?>, List<Injectable>> FIELDS = new IdentityHashMap<>();
+	private static final Map<Class<?>, List<Injectable>> INJECTABLE_FIELDS = new IdentityHashMap<>();
 	private final ObjectFactory factory;
 
 	Injector(ObjectFactory factory)
@@ -31,11 +31,6 @@ final class Injector {
 			return;
 		}
 
-		if (scoped.isEmpty())
-		{
-			throw new IllegalStateException("Failed to create object: " + scoped.getRequest());
-		}
-
 		Object injectInto = scoped.read();
 		this.injectValuesIntoObject(injectInto);
 	}
@@ -48,7 +43,7 @@ final class Injector {
 
 	private static List<Injectable> getInjectables(Class<?> clazz)
 	{
-		return Injector.FIELDS.computeIfAbsent(clazz, Injector::createInjectables);
+		return Injector.INJECTABLE_FIELDS.computeIfAbsent(clazz, Injector::createInjectables);
 	}
 
 	private static List<Injectable> createInjectables(Class<?> clazz)
@@ -87,5 +82,4 @@ final class Injector {
 			this.fieldHandle.invokeExact(holder, value);
 		}
 	}
-
 }
