@@ -10,7 +10,7 @@
 		<version>1.0.0</version>
 	</parent>
 
-	<groupId>com.ulfric.commons</groupId>
+	<groupId>com.ulfric</groupId>
 	<artifactId>dragoon</artifactId>
 	<version>1.0.0</version>
 	<name>Commons Context and Dependency Injection</name>
