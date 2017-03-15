@@ -40,6 +40,9 @@ public class BeansTest extends UtilTestBase {
 		Verify.that(() -> bean.setString("foo")).runsWithoutExceptions();
 		Verify.that(bean::getString).valueIsEqualTo("foo");
 
+		Verify.that(() -> bean.setTrue(true)).runsWithoutExceptions();
+		Verify.that(bean::isTrue).valueIsEqualTo(true);
+
 		Verify.that(bean::notAGetter).doesThrow(AbstractMethodError.class);
 		Verify.that(bean::getKiddingItsVoid).doesThrow(AbstractMethodError.class);
 		Verify.that(() -> bean.getWaitIsThisASetter(null)).doesThrow(AbstractMethodError.class);
@@ -71,6 +74,10 @@ public class BeansTest extends UtilTestBase {
 		String getString();
 
 		void setString(String string);
+
+		boolean isTrue();
+
+		void setTrue(boolean bool);
 
 		Object notAGetter();
 
