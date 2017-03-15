@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import com.ulfric.commons.bean.Bean;
 
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.ClassFileVersion;
 import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.FieldAccessor;
@@ -27,17 +28,17 @@ final class BeanBuilder<T> {
 		this.makeFields();
 	}
 
-	T build()
+	Class<? extends T> build()
 	{
 		@SuppressWarnings("unchecked")
-		T bean = (T) this.builder.make().load(this.interfaceType.getClassLoader()).getLoaded();
+		Class<? extends T> beanClass = (Class<? extends T>) this.builder.make().load(this.getClass().getClassLoader()).getLoaded();
 
-		return bean;
+		return beanClass;
 	}
 
 	private DynamicType.Builder<Bean> createBuilder()
 	{
-		return new ByteBuddy()
+		return new ByteBuddy(ClassFileVersion.JAVA_V8)
 				.subclass(Bean.class)
 				.implement(this.interfaceType)
 				.method(ElementMatchers.isGetter().or(ElementMatchers.isSetter()))
