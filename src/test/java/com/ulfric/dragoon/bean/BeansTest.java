@@ -1,5 +1,10 @@
 package com.ulfric.dragoon.bean;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
@@ -14,20 +19,20 @@ import com.ulfric.verify.Verify;
 public class BeansTest extends UtilTestBase {
 
 	@Test
-	public void testCreate_nonBean()
+	void testCreate_nonBean()
 	{
 		Verify.that(() -> Beans.create(NotABean.class)).doesThrow(Beans.BeanCreationException.class);
 	}
 
 	@Test
-	public void testCreate_extendsBean()
+	void testCreate_extendsBean()
 	{
 		Verify.that(() -> Beans.create(ConcreteBean.class)).suppliesUniqueValues();
 		Verify.that(Beans.create(ConcreteBean.class)).isExactType(ConcreteBean.class);
 	}
 
 	@Test
-	public void testCreate_interfaceBean()
+	void testCreate_interfaceBean()
 	{
 		Verify.that(() -> Beans.create(InterfaceBean.class)).suppliesUniqueValues();
 		InterfaceBean bean = Beans.create(InterfaceBean.class);
@@ -42,6 +47,14 @@ public class BeansTest extends UtilTestBase {
 		Verify.that(Beans.create(InterfaceBean.class).getClass()).isEqualTo(bean.getClass());
 	}
 
+	@Test
+	void testCreate_interface_carriesAnnotationsFromParent()
+	{
+		InterfaceBean bean = Beans.create(InterfaceBean.class);
+
+		Verify.that(bean.getClass().isAnnotationPresent(FooAnnotation.class)).isTrue();
+	}
+
 	public static class NotABean
 	{
 
@@ -52,6 +65,7 @@ public class BeansTest extends UtilTestBase {
 
 	}
 
+	@FooAnnotation
 	public interface InterfaceBean
 	{
 		String getString();
@@ -63,6 +77,13 @@ public class BeansTest extends UtilTestBase {
 		void getKiddingItsVoid();
 
 		Object getWaitIsThisASetter(Object object);
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface FooAnnotation
+	{
+
 	}
 
 }

@@ -41,6 +41,7 @@ final class BeanBuilder<T> {
 		return new ByteBuddy(ClassFileVersion.JAVA_V8)
 				.subclass(Bean.class)
 				.implement(this.interfaceType)
+				.annotateType(this.interfaceType.getDeclaredAnnotations())
 				.method(ElementMatchers.isGetter().or(ElementMatchers.isSetter()))
 				.intercept(FieldAccessor.ofBeanProperty());
 	}
