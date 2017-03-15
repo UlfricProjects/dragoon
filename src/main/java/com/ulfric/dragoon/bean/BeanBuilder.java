@@ -1,9 +1,7 @@
 package com.ulfric.dragoon.bean;
 
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.ulfric.commons.bean.Bean;
@@ -51,12 +49,11 @@ final class BeanBuilder<T> {
 		this.findGetters().forEach(this::createFieldFromGetter);
 	}
 
-	private List<Getter> findGetters()
+	private Stream<Getter> findGetters()
 	{
-		return this.wrapMethods(
+		return this.wrapGetters(
 				Stream.of(this.interfaceType.getMethods())
 						.filter(BeanBuilder.GETTER_PREDICATE)
-						.collect(Collectors.toList())
 		);
 	}
 
@@ -65,12 +62,9 @@ final class BeanBuilder<T> {
 		this.builder = this.builder.defineField(getter.getFieldName(), getter.getType(), Visibility.PRIVATE);
 	}
 
-	private List<Getter> wrapMethods(List<Method> methods)
+	private Stream<Getter> wrapGetters(Stream<Method> methods)
 	{
-		return methods
-				.stream()
-				.map(BeanBuilder.GETTER_MAPPER)
-				.collect(Collectors.toList());
+		return methods.map(BeanBuilder.GETTER_MAPPER);
 	}
 
 }
