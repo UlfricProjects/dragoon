@@ -11,7 +11,7 @@
 	</parent>
 
 	<groupId>com.ulfric.commons</groupId>
-	<artifactId>commons-cdi</artifactId>
+	<artifactId>dragoon</artifactId>
 	<version>1.0.0</version>
 	<name>Commons Context and Dependency Injection</name>
 
