@@ -51,20 +51,14 @@ final class BeanBuilder<T> {
 
 	private Stream<Getter> findGetters()
 	{
-		return this.wrapGetters(
-				Stream.of(this.interfaceType.getMethods())
+		return Stream.of(this.interfaceType.getMethods())
 						.filter(BeanBuilder.GETTER_PREDICATE)
-		);
+						.map(BeanBuilder.GETTER_MAPPER);
 	}
 
 	private void createFieldFromGetter(Getter getter)
 	{
 		this.builder = this.builder.defineField(getter.getFieldName(), getter.getType(), Visibility.PRIVATE);
-	}
-
-	private Stream<Getter> wrapGetters(Stream<Method> methods)
-	{
-		return methods.map(BeanBuilder.GETTER_MAPPER);
 	}
 
 }
