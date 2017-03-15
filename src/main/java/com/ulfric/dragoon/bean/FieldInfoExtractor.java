@@ -1,5 +1,6 @@
 package com.ulfric.dragoon.bean;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import com.ulfric.commons.bean.Bean;
@@ -14,8 +15,9 @@ public enum FieldInfoExtractor {
 
 		String name = FieldInfoExtractor.getName(method, sub);
 		Class<?> type = FieldInfoExtractor.getType(method);
+		Annotation[] annotations = method.getDeclaredAnnotations();
 
-		return new FieldInfo(name, type);
+		return new FieldInfo(name, type, annotations);
 	}
 
 	private static String getName(Method method, int sub)
@@ -27,18 +29,20 @@ public enum FieldInfoExtractor {
 
 	private static Class<?> getType(Method method)
 	{
-		return method.getReturnType() != Void.TYPE ? method.getReturnType() : method.getParameterTypes()[0];
+		return method.getReturnType();
 	}
 
 	static class FieldInfo extends Bean<FieldInfo>
 	{
 		private final String fieldName;
 		private final Class<?> fieldType;
+		private final Annotation[] annotations;
 
-		private FieldInfo(String fieldName, Class<?> fieldType)
+		private FieldInfo(String fieldName, Class<?> fieldType, Annotation[] annotations)
 		{
 			this.fieldType = fieldType;
 			this.fieldName = fieldName;
+			this.annotations = annotations;
 		}
 
 		String getFieldName()
@@ -49,6 +53,11 @@ public enum FieldInfoExtractor {
 		Class<?> getFieldType()
 		{
 			return this.fieldType;
+		}
+
+		Annotation[] getAnnotations()
+		{
+			return this.annotations;
 		}
 	}
 

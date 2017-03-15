@@ -112,7 +112,7 @@ public class BeansTest extends UtilTestBase {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.METHOD)
+	@Target({ElementType.METHOD, ElementType.FIELD})
 	public @interface MethodAnnotation
 	{
 
