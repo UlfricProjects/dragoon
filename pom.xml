@@ -12,7 +12,7 @@
 
 	<artifactId>dragoon</artifactId>
 	<version>1.0.0</version>
-	<name>Commons Context and Dependency Injection</name>
+	<name>Dragoon</name>
 
 	<dependencies>
 		<dependency>
