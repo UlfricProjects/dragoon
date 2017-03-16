@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 
 import com.ulfric.commons.bean.Bean;
 import com.ulfric.commons.exception.Try;
+import com.ulfric.dragoon.Dynamic;
 import com.ulfric.testing.Util;
 import com.ulfric.testing.UtilTestBase;
 import com.ulfric.verify.Verify;
@@ -82,12 +83,11 @@ public class BeansTest extends UtilTestBase {
 	}
 
 	@Test
-	void testCreate_addsDynamicAnnotation()
+	void testCreate_markedDynamic()
 	{
 		InterfaceBean bean = Beans.create(InterfaceBean.class);
 
-		Verify.that(InterfaceBean.class.isAnnotationPresent(DynamicBean.class)).isFalse();
-		Verify.that(bean.getClass().isAnnotationPresent(DynamicBean.class)).isTrue();
+		Verify.that(bean instanceof Dynamic).isTrue();
 	}
 
 	public static class NotABean

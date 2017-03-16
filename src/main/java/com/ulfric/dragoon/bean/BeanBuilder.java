@@ -7,11 +7,11 @@ import org.apache.commons.lang3.ClassUtils;
 
 import com.ulfric.commons.bean.Bean;
 import com.ulfric.commons.exception.Try;
+import com.ulfric.dragoon.Dynamic;
 import com.ulfric.dragoon.bean.FieldInfoExtractor.FieldInfo;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.ClassFileVersion;
-import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.method.ParameterDescription;
 import net.bytebuddy.description.modifier.Visibility;
@@ -47,14 +47,14 @@ final class BeanBuilder<T> {
 		this.implementMethods();
 		this.createFields();
 		this.restoreAnnotationsFromParent();
-		this.markDynamic();
 	}
 
 	private DynamicType.Builder<Bean> createBuilder()
 	{
 		return new ByteBuddy(ClassFileVersion.JAVA_V8)
 				.subclass(Bean.class)
-				.implement(this.interfaceType);
+				.implement(this.interfaceType)
+				.implement(Dynamic.class);
 	}
 
 	private void implementMethods()
@@ -124,15 +124,6 @@ final class BeanBuilder<T> {
 	private void restoreAnnotationsFromParent()
 	{
 		this.builder = this.builder.annotateType(this.interfaceType.getDeclaredAnnotations());
-	}
-
-	private void markDynamic()
-	{
-		this.builder = this.builder.annotateType(
-				AnnotationDescription
-						.Builder.ofType(DynamicBean.class)
-						.build()
-		);
 	}
 
 }

@@ -73,6 +73,13 @@ public class SubclasserTest {
 	}
 
 	@Test
+	void testCreateImplementationClass_markedDynamic()
+	{
+		Verify.that(() -> this.subclasser.createImplementationClass(Hello.class).newInstance() instanceof Dynamic)
+				.valueIsEqualTo(true);
+	}
+
+	@Test
 	void testCreateImplementationClass_final_same()
 	{
 		Verify.that(this.subclasser.createImplementationClass(FHello.class)).isSameAs(FHello.class);
