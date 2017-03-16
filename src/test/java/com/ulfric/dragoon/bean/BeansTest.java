@@ -81,6 +81,15 @@ public class BeansTest extends UtilTestBase {
 		Verify.that(Beans.create(InterfaceBean.class)::getClass).suppliesNonUniqueValues();
 	}
 
+	@Test
+	void testCreate_addsDynamicAnnotation()
+	{
+		InterfaceBean bean = Beans.create(InterfaceBean.class);
+
+		Verify.that(InterfaceBean.class.isAnnotationPresent(DynamicBean.class)).isFalse();
+		Verify.that(bean.getClass().isAnnotationPresent(DynamicBean.class)).isTrue();
+	}
+
 	public static class NotABean
 	{
 
