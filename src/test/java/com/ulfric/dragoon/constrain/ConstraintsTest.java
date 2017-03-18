@@ -4,6 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
@@ -67,6 +68,12 @@ public class ConstraintsTest extends UtilTestBase {
 		BeanCheck bean = Beans.create(BeanCheck.class);
 		bean.setString("");
 		Verify.that(() -> Constraints.check(bean)).runsWithoutExceptions();
+	}
+
+	@Test
+	void testNoOp_errorMessage()
+	{
+		Verify.that(new NoOpAdapter().errorMessage()).isEqualTo("");
 	}
 
 	public static class TestClass
@@ -135,11 +142,11 @@ public class ConstraintsTest extends UtilTestBase {
 	{
 
 		@Override
-		public void check(Object object) throws ConstraintException
+		public void check(Field field, Object object) throws ConstraintException
 		{
 			if (object == null)
 			{
-				throw new ConstraintException("Cannot be null");
+				throw new ConstraintException(this, field);
 			}
 		}
 
@@ -149,17 +156,23 @@ public class ConstraintsTest extends UtilTestBase {
 			return Object.class;
 		}
 
+		@Override
+		public String errorMessage()
+		{
+			return "Value cannot be null";
+		}
+
 	}
 
 	public static class GreaterThan3Adapter implements ConstraintAdapter<Number>
 	{
 
 		@Override
-		public void check(Number number) throws ConstraintException
+		public void check(Field field, Number number) throws ConstraintException
 		{
 			if (number.longValue() <= 3)
 			{
-				throw new ConstraintException();
+				throw new ConstraintException(this, field);
 			}
 		}
 
@@ -167,6 +180,12 @@ public class ConstraintsTest extends UtilTestBase {
 		public Class<Number> adaptionType()
 		{
 			return Number.class;
+		}
+
+		@Override
+		public String errorMessage()
+		{
+			return "Value must be greater than 3";
 		}
 	}
 

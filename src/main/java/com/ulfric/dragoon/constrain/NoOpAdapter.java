@@ -1,9 +1,11 @@
 package com.ulfric.dragoon.constrain;
 
+import java.lang.reflect.Field;
+
 public class NoOpAdapter implements ConstraintAdapter<Object> {
 
 	@Override
-	public void check(Object object) throws ConstraintException
+	public void check(Field field, Object object) throws ConstraintException
 	{
 
 	}
@@ -12,6 +14,12 @@ public class NoOpAdapter implements ConstraintAdapter<Object> {
 	public Class<Object> adaptionType()
 	{
 		return Object.class;
+	}
+
+	@Override
+	public String errorMessage()
+	{
+		return "";
 	}
 
 }

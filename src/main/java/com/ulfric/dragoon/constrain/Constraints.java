@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+
 import com.google.gson.internal.Primitives;
 import com.ulfric.commons.exception.Try;
 import com.ulfric.dragoon.construct.InstanceUtils;
@@ -21,7 +23,7 @@ public enum Constraints {
 
 	public static void check(Object object) throws ConstraintException
 	{
-		for (Field field : object.getClass().getDeclaredFields())
+		for (Field field : FieldUtils.getAllFieldsList(object.getClass()))
 		{
 			if (Constraints.isConstrainable(field))
 			{
@@ -43,7 +45,7 @@ public enum Constraints {
 
 			Constraints.ensureFieldMatchesAdapter(field, adapter);
 
-			adapter.check(Try.to(() -> field.get(object)));
+			adapter.check(field, Try.to(() -> field.get(object)));
 		}
 	}
 

@@ -1,15 +1,16 @@
 package com.ulfric.dragoon.constrain;
 
+import java.lang.reflect.Field;
+
 public class ConstraintException extends Exception {
 
-	public ConstraintException()
+	public ConstraintException(ConstraintAdapter<?> adapter, Field field)
 	{
-
-	}
-
-	public ConstraintException(String message)
-	{
-		super(message);
+		super(
+				field.getClass().getName() +
+						" {" + field.getName() + " [" + field.getType() + "]} : " +
+						adapter.errorMessage()
+		);
 	}
 
 }
