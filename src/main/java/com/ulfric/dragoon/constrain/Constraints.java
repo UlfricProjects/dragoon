@@ -21,19 +21,16 @@ public enum Constraints {
 
 	private static final Map<Class<? extends ConstraintAdapter<?>>, ConstraintAdapter<?>> ADAPTERS = new IdentityHashMap<>();
 
-	public static void check(Object object) throws ConstraintException
+	public static void check(Object object)
 	{
-		for (Field field : FieldUtils.getAllFieldsList(object.getClass()))
-		{
-			if (Constraints.isConstrainable(field))
-			{
-				field.setAccessible(true);
-				Constraints.check(object, field);
-			}
-		}
+		FieldUtils.getAllFieldsList(object.getClass())
+				.stream()
+				.filter(Constraints::isConstrainable)
+				.peek(Constraints::accessibilify)
+				.forEach(field -> Constraints.check(object, field));
 	}
 
-	private static void check(Object object, Field field) throws ConstraintException
+	private static void check(Object object, Field field)
 	{
 		List<Constraint> constraints = Constraints.getConstrainingAnnotations(field);
 
@@ -49,7 +46,7 @@ public enum Constraints {
 		}
 	}
 
-	private static void ensureFieldMatchesAdapter(Field field, ConstraintAdapter<?> adapter) throws ConstraintException
+	private static void ensureFieldMatchesAdapter(Field field, ConstraintAdapter<?> adapter)
 	{
 		if (!adapter.adaptionType().isAssignableFrom(Primitives.wrap(field.getType())))
 		{
@@ -71,6 +68,11 @@ public enum Constraints {
 		boolean annotationPresent = !Constraints.getConstrainingAnnotations(field).isEmpty();
 
 		return !Modifier.isStatic(modifers) && annotationPresent;
+	}
+
+	private static void accessibilify(Field field)
+	{
+		field.setAccessible(true);
 	}
 
 	private static List<Constraint> getConstrainingAnnotations(Field field)
