@@ -22,16 +22,16 @@ public enum Constraints {
 	private static final Map<Class<? extends ConstraintValidator<?>>, ConstraintValidator<?>> VALIDATORS =
 			new IdentityHashMap<>();
 
-	public static void check(Object object)
+	public static void validate(Object object)
 	{
 		FieldUtils.getAllFieldsList(object.getClass())
 				.stream()
 				.filter(Constraints::isConstrainable)
 				.peek(Constraints::accessibilify)
-				.forEach(field -> Constraints.check(object, field));
+				.forEach(field -> Constraints.validate(object, field));
 	}
 
-	private static void check(Object object, Field field)
+	private static void validate(Object object, Field field)
 	{
 		List<Constraint> constraints = Constraints.getConstrainingAnnotations(field);
 

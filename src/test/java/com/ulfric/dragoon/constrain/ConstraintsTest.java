@@ -24,42 +24,42 @@ public class ConstraintsTest extends UtilTestBase {
 	{
 		TestClass test = new TestClass();
 		test.setFoo("");
-		Verify.that(() -> Constraints.check(test)).runsWithoutExceptions();
+		Verify.that(() -> Constraints.validate(test)).runsWithoutExceptions();
 	}
 
 	@Test
 	void testCheck_valueIsNull()
 	{
 		TestClass test = new TestClass();
-		Verify.that(() -> Constraints.check(test)).doesThrow(ConstraintException.class);
+		Verify.that(() -> Constraints.validate(test)).doesThrow(ConstraintException.class);
 	}
 
 	@Test
 	void testCheck_numberLessThan3()
 	{
 		NumberClass numberInstance = new NumberClass(2);
-		Verify.that(() -> Constraints.check(numberInstance)).doesThrow(ConstraintException.class);
+		Verify.that(() -> Constraints.validate(numberInstance)).doesThrow(ConstraintException.class);
 	}
 
 	@Test
 	void testCheck_numberGreaterThan3()
 	{
 		NumberClass numberInstance = new NumberClass(4);
-		Verify.that(() -> Constraints.check(numberInstance)).runsWithoutExceptions();
+		Verify.that(() -> Constraints.validate(numberInstance)).runsWithoutExceptions();
 	}
 
 	@Test
 	void testCheck_incorrectConstraint_throwsException()
 	{
 		IncorrectType incorrectType = new IncorrectType();
-		Verify.that(() -> Constraints.check(incorrectType)).doesThrow(ConstraintTypeMismatchException.class);
+		Verify.that(() -> Constraints.validate(incorrectType)).doesThrow(ConstraintTypeMismatchException.class);
 	}
 
 	@Test
 	void testCheck_beanGetter_whenNull()
 	{
 		BeanCheck bean = Beans.create(BeanCheck.class);
-		Verify.that(() -> Constraints.check(bean)).doesThrow(ConstraintException.class);
+		Verify.that(() -> Constraints.validate(bean)).doesThrow(ConstraintException.class);
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class ConstraintsTest extends UtilTestBase {
 	{
 		BeanCheck bean = Beans.create(BeanCheck.class);
 		bean.setString("");
-		Verify.that(() -> Constraints.check(bean)).runsWithoutExceptions();
+		Verify.that(() -> Constraints.validate(bean)).runsWithoutExceptions();
 	}
 
 	@Test
