@@ -27,7 +27,7 @@ public enum Constraints {
 		FieldUtils.getAllFieldsList(object.getClass())
 				.stream()
 				.filter(Constraints::isConstrainable)
-				.peek(Constraints::accessibilify)
+				.peek(field -> field.setAccessible(true))
 				.forEach(field -> Constraints.validate(object, field));
 	}
 
@@ -69,11 +69,6 @@ public enum Constraints {
 		boolean annotationPresent = !Constraints.getConstraints(field).isEmpty();
 
 		return !Modifier.isStatic(modifers) && annotationPresent;
-	}
-
-	private static void accessibilify(Field field)
-	{
-		field.setAccessible(true);
 	}
 
 	private static List<Constraint> getConstraints(Field field)
