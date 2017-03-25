@@ -33,7 +33,7 @@ public enum Constraints {
 
 	private static void validate(Object object, Field field)
 	{
-		List<Constraint> constraints = Constraints.getConstrainingAnnotations(field);
+		List<Constraint> constraints = Constraints.getConstraints(field);
 
 		for (Constraint constraint : constraints)
 		{
@@ -66,7 +66,7 @@ public enum Constraints {
 	private static boolean isConstrainable(Field field)
 	{
 		int modifers = field.getModifiers();
-		boolean annotationPresent = !Constraints.getConstrainingAnnotations(field).isEmpty();
+		boolean annotationPresent = !Constraints.getConstraints(field).isEmpty();
 
 		return !Modifier.isStatic(modifers) && annotationPresent;
 	}
@@ -76,7 +76,7 @@ public enum Constraints {
 		field.setAccessible(true);
 	}
 
-	private static List<Constraint> getConstrainingAnnotations(Field field)
+	private static List<Constraint> getConstraints(Field field)
 	{
 		return Stream.of(field.getDeclaredAnnotations())
 				.filter(Constraints::isConstraint)
