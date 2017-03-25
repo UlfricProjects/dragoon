@@ -86,7 +86,7 @@ public class BeansTest extends UtilTestBase {
 
 	}
 
-	public static class ConcreteBean extends Bean<ConcreteBean>
+	public static class ConcreteBean extends Bean
 	{
 
 	}
