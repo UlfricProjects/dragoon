@@ -2,11 +2,11 @@ package com.ulfric.dragoon.constrain;
 
 import java.lang.reflect.Field;
 
-public interface ConstraintAdapter<T> {
+public interface ConstraintValidator<T> {
 
 	void check(Field field, T object) throws ConstraintException;
 
-	Class<T> adaptionType();
+	Class<T> validationType();
 
 	String errorMessage();
 

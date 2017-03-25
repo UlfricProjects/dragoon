@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 
 public class ConstraintException extends RuntimeException {
 
-	public ConstraintException(ConstraintAdapter<?> adapter, Field field)
+	public ConstraintException(ConstraintValidator<?> adapter, Field field)
 	{
 		super(
 				field.getClass().getName() +

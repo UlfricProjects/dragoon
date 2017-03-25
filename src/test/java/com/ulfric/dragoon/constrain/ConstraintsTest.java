@@ -73,7 +73,7 @@ public class ConstraintsTest extends UtilTestBase {
 	@Test
 	void testNoOp_errorMessage()
 	{
-		Verify.that(new NoOpAdapter().errorMessage()).isEqualTo("");
+		Verify.that(new NoOpValidator().errorMessage()).isEqualTo("");
 	}
 
 	public static class TestClass
@@ -116,7 +116,7 @@ public class ConstraintsTest extends UtilTestBase {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.FIELD, ElementType.METHOD})
-	@Constraint(adapter = NotNullAdapter.class)
+	@Constraint(validator = NotNullValidator.class)
 	public @interface NotNull
 	{
 
@@ -124,7 +124,7 @@ public class ConstraintsTest extends UtilTestBase {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.FIELD, ElementType.METHOD})
-	@Constraint(adapter = GreaterThan3Adapter.class)
+	@Constraint(validator = GreaterThan3Validator.class)
 	public @interface GreaterThan3
 	{
 
@@ -138,7 +138,7 @@ public class ConstraintsTest extends UtilTestBase {
 
 	}
 
-	public static class NotNullAdapter implements ConstraintAdapter<Object>
+	public static class NotNullValidator implements ConstraintValidator<Object>
 	{
 
 		@Override
@@ -151,7 +151,7 @@ public class ConstraintsTest extends UtilTestBase {
 		}
 
 		@Override
-		public Class<Object> adaptionType()
+		public Class<Object> validationType()
 		{
 			return Object.class;
 		}
@@ -164,7 +164,7 @@ public class ConstraintsTest extends UtilTestBase {
 
 	}
 
-	public static class GreaterThan3Adapter implements ConstraintAdapter<Number>
+	public static class GreaterThan3Validator implements ConstraintValidator<Number>
 	{
 
 		@Override
@@ -177,7 +177,7 @@ public class ConstraintsTest extends UtilTestBase {
 		}
 
 		@Override
-		public Class<Number> adaptionType()
+		public Class<Number> validationType()
 		{
 			return Number.class;
 		}

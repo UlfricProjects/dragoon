@@ -19,7 +19,8 @@ public enum Constraints {
 
 	;
 
-	private static final Map<Class<? extends ConstraintAdapter<?>>, ConstraintAdapter<?>> ADAPTERS = new IdentityHashMap<>();
+	private static final Map<Class<? extends ConstraintValidator<?>>, ConstraintValidator<?>> VALIDATORS =
+			new IdentityHashMap<>();
 
 	public static void check(Object object)
 	{
@@ -37,27 +38,27 @@ public enum Constraints {
 		for (Constraint constraint : constraints)
 		{
 			@SuppressWarnings("unchecked")
-			ConstraintAdapter<Object> adapter = (ConstraintAdapter<Object>)
-					Constraints.ADAPTERS.computeIfAbsent(constraint.adapter(), Constraints::createAdapter);
+			ConstraintValidator<Object> validator = (ConstraintValidator<Object>)
+					Constraints.VALIDATORS.computeIfAbsent(constraint.validator(), Constraints::createValidator);
 
-			Constraints.ensureFieldMatchesAdapter(field, adapter);
+			Constraints.ensureFieldMatchesValidator(field, validator);
 
-			adapter.check(field, Try.to(() -> field.get(object)));
+			validator.check(field, Try.to(() -> field.get(object)));
 		}
 	}
 
-	private static void ensureFieldMatchesAdapter(Field field, ConstraintAdapter<?> adapter)
+	private static void ensureFieldMatchesValidator(Field field, ConstraintValidator<?> validator)
 	{
-		if (!adapter.adaptionType().isAssignableFrom(Primitives.wrap(field.getType())))
+		if (!validator.validationType().isAssignableFrom(Primitives.wrap(field.getType())))
 		{
 			throw new ConstraintTypeMismatchException(
-					"Adapter type [" + adapter.adaptionType().getName() +
+					"Validator type [" + validator.validationType().getName() +
 							"] does not match field type [" + field.getType().getName() + "]"
 			);
 		}
 	}
 
-	private static ConstraintAdapter<?> createAdapter(Class<? extends ConstraintAdapter<?>> clazz)
+	private static ConstraintValidator<?> createValidator(Class<? extends ConstraintValidator<?>> clazz)
 	{
 		return InstanceUtils.createOrNull(clazz);
 	}

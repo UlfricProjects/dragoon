@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface Constraint {
 
-	Class<? extends ConstraintAdapter<?>> adapter() default NoOpAdapter.class;
+	Class<? extends ConstraintValidator<?>> validator() default NoOpValidator.class;
 
 }
