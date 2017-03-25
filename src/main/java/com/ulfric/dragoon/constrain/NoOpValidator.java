@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 public class NoOpValidator implements ConstraintValidator<Object> {
 
 	@Override
-	public void check(Field field, Object object) throws ConstraintException
+	public void check(Field field, Object object)
 	{
 
 	}
