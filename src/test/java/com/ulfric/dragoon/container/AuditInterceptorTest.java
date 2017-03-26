@@ -1,10 +1,5 @@
 package com.ulfric.dragoon.container;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Field;
-import java.util.Iterator;
-import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -13,108 +8,114 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
-import com.ulfric.dragoon.intercept.Context;
-import com.ulfric.dragoon.intercept.Interceptor;
+import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.interceptors.Audit;
-import com.ulfric.dragoon.interceptors.AuditInterceptor;
+import com.ulfric.dragoon.scope.Supplied;
+import com.ulfric.dragoon.scope.SuppliedScopeStrategy;
 
 @RunWith(JUnitPlatform.class)
 public class AuditInterceptorTest {
 
-	@Mock
-	private Object owner;
-	@Mock
-	private Iterable<Interceptor> pipeline;
-	@Mock
-	private Callable<?> finalDestination;
-	@Mock
-	private Executable destinationExecutable;
-	@Mock
-	private Iterator<Interceptor> pipelineIterator;
-	@Mock
-	private Logger logger;
+	private ObjectFactory factory;
+	private Runnable intercepted;
 
-	private Interceptor interceptor;
-	private String type;
-	private String beforeType;
-	private String afterType;
-
-	private Object[] arguments = new Object[0];
-	private Context context;
+	@Spy
+	private NoLogger logger;
 
 	@BeforeEach
-	void init() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException
+	void init()
 	{
 		MockitoAnnotations.initMocks(this);
-		Mockito.when(this.pipeline.iterator()).thenReturn(this.pipelineIterator);
-		this.context = Context.createInvocation(this.owner, this.pipeline,
-				this.finalDestination, this.destinationExecutable, this.arguments);
+		this.factory = ObjectFactory.newInstance();
 
-		this.type = "Test";
-		this.beforeType = "Testing";
-		this.afterType = "Tested";
-		Mockito.when(this.destinationExecutable.getName()).thenReturn(this.type);
+		SuppliedScopeStrategy scope = (SuppliedScopeStrategy) this.factory.request(Supplied.class);
+		scope.register(NoLogger.class, () -> this.logger);
+		this.factory.bind(Logger.class).to(NoLogger.class);
 
-		this.interceptor = new AuditInterceptor();
-		Field loggerField = this.interceptor.getClass().getDeclaredField("logger");
-		loggerField.setAccessible(true);
-		loggerField.set(this.interceptor, this.logger);
+		this.intercepted = this.factory.requestExact(AuditMe.class);
 	}
 
 	@Test
 	void testIntercept_logsAsExpected()
 	{
-		this.interceptor.intercept(this.context);
+		this.intercepted.run();
 		this.verifyLoggers();
 	}
 
 	@Test
 	void testIntercept_FiguresOutQualifiedTypes()
 	{
-		this.type = "Teste";
-		Mockito.when(this.destinationExecutable.getName()).thenReturn(this.type);
-		this.interceptor.intercept(this.context);
+		this.intercepted = this.factory.requestExact(SpecialCaseNameAuditMe.class);
+		this.intercepted.run();
 		this.verifyLoggers();
 	}
 
 	@Test
 	void testIntercept_getsNameFromAnnotation()
 	{
-		Audit audit = new Audit()
-		{
-			@Override
-			public Class<? extends Annotation> annotationType()
-			{
-				return Audit.class;
-			}
-
-			@Override
-			public String value()
-			{
-				return AuditInterceptorTest.this.type;
-			}
-		};
-		Mockito.when(this.destinationExecutable.getAnnotation(Audit.class)).thenReturn(audit);
-
-		this.type = "Hello";
-		this.beforeType = "Helloing";
-		this.afterType = "Helloed";
-
-		this.interceptor.intercept(this.context);
-		this.verifyLoggers();
+		this.intercepted = this.factory.requestExact(HelloAuditMe.class);
+		this.intercepted.run();
+		this.verifyLoggers("Helloing", "Helloed");
 	}
 
 	private void verifyLoggers()
 	{
-		Mockito.verify(this.logger, Mockito.atLeastOnce())
-			.info(this.beforeType + ' ' + this.owner);
+		this.verifyLoggers("Testing", "Tested");
+	}
 
-		Mockito.verify(this.logger, Mockito.atLeastOnce())
-			.info(Matchers.matches(Pattern.quote(this.afterType + ' ' + this.owner + " in ") + "[0-9]+ms"));
+	private void verifyLoggers(String beforeType, String afterType)
+	{
+		Mockito.verify(this.logger, Mockito.times(1))
+			.info(beforeType + ' ' + this.intercepted);
+
+		Mockito.verify(this.logger, Mockito.times(1))
+			.info(Matchers.matches(Pattern.quote(afterType + ' ' + this.intercepted + " in ") + "[0-9]+ms"));
+	}
+
+	static class AuditMe implements Runnable
+	{
+		@Audit("Test")
+		@Override
+		public void run() { }
+	}
+
+	static class ExtendsAuditMe extends AuditMe
+	{
+		@Override
+		public void run() { }
+	}
+
+	static class SpecialCaseNameAuditMe implements Runnable
+	{
+		@Audit("Teste")
+		@Override
+		public void run() { }
+	}
+
+	static class HelloAuditMe implements Runnable
+	{
+		@Audit("Hello")
+		@Override
+		public void run() { }
+	}
+
+	@Supplied
+	static class NoLogger extends Logger
+	{
+		public NoLogger()
+		{
+			super(null, null);
+		}
+
+		@Override
+		public void info(String message)
+		{
+
+		}
 	}
 
 }
