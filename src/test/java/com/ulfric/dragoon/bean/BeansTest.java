@@ -44,8 +44,13 @@ public class BeansTest extends UtilTestBase {
 	{
 		InterfaceBean bean = Beans.create(InterfaceBean.class);
 
-		Verify.that(() -> bean.setString("foo")).runsWithoutExceptions();
-		Verify.that(bean::getString).valueIsEqualTo("foo");
+		Verify.that(bean.getString()).isNull();
+
+		bean.setString("foo");
+		Verify.that(bean.getString()).isEqualTo("foo");
+
+		bean.setString("bar");
+		Verify.that(bean.getString()).isEqualTo("bar");
 	}
 
 	@Test
@@ -53,8 +58,11 @@ public class BeansTest extends UtilTestBase {
 	{
 		InterfaceBean bean = Beans.create(InterfaceBean.class);
 
-		Verify.that(() -> bean.setTrue(true)).runsWithoutExceptions();
-		Verify.that(bean::isTrue).valueIsEqualTo(true);
+		bean.setTrue(true);
+		Verify.that(bean.isTrue()).isTrue();
+
+		bean.setTrue(false);
+		Verify.that(bean.isTrue()).isFalse();
 	}
 
 	@Test
@@ -70,7 +78,7 @@ public class BeansTest extends UtilTestBase {
 	{
 		InterfaceBean bean = Beans.create(InterfaceBean.class);
 
-		Method method = Try.to(() -> bean.getClass().getDeclaredMethod("getString"));
+		Method method = Try.to(() -> bean.getClass().getMethod("getString"));
 
 		Verify.that(method.isAnnotationPresent(MethodAnnotation.class)).isTrue();
 	}
@@ -78,7 +86,7 @@ public class BeansTest extends UtilTestBase {
 	@Test
 	void testCreate_reusesDynamicClass()
 	{
-		Verify.that(Beans.create(InterfaceBean.class)::getClass).suppliesNonUniqueValues();
+		Verify.that(() -> Beans.create(InterfaceBean.class).getClass()).suppliesNonUniqueValues();
 	}
 
 	public static class NotABean
@@ -86,7 +94,7 @@ public class BeansTest extends UtilTestBase {
 
 	}
 
-	public static class ConcreteBean extends Bean<ConcreteBean>
+	public static class ConcreteBean extends Bean
 	{
 
 	}
