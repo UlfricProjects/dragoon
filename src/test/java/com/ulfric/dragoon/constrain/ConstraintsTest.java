@@ -4,7 +4,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
@@ -18,6 +17,12 @@ import com.ulfric.verify.Verify;
 @RunWith(JUnitPlatform.class)
 @Util(Constraints.class)
 public class ConstraintsTest extends UtilTestBase {
+
+	@Test
+	void testCheck_nullValue()
+	{
+		Verify.that(() -> Constraints.validate(null)).doesThrow(NullPointerException.class);
+	}
 
 	@Test
 	void testCheck_valueIsNotNull()
@@ -71,9 +76,40 @@ public class ConstraintsTest extends UtilTestBase {
 	}
 
 	@Test
-	void testNoOp_errorMessage()
+	void testCheck_errorMessage_isEqual()
 	{
-		Verify.that(new NoOpValidator().errorMessage()).isEqualTo("");
+		BeanCheck bean = Beans.create(BeanCheck.class);
+		try
+		{
+			Constraints.validate(bean);
+		}
+		catch (ConstraintException exception)
+		{
+			Verify.that(exception.getMessage().equals("Must not be null"));
+		}
+	}
+
+	@Test
+	void testCheck_errorMessage_default()
+	{
+		NumberClass number = new NumberClass(0);
+		try
+		{
+			Constraints.validate(number);
+		}
+		catch (ConstraintException exception)
+		{
+			Verify.that(exception.getMessage().equals("Validation failed"));
+		}
+	}
+
+	@Test
+	void testGetConstraint_nonConstraint()
+	{
+		@NotAConstraint class Foo {}
+		NotAConstraint annotation = Foo.class.getDeclaredAnnotation(NotAConstraint.class);
+
+		Verify.that(() -> Constraints.getConstraint(annotation)).doesThrow(IllegalArgumentException.class);
 	}
 
 	public static class TestClass
@@ -93,7 +129,6 @@ public class ConstraintsTest extends UtilTestBase {
 	public static class NumberClass
 	{
 		@GreaterThan3 private final int x;
-		@NoOp private final int noOp = 2;
 
 		public NumberClass(int x)
 		{
@@ -119,7 +154,7 @@ public class ConstraintsTest extends UtilTestBase {
 	@Constraint(validator = NotNullValidator.class)
 	public @interface NotNull
 	{
-
+		String error() default "Must not be null";
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -131,22 +166,23 @@ public class ConstraintsTest extends UtilTestBase {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ElementType.FIELD, ElementType.METHOD})
-	@Constraint
-	public @interface NoOp
+	@Target({ElementType.TYPE})
+	public @interface NotAConstraint
 	{
 
 	}
+
+
 
 	public static class NotNullValidator implements ConstraintValidator<Object>
 	{
 
 		@Override
-		public void check(Field field, Object object) throws ConstraintException
+		public void check(Object object) throws ConstraintException
 		{
 			if (object == null)
 			{
-				throw new ConstraintException(this, field);
+				throw new ConstraintException(this);
 			}
 		}
 
@@ -156,23 +192,17 @@ public class ConstraintsTest extends UtilTestBase {
 			return Object.class;
 		}
 
-		@Override
-		public String errorMessage()
-		{
-			return "Value cannot be null";
-		}
-
 	}
 
 	public static class GreaterThan3Validator implements ConstraintValidator<Number>
 	{
 
 		@Override
-		public void check(Field field, Number number) throws ConstraintException
+		public void check(Number number) throws ConstraintException
 		{
 			if (number.longValue() <= 3)
 			{
-				throw new ConstraintException(this, field);
+				throw new ConstraintException(this);
 			}
 		}
 
@@ -182,11 +212,6 @@ public class ConstraintsTest extends UtilTestBase {
 			return Number.class;
 		}
 
-		@Override
-		public String errorMessage()
-		{
-			return "Value must be greater than 3";
-		}
 	}
 
 }

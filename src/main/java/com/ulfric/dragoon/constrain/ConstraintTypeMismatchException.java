@@ -1,6 +1,8 @@
 package com.ulfric.dragoon.constrain;
 
-public class ConstraintTypeMismatchException extends RuntimeException {
+import java.security.InvalidParameterException;
+
+public class ConstraintTypeMismatchException extends InvalidParameterException {
 
 	ConstraintTypeMismatchException(String message)
 	{

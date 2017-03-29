@@ -15,7 +15,7 @@ public enum FieldInfoExtractor {
 
 		String name = FieldInfoExtractor.getName(method, sub);
 		Class<?> type = FieldInfoExtractor.getType(method);
-		Annotation[] annotations = method.getDeclaredAnnotations();
+		Annotation[] annotations = method.getAnnotations();
 
 		return new FieldInfo(name, type, annotations);
 	}

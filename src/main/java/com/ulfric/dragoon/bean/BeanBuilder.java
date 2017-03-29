@@ -110,13 +110,8 @@ final class BeanBuilder<T> {
 	private void createField(Method method)
 	{
 		FieldInfo info = FieldInfoExtractor.from(method);
-		this.createField(info);
-	}
 
-	private void createField(FieldInfo info)
-	{
-		this.builder =
-				this.builder
+		this.builder = this.builder
 						.defineField(info.getFieldName(), info.getFieldType(), Visibility.PRIVATE)
 						.annotateField(info.getAnnotations());
 	}

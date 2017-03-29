@@ -3,6 +3,7 @@ package com.ulfric.dragoon.constrain;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,69 +12,71 @@ import java.util.stream.Stream;
 
 import com.google.gson.internal.Primitives;
 import com.ulfric.commons.exception.Try;
-import com.ulfric.dragoon.construct.InstanceUtils;
 
-public class ConstraintProfile<T> {
+class ConstraintProfile<T> {
 
-	private final Class<T> clazz;
-	private final Map<Field, List<ConstraintValidator<?>>> validators = new HashMap<>();
+	private final Class<T> validationCandidate;
+	private final Map<Field, List<ConstraintValidator<?>>> validators;
 
-	public ConstraintProfile(Class<T> clazz)
+	ConstraintProfile(Class<T> validationCandidate)
 	{
-		this.clazz = clazz;
-		this.loadValidators();
+		this.validationCandidate = validationCandidate;
+		this.validators = Collections.unmodifiableMap(this.getValidators());
 	}
 
-	public void check(T instance)
+	void check(T instance)
 	{
-		this.validators.keySet().forEach(field ->
+		this.validators.forEach((field, validators) ->
 		{
 			Object value = Try.to(() -> field.get(instance));
 
-			this.validators.get(field).forEach(validator ->
+			validators.forEach(validator ->
 			{
 				@SuppressWarnings("unchecked")
 				ConstraintValidator<Object> objectValidator =
 						(ConstraintValidator<Object>) validator;
 
-				objectValidator.check(field, value);
+				objectValidator.check(value);
 			});
 		});
 	}
 
-	private void loadValidators()
+	private Map<Field, List<ConstraintValidator<?>>> getValidators()
 	{
-		for (Field field : this.clazz.getDeclaredFields())
+		Map<Field, List<ConstraintValidator<?>>> validators = new HashMap<>();
+
+		for (Field field : this.validationCandidate.getDeclaredFields())
 		{
 			if (!this.isConstrainable(field))
 			{
 				continue;
 			}
 
-			List<Constraint> constraints = this.getConstraints(field);
+			List<Annotation> annotations = this.getConstraints(field);
 
-			if (constraints.isEmpty())
+			if (annotations.isEmpty())
 			{
 				continue;
 			}
 
 			field.setAccessible(true);
 
-			List<ConstraintValidator<?>> validators =
-					constraints
+			List<ConstraintValidator<?>> constraints =
+					annotations
 							.stream()
-							.map(Constraint::validator)
-							.map(InstanceUtils::createOrNull)
+							.map(Constraints::getConstraint)
 							.peek(validator -> this.ensureFieldMatchesValidator(field, validator))
 							.collect(Collectors.toList());
 
-			this.validators.put(field, validators);
+			validators.put(field, constraints);
 		}
+
+		return validators;
 	}
 
 	private void ensureFieldMatchesValidator(Field field, ConstraintValidator<?> validator)
 	{
-		if (!validator.validationType().isAssignableFrom(Primitives.wrap(field.getType())))
+		if (!validator.validationType().isAssignableFrom(this.getValidatableType(field)))
 		{
 			throw new ConstraintTypeMismatchException(
 				"Validator type [" + validator.validationType().getName() +
@@ -82,17 +85,21 @@ public class ConstraintProfile<T> {
 		}
 	}
 
+	private Class<?> getValidatableType(Field field)
+	{
+		return Primitives.wrap(field.getType());
+	}
+
 	private boolean isConstrainable(Field field)
 	{
 		return !Modifier.isStatic(field.getModifiers());
 	}
 
 
-	private List<Constraint> getConstraints(Field field)
+	private List<Annotation> getConstraints(Field field)
 	{
-		return Stream.of(field.getDeclaredAnnotations())
+		return Stream.of(field.getAnnotations())
 				.filter(this::isConstraint)
-				.map(annotation -> annotation.annotationType().getAnnotation(Constraint.class))
 				.collect(Collectors.toList());
 	}
 
