@@ -3,7 +3,6 @@ package com.ulfric.dragoon;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,9 +10,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.ClassUtils.Interfaces;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
+import com.ulfric.commons.reflect.AnnotationUtils;
 import com.ulfric.dragoon.intercept.Intercept;
 import com.ulfric.dragoon.intercept.Interceptor;
-import com.ulfric.commons.reflect.AnnotationUtils;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
@@ -105,12 +104,7 @@ final class DynamicSubclassBuilder<T> {
 
 	private List<Interceptor> getInterceptors(Method method)
 	{
-		List<Interceptor> interceptors = new ArrayList<>();
-
-		interceptors.addAll(this.getDirectInterceptors(method));
-		this.getSuperMethods(method).stream().map(this::getDirectInterceptors).forEach(interceptors::addAll);
-
-		return interceptors;
+		return this.getSuperMethods(method).stream().map(this::getDirectInterceptors).flatMap(List::stream).collect(Collectors.toList());
 	}
 
 	private List<Interceptor> getDirectInterceptors(Method method)

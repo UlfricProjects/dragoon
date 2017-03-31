@@ -4,11 +4,12 @@ import java.lang.reflect.Executable;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
+import com.ulfric.commons.naming.Named;
+import com.ulfric.commons.reflect.AnnotationUtils;
+import com.ulfric.commons.text.FormatUtils;
 import com.ulfric.dragoon.inject.Inject;
 import com.ulfric.dragoon.intercept.Context;
 import com.ulfric.dragoon.intercept.Interceptor;
-import com.ulfric.commons.naming.Named;
-import com.ulfric.commons.text.FormatUtils;
 
 public final class AuditInterceptor implements Interceptor {
 
@@ -55,11 +56,7 @@ public final class AuditInterceptor implements Interceptor {
 		private String getAroundType()
 		{
 			Executable destination = this.context.getDestinationExecutable();
-			Audit around = destination.getAnnotation(Audit.class);
-			if (around == null)
-			{
-				return destination.getName();
-			}
+			Audit around = AnnotationUtils.getRootAnnotation(destination, Audit.class);
 			return around.value();
 		}
 
