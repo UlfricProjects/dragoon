@@ -41,12 +41,9 @@ public final class SuppliedScopeStrategy implements ScopeStrategy {
 		{
 			return Scoped.createEmptyScope(request);
 		}
-		else
-		{
-			@SuppressWarnings("unchecked")
-			T object = (T) supplier.get();
-			return new Scoped<>(request, object);
-		}
+		@SuppressWarnings("unchecked")
+		T object = (T) supplier.get();
+		return new Scoped<>(request, object);
 	}
 
 }
