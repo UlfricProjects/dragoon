@@ -26,10 +26,7 @@ public final class SharedScopeStrategy implements ScopeStrategy {
 		{
 			return Scoped.createEmptyScope(request);
 		}
-		else
-		{
-			return new Scoped<>(request, instance);
-		}
+		return new Scoped<>(request, instance);
 	}
 
 }
