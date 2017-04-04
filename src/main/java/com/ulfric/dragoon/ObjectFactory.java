@@ -1,6 +1,5 @@
 package com.ulfric.dragoon;
 
-import java.lang.annotation.Annotation;
 import java.util.Objects;
 
 import com.ulfric.dragoon.initialize.Initialize;
@@ -11,6 +10,7 @@ import com.ulfric.dragoon.interceptors.Audit;
 import com.ulfric.dragoon.interceptors.AuditInterceptor;
 import com.ulfric.dragoon.scope.Default;
 import com.ulfric.dragoon.scope.DefaultScopeStrategy;
+import com.ulfric.dragoon.scope.Scope;
 import com.ulfric.dragoon.scope.Scoped;
 import com.ulfric.dragoon.scope.Shared;
 import com.ulfric.dragoon.scope.SharedScopeStrategy;
@@ -71,14 +71,17 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Service
 	{
 		Objects.requireNonNull(request);
 
+		if (this.isScope(request))
+		{
+			return this.scopes.createBinding(request);
+		}
+
 		return this.bindings.createBinding(request);
 	}
 
-	public Binding bindScope(Class<? extends Annotation> request)
+	private boolean isScope(Class<?> request)
 	{
-		Objects.requireNonNull(request);
-
-		return this.scopes.createBinding(request);
+		return request.isAnnotation() && request.isAnnotationPresent(Scope.class);
 	}
 
 	public <T> T requestExact(Class<T> request)
