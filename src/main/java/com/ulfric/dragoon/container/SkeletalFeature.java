@@ -36,9 +36,9 @@ public class SkeletalFeature implements Feature {
 	{
 		this.verify(this::isUnloaded);
 
-		this.onLoad();
 		this.loaded = true;
 		this.onStateChange();
+		this.onLoad();
 	}
 
 	@Override
@@ -48,9 +48,9 @@ public class SkeletalFeature implements Feature {
 
 		this.loadIfNotLoaded();
 
-		this.onEnable();
 		this.enabled = true;
 		this.onStateChange();
+		this.onEnable();
 	}
 
 	private void loadIfNotLoaded()
@@ -66,9 +66,9 @@ public class SkeletalFeature implements Feature {
 	{
 		this.verify(this::isEnabled);
 
-		this.onDisable();
 		this.enabled = false;
 		this.onStateChange();
+		this.onDisable();
 	}
 
 	private void verify(BooleanSupplier flag)

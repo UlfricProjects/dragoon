@@ -1,13 +1,12 @@
 package com.ulfric.dragoon.container;
 
-import java.util.logging.Logger;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
 import com.ulfric.dragoon.ObjectFactory;
+import com.ulfric.dragoon.TestObjectFactory;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
@@ -15,50 +14,48 @@ public class SkeletalFeatureTest {
 
 	private ObjectFactory factory;
 	private Container parent;
-	private Feature child;
 
 	@BeforeEach
 	void init()
 	{
-		this.factory = ObjectFactory.newInstance();
-		this.factory.bind(Logger.class).to(NullLogger.class);
+		Child.instance = null;
+		this.factory = TestObjectFactory.newInstance();
 		this.parent = this.factory.requestExact(Container.class);
-		this.parent.install(TestingFeature.class);
-		this.child = TestingFeature.lastInstance;
+		this.parent.install(Child.class);
 	}
 
 	@Test
 	void testParentLoad_LoadsChild()
 	{
-		Verify.that(this.child.isLoaded()).isFalse();
+		Verify.that(Child.instance).isNull();
 		this.parent.load();
-		Verify.that(this.child.isLoaded()).isTrue();
+		Verify.that(Child.instance.isLoaded()).isTrue();
 	}
 
 	@Test
 	void testParentEnable_EnablesChild()
 	{
-		Verify.that(this.child.isEnabled()).isFalse();
+		Verify.that(Child.instance).isNull();
 		this.parent.enable();
-		Verify.that(this.child.isEnabled()).isTrue();
+		Verify.that(Child.instance.isEnabled()).isTrue();
 	}
 
 	@Test
 	void testParentDisable_DisableChild()
 	{
 		this.parent.enable();
-		Verify.that(this.child.isDisabled()).isFalse();
+		Verify.that(Child.instance.isDisabled()).isFalse();
 		this.parent.disable();
-		Verify.that(this.child.isDisabled()).isTrue();
+		Verify.that(Child.instance.isDisabled()).isTrue();
 	}
 
-	static class TestingFeature extends SkeletalFeature
+	static class Child extends SkeletalFeature
 	{
-		static TestingFeature lastInstance;
+		static Child instance;
 
-		public TestingFeature()
+		public Child()
 		{
-			TestingFeature.lastInstance = this;
+			Child.instance = this;
 		}
 	}
 

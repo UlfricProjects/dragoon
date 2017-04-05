@@ -2,24 +2,34 @@ package com.ulfric.dragoon;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.ulfric.dragoon.initialize.Initialize;
-import com.ulfric.dragoon.scope.Scoped;
+import org.apache.commons.lang3.ClassUtils;
+
 import com.ulfric.commons.exception.Try;
 import com.ulfric.commons.reflect.HandleUtils;
+import com.ulfric.dragoon.initialize.Initialize;
+import com.ulfric.dragoon.scope.Scoped;
 
 final class Initializer {
 
+	private static final String SCOPE_READ_TYPE = "init";
 	private static final Map<Class<?>, List<Initializable>> INITIALIZE_METHODS = new IdentityHashMap<>();
+	private static final Method[] EMPTY_METHOD_ARRAY = new Method[0];
 
 	void initializeScoped(Scoped<?> scoped)
 	{
-		Object toInitialize = scoped.read();
+		if (scoped.isRead(Initializer.SCOPE_READ_TYPE))
+		{
+			return;
+		}
+
+		Object toInitialize = scoped.read(Initializer.SCOPE_READ_TYPE);
 		this.initializeObject(toInitialize);
 	}
 
@@ -36,11 +46,29 @@ final class Initializer {
 
 	private static List<Initializable> createInitializables(Class<?> clazz)
 	{
-		return Stream.concat(Stream.of(clazz.getDeclaredMethods()), Stream.of(clazz.getMethods()))
+		return Stream.of(clazz.getDeclaredMethods(), clazz.getMethods(),
+						Initializer.getAllPrivateMethods(clazz.getSuperclass()))
+				.flatMap(Stream::of)
 				.distinct()
 				.filter(Initializer::isInitializable)
 				.map(Initializable::new)
 				.collect(Collectors.toList());
+	}
+
+	private static Method[] getAllPrivateMethods(Class<?> clazz)
+	{
+		if (clazz == null)
+		{
+			return Initializer.EMPTY_METHOD_ARRAY;
+		}
+		List<Class<?>> allClasses = ClassUtils.getAllSuperclasses(clazz);
+		allClasses.add(clazz);
+
+		return allClasses.stream()
+				.map(Class::getDeclaredMethods)
+				.flatMap(Stream::of)
+				.filter(method -> Modifier.isPrivate(method.getModifiers()))
+				.toArray(Method[]::new);
 	}
 
 	private static boolean isInitializable(Method method)

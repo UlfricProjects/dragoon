@@ -1,19 +1,17 @@
 package com.ulfric.dragoon.container;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.logging.Logger;
 
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
-import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.commons.exception.Try;
+import com.ulfric.dragoon.ObjectFactory;
+import com.ulfric.dragoon.TestObjectFactory;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
@@ -27,13 +25,12 @@ public class ContainerTest {
 	@BeforeEach
 	void init()
 	{
-		this.factory = ObjectFactory.newInstance();
-		this.factory.bind(Logger.class).to(NullLogger.class);
+		this.factory = TestObjectFactory.newInstance();
 		this.container = this.factory.requestExact(Container.class);
 
 		Try.to(() ->
 		{
-			Field field = Container.class.getDeclaredField("FEATURE_WRAPPERS");
+			Field field = FeatureStateController.class.getDeclaredField("FEATURE_WRAPPERS");
 			field.setAccessible(true);
 			Map<?, ?> map = (Map<?, ?>) field.get(null);
 			map.clear();
@@ -59,48 +56,9 @@ public class ContainerTest {
 	}
 
 	@Test
-	void testGetFeatureWrapper_unregisteredRequest()
-	{
-		Verify.that(this.getFeatureWrapper(Hello.class)).isNull();
-	}
-
-	@Test
-	void testGetFeatureWrapper_superclassRequest()
-	{
-		Container.registerFeatureWrapper(Hello.class, new HelloFeature());
-		Verify.that(this.getFeatureWrapper(SubHello.class)).isInstanceOf(HelloFeature.class);
-	}
-
-	@Test
-	void testGetFeatureWrapper_exactRequest()
-	{
-		Container.registerFeatureWrapper(Hello.class, new HelloFeature());
-		Verify.that(this.getFeatureWrapper(Hello.class)).isInstanceOf(HelloFeature.class);
-	}
-
-	@Test
-	void testInstall_nullFeature()
-	{
-		Verify.that(() -> this.container.install(null)).doesThrow(NullPointerException.class);
-	}
-
-	@Test
 	void testInstall_container()
 	{
-		Verify.that(() -> this.container.install(FooContainer.class)).runsWithoutExceptions();
-	}
-
-	@Test
-	void testInstall_arbitraryClass()
-	{
-		Verify.that(() -> this.container.install(Hello.class)).doesThrow(FeatureWrapperMissingException.class);
-	}
-
-	@Test
-	void testInstall_wrappedClass()
-	{
-		Container.registerFeatureWrapper(Hello.class, new HelloFeature());
-		Verify.that(() -> this.container.install(Hello.class)).runsWithoutExceptions();
+		Verify.that(() -> this.container.install(TestContainer.class)).runsWithoutExceptions();
 	}
 
 	@Test
@@ -130,17 +88,6 @@ public class ContainerTest {
 		Verify.that(() -> this.container.disable()).doesThrow(IllegalStateException.class);
 	}
 
-	private <T> FeatureWrapper<T> getFeatureWrapper(Class<T> request)
-	{
-		return Try.to(() -> {
-			Method method = MethodUtils.getMatchingMethod(Container.class, "getFeatureWrapper", Class.class);
-			method.setAccessible(true);
-			@SuppressWarnings("unchecked")
-			FeatureWrapper<T> casted = (FeatureWrapper<T>) method.invoke(null, request);
-			return casted;
-		});
-	}
-
 	public static class Hello
 	{
 
@@ -159,11 +106,6 @@ public class ContainerTest {
 		{
 			return ContainerTest.this.feature;
 		}
-
-	}
-
-	public static class FooContainer extends Container
-	{
 
 	}
 
