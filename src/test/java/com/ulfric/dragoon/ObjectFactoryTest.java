@@ -46,15 +46,9 @@ public class ObjectFactoryTest {
 	}
 
 	@Test
-	void testBindScope_null_throwsNPE()
+	void testBind_scope_isNotNull()
 	{
-		Verify.that(() -> this.factory.bindScope(null)).doesThrow(NullPointerException.class);
-	}
-
-	@Test
-	void testBindScope_nonnull_isNotNull()
-	{
-		Verify.that(this.factory.bindScope(Default.class)).isNotNull();
+		Verify.that(this.factory.bind(Default.class)).isNotNull();
 	}
 
 	@Test
