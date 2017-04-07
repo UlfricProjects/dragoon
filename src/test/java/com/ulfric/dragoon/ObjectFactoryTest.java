@@ -18,7 +18,7 @@ public class ObjectFactoryTest {
 	@BeforeEach
 	void init()
 	{
-		this.factory = ObjectFactory.newInstance();
+		this.factory = TestObjectFactory.newInstance();
 	}
 
 	@Test

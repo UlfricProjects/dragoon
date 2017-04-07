@@ -1,118 +1,129 @@
 package com.ulfric.dragoon.container;
 
-import java.lang.reflect.Field;
-import java.util.Set;
+import java.lang.reflect.Method;
 
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.ulfric.commons.exception.Try;
+import com.ulfric.dragoon.ObjectFactory;
+import com.ulfric.dragoon.TestObjectFactory;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
 public class FeatureStateControllerTest {
 
-	private Feature parent;
-	private FeatureStateController controller;
+	@Mock
+	private Feature feature;
 
-	private Feature toInstall;
-	private Feature secondInstall;
+	private ObjectFactory factory;
+	private Container container;
+	private FeatureStateController states;
 
 	@BeforeEach
 	void init()
 	{
-		this.parent = Mockito.mock(Feature.class);
-
-		Mockito.when(this.parent.isLoaded()).thenReturn(true);
-		Mockito.when(this.parent.isEnabled()).thenReturn(true);
-
-		this.toInstall = Mockito.mock(Feature.class);
-		this.secondInstall = Mockito.mock(Feature.class);
-
-		this.controller = new FeatureStateController(this.parent);
+		MockitoAnnotations.initMocks(this);
+		this.factory = TestObjectFactory.newInstance();
+		this.container = this.factory.requestExact(Container.class);
+		this.states = FeatureStateController.newInstance(this.factory, this.container);
+		TestContainer.clearFeatureWrappers();
 	}
 
 	@Test
-	void testInstall_nullValue()
+	void testInstall_nullFeature()
 	{
-		Verify.that(() -> this.controller.install(null)).doesThrow(NullPointerException.class);
+		Verify.that(() -> this.states.install(null)).doesThrow(NullPointerException.class);
 	}
 
 	@Test
-	void testInstall_notLoaded()
+	void testInstall_container()
 	{
-		Mockito.when(this.toInstall.isLoaded()).thenReturn(false);
-		Mockito.when(this.toInstall.isEnabled()).thenReturn(false);
-
-		Verify.that(() -> this.controller.install(this.toInstall)).runsWithoutExceptions();
-
-		Set<Feature> states = this.getControllerStatesField();
-
-		Verify.that(states.contains(this.toInstall));
-
-		this.controller.install(this.toInstall);
-
-		Verify.that(states.size()).isEqualTo(1);
-	}
-
-	@SuppressWarnings("unchecked")
-	private Set<Feature> getControllerStatesField()
-	{
-		Field statesField = Try.to(() -> FeatureStateController.class.getDeclaredField("states"));
-		statesField.setAccessible(true);
-
-		return Try.to(() -> (Set<Feature>) statesField.get(this.controller));
+		this.container.loaded = true;
+		Verify.that(() -> this.states.install(TestContainer.class)).runsWithoutExceptions();
 	}
 
 	@Test
-	void testInstall_multiple()
+	void testInstall_containerLazily()
 	{
-		this.mockInstallationCandidates();
-
-		this.controller.install(this.toInstall);
-		this.controller.install(this.secondInstall);
-
-		this.disableParent();
-
-		boolean[] disabled = this.mockDisable();
-
-		this.controller.refresh();
-
-		Verify.that(disabled[0]).isTrue();
+		Verify.that(() -> this.states.install(TestContainer.class)).runsWithoutExceptions();
 	}
 
-	private void mockInstallationCandidates()
+	@Test
+	void testInstall_arbitraryClass()
 	{
-		Mockito.when(this.toInstall.isLoaded()).thenReturn(true);
-		Mockito.when(this.toInstall.isEnabled()).thenReturn(true);
-		Mockito.when(this.toInstall.isDisabled()).thenReturn(false);
-
-		Mockito.when(this.secondInstall.isLoaded()).thenReturn(false);
-		Mockito.when(this.secondInstall.isEnabled()).thenReturn(false);
-		Mockito.when(this.secondInstall.isDisabled()).thenReturn(true);
+		this.container.loaded = true;
+		Verify.that(() -> this.states.install(Hello.class)).doesThrow(FeatureWrapperMissingException.class);
 	}
 
-	private boolean[] mockDisable()
+	@Test
+	void testInstall_wrappedClass()
 	{
-		final boolean[] disabled = new boolean[] { false };
+		this.container.loaded = true;
+		Container.registerFeatureWrapper(Hello.class, new HelloFeature());
+		Verify.that(() -> this.states.install(Hello.class)).runsWithoutExceptions();
+	}
 
-		Mockito.doAnswer(ignored ->
+	@Test
+	void testInstall_twice()
+	{
+		Verify.that(() -> this.states.install(TestContainer.class)).runsWithoutExceptions();
+		Verify.that(() -> this.states.install(TestContainer.class)).doesThrow(IllegalStateException.class);
+	}
+
+	@Test
+	void testGetFeatureWrapper_unregisteredRequest()
+	{
+		Verify.that(this.getFeatureWrapper(Hello.class)).isNull();
+	}
+
+	@Test
+	void testGetFeatureWrapper_superclassRequest()
+	{
+		Container.registerFeatureWrapper(Hello.class, new HelloFeature());
+		Verify.that(this.getFeatureWrapper(SubHello.class)).isInstanceOf(HelloFeature.class);
+	}
+
+	@Test
+	void testGetFeatureWrapper_exactRequest()
+	{
+		Container.registerFeatureWrapper(Hello.class, new HelloFeature());
+		Verify.that(this.getFeatureWrapper(Hello.class)).isInstanceOf(HelloFeature.class);
+	}
+
+	private <T> FeatureWrapper<T> getFeatureWrapper(Class<T> request)
+	{
+		return Try.to(() -> {
+			Method method = MethodUtils.getMatchingMethod(FeatureStateController.class, "getFeatureWrapper", Class.class);
+			method.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			FeatureWrapper<T> casted = (FeatureWrapper<T>) method.invoke(null, request);
+			return casted;
+		});
+	}
+
+	public static class Hello
+	{
+
+	}
+
+	public static class SubHello extends Hello
+	{
+
+	}
+
+	public final class HelloFeature implements FeatureWrapper<Hello>
+	{
+		@Override
+		public Feature apply(Feature parent, Hello hello)
 		{
-			disabled[0] = true;
-			return null;
-		}).when(this.toInstall).disable();
-
-		return disabled;
-	}
-
-	private void disableParent()
-	{
-		Mockito.when(this.parent.isLoaded()).thenReturn(false);
-		Mockito.when(this.parent.isEnabled()).thenReturn(false);
-		Mockito.when(this.parent.isDisabled()).thenReturn(true);
+			return FeatureStateControllerTest.this.feature;
+		}
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.ulfric.dragoon.container;
+package com.ulfric.dragoon.interceptors;
 
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -13,7 +13,8 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import com.ulfric.dragoon.ObjectFactory;
-import com.ulfric.dragoon.interceptors.Audit;
+import com.ulfric.dragoon.container.Container;
+import com.ulfric.dragoon.container.NullLogger;
 import com.ulfric.dragoon.scope.Supplied;
 import com.ulfric.dragoon.scope.SuppliedScopeStrategy;
 
@@ -62,6 +63,15 @@ public class AuditInterceptorTest {
 		this.verifyLoggers("Helloing", "Helloed");
 	}
 
+	@Test
+	void testIntercept_container()
+	{
+		this.intercepted = this.factory.requestExact(AuditMeContainer.class);
+		this.intercepted.run();
+		System.out.println(this.intercepted);
+		this.verifyLoggers("Loading", "Loaded");
+	}
+
 	private void verifyLoggers()
 	{
 		this.verifyLoggers("Testing", "Tested");
@@ -103,19 +113,25 @@ public class AuditInterceptorTest {
 		public void run() { }
 	}
 
-	@Supplied
-	static class NoLogger extends Logger
+	static class AuditMeContainer extends Container implements Runnable
 	{
-		public NoLogger()
+		@Override
+		public void run()
 		{
-			super(null, null);
+			this.onLoad();
 		}
 
 		@Override
-		public void info(String message)
+		public void onLoad()
 		{
-
+			
 		}
+	}
+
+	@Supplied
+	static class NoLogger extends NullLogger
+	{
+
 	}
 
 }

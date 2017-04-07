@@ -16,6 +16,7 @@ import com.ulfric.commons.reflect.HandleUtils;
 
 final class Injector {
 
+	private static final String SCOPE_READ_TYPE = "inject";
 	private static final Map<Class<?>, List<Injectable>> INJECTABLE_FIELDS = new IdentityHashMap<>();
 	private final ObjectFactory factory;
 
@@ -26,12 +27,12 @@ final class Injector {
 
 	void injectFields(Scoped<?> scoped)
 	{
-		if (scoped.isRead())
+		if (scoped.isRead(Injector.SCOPE_READ_TYPE))
 		{
 			return;
 		}
 
-		Object injectInto = scoped.read();
+		Object injectInto = scoped.read(Injector.SCOPE_READ_TYPE);
 		this.injectValuesIntoObject(injectInto);
 	}
 

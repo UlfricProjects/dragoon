@@ -19,7 +19,7 @@ public class InitializerTest {
 	@BeforeEach
 	void init()
 	{
-		this.factory = ObjectFactory.newInstance();
+		this.factory = TestObjectFactory.newInstance();
 		this.initializer = new Initializer();
 	}
 
@@ -39,6 +39,16 @@ public class InitializerTest {
 		Scoped<?> scoped = new Scoped<>(DoInit.class, init);
 		Verify.that(() -> this.initializer.initializeScoped(scoped)).runsWithoutExceptions();
 		Verify.that(init.initialized).isTrue();
+	}
+
+	@Test
+	void testInitializeScoped_doNInitButAlreadyRead()
+	{
+		DoInit init = new DoInit();
+		Scoped<?> scoped = new Scoped<>(DoInit.class, init);
+		scoped.read("init");
+		Verify.that(() -> this.initializer.initializeScoped(scoped)).runsWithoutExceptions();
+		Verify.that(init.initialized).isFalse();
 	}
 
 	@Test

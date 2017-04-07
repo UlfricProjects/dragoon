@@ -24,7 +24,7 @@ public class SubclasserTest {
 	@BeforeEach
 	void init()
 	{
-		this.factory = ObjectFactory.newInstance();
+		this.factory = TestObjectFactory.newInstance();
 		this.subclasser = new Subclasser(this.factory);
 		this.factory.bind(InterceptMe.class).to(PassthroughInterceptor.class);
 	}

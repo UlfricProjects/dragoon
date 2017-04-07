@@ -20,7 +20,7 @@ public class InjectorTest {
 	@BeforeEach
 	void init()
 	{
-		this.factory = ObjectFactory.newInstance();
+		this.factory = TestObjectFactory.newInstance();
 		this.injector = new Injector(this.factory);
 	}
 
@@ -28,9 +28,9 @@ public class InjectorTest {
 	void testInjectFields_isRead_isNotInjected()
 	{
 		Scoped<Example> scoped = new Scoped<>(Example.class, new Example());
-		scoped.read();
+		scoped.read("inject");
 		this.injector.injectFields(scoped);
-		Verify.that(scoped.read().value).isNull();
+		Verify.that(scoped.read("inject").value).isNull();
 	}
 
 	@Test
@@ -38,7 +38,7 @@ public class InjectorTest {
 	{
 		Scoped<Example> scoped = new Scoped<>(Example.class, new Example());
 		this.injector.injectFields(scoped);
-		Verify.that(scoped.read().value).isNotNull();
+		Verify.that(scoped.read("inject").value).isNotNull();
 	}
 
 	@Test
@@ -52,6 +52,14 @@ public class InjectorTest {
 	{
 		@Inject
 		Object value;
+
+		@Inject
+		Obj otherValue;
+	}
+
+	static final class Obj
+	{
+		
 	}
 
 }

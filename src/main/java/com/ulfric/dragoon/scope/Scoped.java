@@ -1,6 +1,8 @@
 package com.ulfric.dragoon.scope;
 
+import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 public final class Scoped<T> {
 
@@ -12,7 +14,7 @@ public final class Scoped<T> {
 	private final Class<T> request;
 	private final T value;
 
-	private volatile boolean read;
+	private Set<String> reads;
 
 	public Scoped(Class<T> request, T value)
 	{
@@ -22,18 +24,42 @@ public final class Scoped<T> {
 
 	public T read()
 	{
+		return this.read(null);
+	}
+
+	public T read(String type)
+	{
 		if (this.isEmpty())
 		{
 			throw new NoSuchElementException("Could read scoped for request: " + request.getName());
 		}
 
-		this.read = true;
+		this.markRead(type);
 		return this.value;
+	}
+
+	private void markRead(String type)
+	{
+		this.makeReadable();
+		this.reads.add(type);
+	}
+
+	private void makeReadable()
+	{
+		if (this.reads == null)
+		{
+			this.reads = new HashSet<>();
+		}
 	}
 
 	public boolean isRead()
 	{
-		return this.read;
+		return this.reads != null;
+	}
+
+	public boolean isRead(String type)
+	{
+		return this.isRead() && this.reads.contains(type);
 	}
 
 	public boolean isEmpty()
