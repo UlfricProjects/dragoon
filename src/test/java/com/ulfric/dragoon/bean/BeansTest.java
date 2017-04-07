@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 
 import com.ulfric.commons.bean.Bean;
 import com.ulfric.commons.exception.Try;
+import com.ulfric.dragoon.Dynamic;
 import com.ulfric.testing.Util;
 import com.ulfric.testing.UtilTestBase;
 import com.ulfric.verify.Verify;
@@ -89,6 +90,14 @@ public class BeansTest extends UtilTestBase {
 		Verify.that(() -> Beans.create(InterfaceBean.class).getClass()).suppliesNonUniqueValues();
 	}
 
+	@Test
+	void testCreate_markedDynamic()
+	{
+		InterfaceBean bean = Beans.create(InterfaceBean.class);
+
+		Verify.that(bean instanceof Dynamic).isTrue();
+	}
+
 	public static class NotABean
 	{
 
@@ -120,7 +129,7 @@ public class BeansTest extends UtilTestBase {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.METHOD)
+	@Target({ElementType.METHOD, ElementType.FIELD})
 	public @interface MethodAnnotation
 	{
 

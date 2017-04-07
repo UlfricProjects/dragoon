@@ -35,7 +35,9 @@ final class DynamicSubclassBuilder<T> {
 
 	private DynamicType.Builder<T> createNewBuilder()
 	{
-		return new ByteBuddy().subclass(this.parent);
+		return new ByteBuddy()
+				.subclass(this.parent)
+				.implement(Dynamic.class);
 	}
 
 	Class<? extends T> build()

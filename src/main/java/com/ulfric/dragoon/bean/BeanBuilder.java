@@ -1,14 +1,13 @@
 package com.ulfric.dragoon.bean;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ClassUtils;
 
 import com.ulfric.commons.bean.Bean;
 import com.ulfric.commons.exception.Try;
+import com.ulfric.dragoon.Dynamic;
 import com.ulfric.dragoon.bean.FieldInfoExtractor.FieldInfo;
 
 import net.bytebuddy.ByteBuddy;
@@ -24,7 +23,6 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 final class BeanBuilder<T> {
 
-	private final Set<FieldInfo> registeredFields = new HashSet<>();
 	private final Class<T> interfaceType;
 	private DynamicType.Builder<Bean> builder;
 
@@ -47,6 +45,7 @@ final class BeanBuilder<T> {
 	private void make()
 	{
 		this.implementMethods();
+		this.createFields();
 		this.restoreAnnotationsFromParent();
 	}
 
@@ -54,7 +53,8 @@ final class BeanBuilder<T> {
 	{
 		return new ByteBuddy(ClassFileVersion.JAVA_V8)
 				.subclass(Bean.class)
-				.implement(this.interfaceType);
+				.implement(this.interfaceType)
+				.implement(Dynamic.class);
 	}
 
 	private void implementMethods()
@@ -94,27 +94,26 @@ final class BeanBuilder<T> {
 
 	private void implementMethod(Method method)
 	{
-		this.ensureFieldCreated(method);
-
 		this.builder =
 				this.builder.method(ElementMatchers.is(method))
 						.intercept(FieldAccessor.ofBeanProperty())
 						.annotateMethod(method.getDeclaredAnnotations());
 	}
 
-	private void ensureFieldCreated(Method method)
+	private void createFields()
+	{
+		this.streamMethods(ElementMatchers.isGetter())
+				.map(this::unwrapDescription)
+				.forEach(this::createField);
+	}
+
+	private void createField(Method method)
 	{
 		FieldInfo info = FieldInfoExtractor.from(method);
 
-		if (!this.registeredFields.contains(info)) {
-			this.createField(info);
-			this.registeredFields.add(info);
-		}
-	}
-
-	private void createField(FieldInfo info)
-	{
-		this.builder = this.builder.defineField(info.getFieldName(), info.getFieldType(), Visibility.PRIVATE);
+		this.builder = this.builder
+						.defineField(info.getFieldName(), info.getFieldType(), Visibility.PRIVATE)
+						.annotateField(info.getAnnotations());
 	}
 
 	private void restoreAnnotationsFromParent()
