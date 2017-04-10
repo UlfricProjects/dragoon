@@ -48,7 +48,7 @@ public class ScopesTest {
 	void testGetScopedObject_shared()
 	{
 		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
-		Verify.that(() -> this.scopes.getScopedObject(Example.class).read()).doesThrow(NoSuchElementException.class);
+		Verify.that(() -> this.scopes.getScopedObject(Example.class).read()).suppliesNonUniqueValues();
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public class ScopesTest {
 		Verify.that(() -> strategy.getOrCreate(Example.class).read()).suppliesNonUniqueValues();
 		Scopes scopes = this.scopes.createChild();
 		scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
-		Verify.that(scopes.getScopedObject(Example.class).read()).isSameAs(strategy.getOrEmpty(Example.class).read());
+		Verify.that(strategy.getOrCreate(Example.class).read()).isSameAs(scopes.getScopedObject(Example.class).read());
 	}
 
 	@Test

@@ -24,14 +24,33 @@ public final class Scopes extends Registry<Scopes, ScopeStrategy> {
 
 	public <T> Scoped<T> getScopedObject(Class<T> request)
 	{
+		Scoped<T> scoped = this.findScopedObject(request);
+
+		if (scoped.isEmpty())
+		{
+			scoped = this.createScopedObject(request);
+		}
+
+		return scoped;
+	}
+
+	private <T> Scoped<T> findScopedObject(Class<T> request)
+	{
 		ScopeStrategy scope = this.registered.computeIfAbsent(request, this::resolveScopeType);
 		Scoped<T> scoped = scope.getOrEmpty(request);
 
 		if (scoped.isEmpty() && this.hasParent())
 		{
-			scoped = this.getParent().getScopedObject(request);
+			scoped = this.getParent().findScopedObject(request);
 		}
+
 		return scoped;
+	}
+
+	private <T> Scoped<T> createScopedObject(Class<T> request)
+	{
+		ScopeStrategy scope = this.registered.computeIfAbsent(request, this::resolveScopeType);
+		return scope.getOrCreate(request);
 	}
 
 	ScopeStrategy getScope(Class<?> scope)

@@ -16,7 +16,7 @@ public enum DefaultScopeStrategy implements ScopeStrategy {
 	@Override
 	public <T> Scoped<T> getOrEmpty(Class<T> request)
 	{
-		return getOrCreate(request);
+		return this.getOrCreate(request);
 	}
 
 }
