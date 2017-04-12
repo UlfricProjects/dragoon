@@ -1,5 +1,6 @@
 package com.ulfric.dragoon.container;
 
+import com.ulfric.dragoon.Binding;
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.initialize.Initialize;
 import com.ulfric.dragoon.inject.Inject;
@@ -27,6 +28,11 @@ public class Container extends SkeletalFeature implements Extensible<Class<?>> {
 	public final void install(Class<?> feature)
 	{
 		this.features.install(feature);
+	}
+
+	public final Binding bind(Class<?> request)
+	{
+		return this.factory.bind(request);
 	}
 
 	@Override
