@@ -37,7 +37,7 @@ When an ObjectFactory creates an instance, it will find all fields annotated wit
 Note: As the factory must construct the object to access its fields, @Inject'ed fields should not be accessed by the constructor as they will be null. To safely access the injected field, use an Initializer instead.
 
 ## Initializers
-Initializers are a (public) method annotated with @Initializer. When an ObjectFactory constructs an instance and performs all tasks on it (eg. Injection), it will call all initializer methods. This is useful as outlined above in Dependency Injection.
+Initializers are a method annotated with @Initialize. When an ObjectFactory constructs an instance and performs all tasks on it (eg. Injection), it will call all initializer methods. This is useful as outlined above in Dependency Injection.
 
 ## Important Note
 When creating a type that will be provided through an ObjectFactory, ensure that classes (and inner classes) are public and non-final. ObjectFactory will often create subclasses of the type declared as a static inner class through runtime bytecode manipulation, which will then be instantiated and returned rather than a direct instance of the type.
