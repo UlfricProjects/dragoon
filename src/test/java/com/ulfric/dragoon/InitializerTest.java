@@ -42,6 +42,24 @@ public class InitializerTest {
 	}
 
 	@Test
+	void testInitializeScoped_doInitPublic()
+	{
+		DoInitPublic init = new DoInitPublic();
+		Scoped<?> scoped = new Scoped<>(DoInitPublic.class, init);
+		Verify.that(() -> this.initializer.initializeScoped(scoped)).runsWithoutExceptions();
+		Verify.that(init.initialized).isTrue();
+	}
+
+	@Test
+	void testInitializeScoped_doInitPrivate()
+	{
+		DoInitPrivate init = new DoInitPrivate();
+		Scoped<?> scoped = new Scoped<>(DoInitPrivate.class, init);
+		Verify.that(() -> this.initializer.initializeScoped(scoped)).runsWithoutExceptions();
+		Verify.that(init.initialized).isTrue();
+	}
+
+	@Test
 	void testInitializeScoped_doNInitButAlreadyRead()
 	{
 		DoInit init = new DoInit();
@@ -73,6 +91,38 @@ public class InitializerTest {
 
 		@Initialize
 		void init()
+		{
+			this.initialized = true;
+		}
+
+		public boolean isInitialized()
+		{
+			return this.initialized;
+		}
+	}
+
+	public static class DoInitPublic
+	{
+		private boolean initialized = false;
+
+		@Initialize
+		public void init()
+		{
+			this.initialized = true;
+		}
+
+		public boolean isInitialized()
+		{
+			return this.initialized;
+		}
+	}
+
+	public static class DoInitPrivate
+	{
+		private boolean initialized = false;
+
+		@Initialize
+		private void init()
 		{
 			this.initialized = true;
 		}

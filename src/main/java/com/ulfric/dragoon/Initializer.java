@@ -20,7 +20,6 @@ final class Initializer {
 
 	private static final String SCOPE_READ_TYPE = "init";
 	private static final Map<Class<?>, List<Initializable>> INITIALIZE_METHODS = new IdentityHashMap<>();
-	private static final Method[] EMPTY_METHOD_ARRAY = new Method[0];
 
 	void initializeScoped(Scoped<?> scoped)
 	{
@@ -46,8 +45,7 @@ final class Initializer {
 
 	private static List<Initializable> createInitializables(Class<?> clazz)
 	{
-		return Stream.of(clazz.getDeclaredMethods(), clazz.getMethods(),
-						Initializer.getAllPrivateMethods(clazz.getSuperclass()))
+		return Stream.of(clazz.getMethods(), Initializer.getAllPrivateMethods(clazz))
 				.flatMap(Stream::of)
 				.distinct()
 				.filter(Initializer::isInitializable)
@@ -57,17 +55,13 @@ final class Initializer {
 
 	private static Method[] getAllPrivateMethods(Class<?> clazz)
 	{
-		if (clazz == null)
-		{
-			return Initializer.EMPTY_METHOD_ARRAY;
-		}
 		List<Class<?>> allClasses = ClassUtils.getAllSuperclasses(clazz);
 		allClasses.add(clazz);
 
 		return allClasses.stream()
 				.map(Class::getDeclaredMethods)
 				.flatMap(Stream::of)
-				.filter(method -> Modifier.isPrivate(method.getModifiers()))
+				.filter(method -> !Modifier.isPublic(method.getModifiers()))
 				.toArray(Method[]::new);
 	}
 
