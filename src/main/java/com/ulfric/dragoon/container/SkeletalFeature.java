@@ -4,20 +4,7 @@ import java.util.function.BooleanSupplier;
 
 public class SkeletalFeature implements Feature {
 
-	protected boolean loaded;
-	protected boolean enabled;
-
-	@Override
-	public final boolean isLoaded()
-	{
-		return this.loaded;
-	}
-
-	@Override
-	public final boolean isUnloaded()
-	{
-		return Feature.super.isUnloaded();
-	}
+	private boolean enabled;
 
 	@Override
 	public final boolean isEnabled()
@@ -32,33 +19,13 @@ public class SkeletalFeature implements Feature {
 	}
 
 	@Override
-	public final void load()
-	{
-		this.verify(this::isUnloaded);
-
-		this.loaded = true;
-		this.onStateChange();
-		this.onLoad();
-	}
-
-	@Override
 	public final void enable()
 	{
 		this.verify(this::isDisabled);
 
-		this.loadIfNotLoaded();
-
 		this.enabled = true;
 		this.onStateChange();
 		this.onEnable();
-	}
-
-	private void loadIfNotLoaded()
-	{
-		if (!this.isLoaded())
-		{
-			this.load();
-		}
 	}
 
 	@Override
@@ -87,11 +54,6 @@ public class SkeletalFeature implements Feature {
 	}
 
 	public void onStateChange()
-	{
-
-	}
-
-	public void onLoad()
 	{
 
 	}

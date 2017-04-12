@@ -142,7 +142,7 @@ final class FeatureStateController {
 
 	private boolean installLazily(Class<?> feature)
 	{
-		if (!this.owner.isLoaded())
+		if (!this.owner.isEnabled())
 		{
 			this.states.put(feature, null);
 
@@ -172,11 +172,6 @@ final class FeatureStateController {
 
 	private void refreshFeature(Feature feature)
 	{
-		if (this.shouldLoad(feature))
-		{
-			feature.load();
-		}
-
 		if (this.shouldEnable(feature))
 		{
 			feature.enable();
@@ -185,11 +180,6 @@ final class FeatureStateController {
 		{
 			feature.disable();
 		}
-	}
-
-	private boolean shouldLoad(Feature feature)
-	{
-		return this.shouldChange(feature, Feature::isLoaded);
 	}
 
 	private boolean shouldEnable(Feature feature)

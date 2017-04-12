@@ -69,7 +69,7 @@ public class AuditInterceptorTest {
 		this.intercepted = this.factory.requestExact(AuditMeContainer.class);
 		this.intercepted.run();
 		System.out.println(this.intercepted);
-		this.verifyLoggers("Loading", "Loaded");
+		this.verifyLoggers("Enabling", "Enabled");
 	}
 
 	private void verifyLoggers()
@@ -118,11 +118,11 @@ public class AuditInterceptorTest {
 		@Override
 		public void run()
 		{
-			this.onLoad();
+			this.onEnable();
 		}
 
 		@Override
-		public void onLoad()
+		public void onEnable()
 		{
 			
 		}

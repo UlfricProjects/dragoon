@@ -35,13 +35,6 @@ public class Container extends SkeletalFeature {
 	}
 
 	@Override
-	@Audit("Load")
-	public void onLoad()
-	{
-
-	}
-
-	@Override
 	@Audit("Enable")
 	public void onEnable()
 	{

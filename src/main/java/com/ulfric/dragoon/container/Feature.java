@@ -5,21 +5,12 @@ import com.ulfric.dragoon.Dynamic;
 
 public interface Feature extends Named {
 
-	default boolean isUnloaded()
-	{
-		return !this.isLoaded();
-	}
-
-	boolean isLoaded();
-
 	default boolean isDisabled()
 	{
 		return !this.isEnabled();
 	}
 
 	boolean isEnabled();
-
-	void load();
 
 	void enable();
 

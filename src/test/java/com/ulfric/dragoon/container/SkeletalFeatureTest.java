@@ -25,14 +25,6 @@ public class SkeletalFeatureTest {
 	}
 
 	@Test
-	void testParentLoad_LoadsChild()
-	{
-		Verify.that(Child.instance).isNull();
-		this.parent.load();
-		Verify.that(Child.instance.isLoaded()).isTrue();
-	}
-
-	@Test
 	void testParentEnable_EnablesChild()
 	{
 		Verify.that(Child.instance).isNull();

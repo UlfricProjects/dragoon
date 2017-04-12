@@ -62,14 +62,7 @@ public class ContainerTest {
 	}
 
 	@Test
-	void testLoad_alreadyLoaded()
-	{
-		this.container.load();
-		Verify.that(() -> this.container.load()).doesThrow(IllegalStateException.class);
-	}
-
-	@Test
-	void testLoad_alreadyEnabled()
+	void testEnable_alreadyEnabled()
 	{
 		this.container.enable();
 		Verify.that(() -> this.container.enable()).doesThrow(IllegalStateException.class);

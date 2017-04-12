@@ -44,7 +44,7 @@ public class FeatureStateControllerTest {
 	@Test
 	void testInstall_container()
 	{
-		this.container.loaded = true;
+		this.container.enable();
 		Verify.that(() -> this.states.install(TestContainer.class)).runsWithoutExceptions();
 	}
 
@@ -57,14 +57,14 @@ public class FeatureStateControllerTest {
 	@Test
 	void testInstall_arbitraryClass()
 	{
-		this.container.loaded = true;
+		this.container.enable();
 		Verify.that(() -> this.states.install(Hello.class)).doesThrow(FeatureWrapperMissingException.class);
 	}
 
 	@Test
 	void testInstall_wrappedClass()
 	{
-		this.container.loaded = true;
+		this.container.enable();
 		Container.registerFeatureWrapper(Hello.class, new HelloFeature());
 		Verify.that(() -> this.states.install(Hello.class)).runsWithoutExceptions();
 	}

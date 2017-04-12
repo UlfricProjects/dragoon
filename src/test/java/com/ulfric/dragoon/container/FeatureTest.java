@@ -10,14 +10,8 @@ import org.junit.runner.RunWith;
 @RunWith(JUnitPlatform.class)
 public class FeatureTest {
 
-	private final FeatureImpl feature = new FeatureImpl();
+	private final Feature feature = new FeatureImpl();
 	private final FeatureNamed featureNamed = new FeatureNamed();
-
-	@Test
-	void testIsUnloaded_invertsIsLoaded()
-	{
-		Verify.that(this.feature.isUnloaded()).isTrue();
-	}
 
 	@Test
 	void testIsDisabled_invertsIsEnabled()
@@ -37,31 +31,12 @@ public class FeatureTest {
 		Verify.that(this.featureNamed.getName()).isEqualTo("name");
 	}
 
-	@Test
-	void testIsUnloaded_whenFalse()
-	{
-		Verify.that(this.featureNamed.isUnloaded()).isFalse();
-	}
-
 	static final class FeatureImpl implements Feature
 	{
-
-		@Override
-		public boolean isLoaded()
-		{
-			return false;
-		}
-
 		@Override
 		public boolean isEnabled()
 		{
 			return true;
-		}
-
-		@Override
-		public void load()
-		{
-
 		}
 
 		@Override
@@ -80,23 +55,10 @@ public class FeatureTest {
 	@Name("name")
 	static final class FeatureNamed implements Feature
 	{
-
-		@Override
-		public boolean isLoaded()
-		{
-			return true;
-		}
-
 		@Override
 		public boolean isEnabled()
 		{
 			return true;
-		}
-
-		@Override
-		public void load()
-		{
-
 		}
 
 		@Override
