@@ -1,12 +1,13 @@
 package com.ulfric.dragoon.container;
 
 import com.ulfric.dragoon.Binding;
+import com.ulfric.dragoon.Factory;
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.initialize.Initialize;
 import com.ulfric.dragoon.inject.Inject;
 import com.ulfric.dragoon.interceptors.Audit;
 
-public class Container extends SkeletalFeature implements Extensible<Class<?>> {
+public class Container extends SkeletalFeature implements Factory, Extensible<Class<?>> {
 
 	public static <T> void registerFeatureWrapper(Class<T> request, FeatureWrapper<T> wrapper)
 	{
@@ -30,9 +31,16 @@ public class Container extends SkeletalFeature implements Extensible<Class<?>> {
 		this.features.install(feature);
 	}
 
+	@Override
 	public final Binding bind(Class<?> request)
 	{
 		return this.factory.bind(request);
+	}
+
+	@Override
+	public Object request(Class<?> request)
+	{
+		return this.factory.request(request);
 	}
 
 	@Override

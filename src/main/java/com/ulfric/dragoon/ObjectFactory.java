@@ -2,12 +2,14 @@ package com.ulfric.dragoon;
 
 import java.util.Objects;
 
+import com.ulfric.commons.naming.Name;
+import com.ulfric.commons.service.Service;
 import com.ulfric.dragoon.initialize.Initialize;
 import com.ulfric.dragoon.interceptors.Asynchronous;
 import com.ulfric.dragoon.interceptors.AsynchronousInterceptor;
-import com.ulfric.dragoon.interceptors.InitializeInterceptor;
 import com.ulfric.dragoon.interceptors.Audit;
 import com.ulfric.dragoon.interceptors.AuditInterceptor;
+import com.ulfric.dragoon.interceptors.InitializeInterceptor;
 import com.ulfric.dragoon.scope.Default;
 import com.ulfric.dragoon.scope.DefaultScopeStrategy;
 import com.ulfric.dragoon.scope.Scope;
@@ -16,12 +18,10 @@ import com.ulfric.dragoon.scope.Shared;
 import com.ulfric.dragoon.scope.SharedScopeStrategy;
 import com.ulfric.dragoon.scope.Supplied;
 import com.ulfric.dragoon.scope.SuppliedScopeStrategy;
-import com.ulfric.commons.naming.Name;
-import com.ulfric.commons.service.Service;
 
 @Name("ObjectFactory")
 @Supplied
-public final class ObjectFactory extends Child<ObjectFactory> implements Service {
+public final class ObjectFactory extends Child<ObjectFactory> implements Factory, Service {
 
 	public static ObjectFactory newInstance()
 	{
@@ -67,6 +67,7 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Service
 		strategy.register(ObjectFactory.class, this::createChild);
 	}
 
+	@Override
 	public Binding bind(Class<?> request)
 	{
 		Objects.requireNonNull(request);
@@ -98,6 +99,7 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Service
 		return casted;
 	}
 
+	@Override
 	public Object request(Class<?> request)
 	{
 		Objects.requireNonNull(request);
