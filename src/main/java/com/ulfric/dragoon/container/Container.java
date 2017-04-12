@@ -5,7 +5,7 @@ import com.ulfric.dragoon.initialize.Initialize;
 import com.ulfric.dragoon.inject.Inject;
 import com.ulfric.dragoon.interceptors.Audit;
 
-public class Container extends SkeletalFeature {
+public class Container extends SkeletalFeature implements Extensible<Class<?>> {
 
 	public static <T> void registerFeatureWrapper(Class<T> request, FeatureWrapper<T> wrapper)
 	{
@@ -23,6 +23,7 @@ public class Container extends SkeletalFeature {
 		this.features = FeatureStateController.newInstance(this.factory, this);
 	}
 
+	@Override
 	public final void install(Class<?> feature)
 	{
 		this.features.install(feature);
