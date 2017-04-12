@@ -93,13 +93,11 @@ public class ContainerTest {
 
 	public final class HelloFeature implements FeatureWrapper<Hello>
 	{
-
 		@Override
 		public Feature apply(Feature parent, Hello hello)
 		{
 			return ContainerTest.this.feature;
 		}
-
 	}
 
 }

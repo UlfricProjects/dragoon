@@ -3,6 +3,7 @@ package com.ulfric.dragoon;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ final class Initializer {
 
 	private static List<Initializable> createInitializables(Class<?> clazz)
 	{
-		return Stream.of(clazz.getMethods(), Initializer.getAllPrivateMethods(clazz))
+		return Stream.of(Initializer.getAllPrivateMethods(clazz), clazz.getMethods())
 				.flatMap(Stream::of)
 				.distinct()
 				.filter(Initializer::isInitializable)
@@ -57,6 +58,7 @@ final class Initializer {
 	{
 		List<Class<?>> allClasses = ClassUtils.getAllSuperclasses(clazz);
 		allClasses.add(clazz);
+		Collections.reverse(allClasses);
 
 		return allClasses.stream()
 				.map(Class::getDeclaredMethods)
