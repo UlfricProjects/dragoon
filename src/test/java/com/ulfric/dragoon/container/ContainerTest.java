@@ -81,6 +81,13 @@ public class ContainerTest {
 		Verify.that(() -> this.container.disable()).doesThrow(IllegalStateException.class);
 	}
 
+	@Test
+	void testFactory()
+	{
+		this.container.bind(Object.class).to(Hello.class);
+		Verify.that(this.container.request(Object.class)).isInstanceOf(Hello.class);
+	}
+
 	public static class Hello
 	{
 

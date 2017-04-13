@@ -38,7 +38,7 @@ public class Container extends SkeletalFeature implements Factory, Extensible<Cl
 	}
 
 	@Override
-	public Object request(Class<?> request)
+	public final Object request(Class<?> request)
 	{
 		return this.factory.request(request);
 	}
