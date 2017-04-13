@@ -85,6 +85,7 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Factory
 		return request.isAnnotation() && request.isAnnotationPresent(Scope.class);
 	}
 
+	@Override
 	public <T> T requestExact(Class<T> request)
 	{
 		Object value = this.request(request);

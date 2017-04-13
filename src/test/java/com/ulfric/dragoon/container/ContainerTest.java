@@ -86,6 +86,7 @@ public class ContainerTest {
 	{
 		this.container.bind(Object.class).to(Hello.class);
 		Verify.that(this.container.request(Object.class)).isInstanceOf(Hello.class);
+		Verify.that(this.container.requestExact(Hello.class)).isExactType(Hello.class);
 	}
 
 	public static class Hello
