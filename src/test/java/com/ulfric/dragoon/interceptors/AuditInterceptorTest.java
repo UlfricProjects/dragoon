@@ -14,7 +14,7 @@ import org.mockito.Spy;
 
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.container.Container;
-import com.ulfric.dragoon.container.NullLogger;
+import com.ulfric.dragoon.container.MockedLogger;
 import com.ulfric.dragoon.scope.Supplied;
 import com.ulfric.dragoon.scope.SuppliedScopeStrategy;
 
@@ -25,7 +25,7 @@ public class AuditInterceptorTest {
 	private Runnable intercepted;
 
 	@Spy
-	private NoLogger logger;
+	private MockedLogger logger;
 
 	@BeforeEach
 	void init()
@@ -34,15 +34,14 @@ public class AuditInterceptorTest {
 		this.factory = ObjectFactory.newInstance();
 
 		SuppliedScopeStrategy scope = (SuppliedScopeStrategy) this.factory.request(Supplied.class);
-		scope.register(NoLogger.class, () -> this.logger);
-		this.factory.bind(Logger.class).to(NoLogger.class);
-
-		this.intercepted = this.factory.requestExact(AuditMe.class);
+		scope.register(MockedLogger.class, () -> this.logger);
+		this.factory.bind(Logger.class).to(MockedLogger.class);
 	}
 
 	@Test
 	void testIntercept_logsAsExpected()
 	{
+		this.intercepted = this.factory.requestExact(AuditMe.class);
 		this.intercepted.run();
 		this.verifyLoggers();
 	}
@@ -68,7 +67,6 @@ public class AuditInterceptorTest {
 	{
 		this.intercepted = this.factory.requestExact(AuditMeContainer.class);
 		this.intercepted.run();
-		System.out.println(this.intercepted);
 		this.verifyLoggers("Enabling", "Enabled");
 	}
 
@@ -126,12 +124,6 @@ public class AuditInterceptorTest {
 		{
 			
 		}
-	}
-
-	@Supplied
-	static class NoLogger extends NullLogger
-	{
-
 	}
 
 }

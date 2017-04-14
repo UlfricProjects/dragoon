@@ -1,5 +1,6 @@
 package com.ulfric.dragoon;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 import com.ulfric.commons.naming.Name;
@@ -16,6 +17,7 @@ import com.ulfric.dragoon.scope.Scope;
 import com.ulfric.dragoon.scope.Scoped;
 import com.ulfric.dragoon.scope.Shared;
 import com.ulfric.dragoon.scope.SharedScopeStrategy;
+import com.ulfric.dragoon.scope.SingletonScope;
 import com.ulfric.dragoon.scope.Supplied;
 import com.ulfric.dragoon.scope.SuppliedScopeStrategy;
 
@@ -56,6 +58,7 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Factory
 	{
 		this.scopes.registerBinding(Default.class, DefaultScopeStrategy.class);
 		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
+		this.scopes.registerBinding(SingletonScope.class, SharedScopeStrategy.class);
 		this.scopes.registerBinding(Supplied.class, SuppliedScopeStrategy.class);
 
 		this.bindings.registerBinding(Audit.class, AuditInterceptor.class);
@@ -121,7 +124,7 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Factory
 			}
 		}
 
-		return this.getInjectedObject(implementation);
+		return this.getStatefulObject(implementation);
 	}
 
 	private boolean couldBeScope(Class<?> request)
@@ -129,11 +132,35 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Factory
 		return request.isAnnotation();
 	}
 
-	private Object getInjectedObject(Class<?> implementation)
+	private Object getStatefulObject(Class<?> implementation)
 	{
 		Scoped<?> scoped = this.scopes.getScopedObject(implementation);
-		this.injector.injectFields(scoped);
-		this.initializer.initializeScoped(scoped);
+
+		Iterator<Runnable> injectionLayers = this.injector.getInjections(scoped);
+		Iterator<Runnable> initializationLayers = this.initializer.getInitializers(scoped);
+		do
+		{
+			boolean finished = true;
+
+			if (injectionLayers.hasNext())
+			{
+				injectionLayers.next().run();
+				finished = false;
+			}
+
+			if (initializationLayers.hasNext())
+			{
+				initializationLayers.next().run();
+				finished = false;
+			}
+
+			if (finished)
+			{
+				break;
+			}
+		}
+		while (true);
+
 		return scoped.read();
 	}
 

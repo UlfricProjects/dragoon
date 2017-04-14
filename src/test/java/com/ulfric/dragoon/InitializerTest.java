@@ -28,7 +28,7 @@ public class InitializerTest {
 	{
 		DoNotInit init = new DoNotInit();
 		Scoped<?> scoped = new Scoped<>(DoNotInit.class, init);
-		Verify.that(() -> this.initializer.initializeScoped(scoped)).runsWithoutExceptions();
+		Verify.that(() -> this.doInitialize(scoped)).runsWithoutExceptions();
 		Verify.that(init.initialized).isFalse();
 	}
 
@@ -37,7 +37,7 @@ public class InitializerTest {
 	{
 		DoInit init = new DoInit();
 		Scoped<?> scoped = new Scoped<>(DoInit.class, init);
-		Verify.that(() -> this.initializer.initializeScoped(scoped)).runsWithoutExceptions();
+		Verify.that(() -> this.doInitialize(scoped)).runsWithoutExceptions();
 		Verify.that(init.initialized).isTrue();
 	}
 
@@ -46,7 +46,7 @@ public class InitializerTest {
 	{
 		DoInitPublic init = new DoInitPublic();
 		Scoped<?> scoped = new Scoped<>(DoInitPublic.class, init);
-		Verify.that(() -> this.initializer.initializeScoped(scoped)).runsWithoutExceptions();
+		Verify.that(() -> this.doInitialize(scoped)).runsWithoutExceptions();
 		Verify.that(init.initialized).isTrue();
 	}
 
@@ -55,7 +55,7 @@ public class InitializerTest {
 	{
 		DoInitPrivate init = new DoInitPrivate();
 		Scoped<?> scoped = new Scoped<>(DoInitPrivate.class, init);
-		Verify.that(() -> this.initializer.initializeScoped(scoped)).runsWithoutExceptions();
+		Verify.that(() -> this.doInitialize(scoped)).runsWithoutExceptions();
 		Verify.that(init.initialized).isTrue();
 	}
 
@@ -65,7 +65,7 @@ public class InitializerTest {
 		DoInit init = new DoInit();
 		Scoped<?> scoped = new Scoped<>(DoInit.class, init);
 		scoped.read("init");
-		Verify.that(() -> this.initializer.initializeScoped(scoped)).runsWithoutExceptions();
+		Verify.that(() -> this.doInitialize(scoped)).runsWithoutExceptions();
 		Verify.that(init.initialized).isFalse();
 	}
 
@@ -73,6 +73,11 @@ public class InitializerTest {
 	void testInitializeScoped_canReadInjectables_noExceptions()
 	{
 		Verify.that(() -> this.factory.requestExact(CanReadInjectables.class)).runsWithoutExceptions();
+	}
+
+	private void doInitialize(Scoped<?> scoped)
+	{
+		this.initializer.getInitializers(scoped).forEachRemaining(Runnable::run);
 	}
 
 	public static class DoNotInit

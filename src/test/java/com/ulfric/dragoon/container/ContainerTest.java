@@ -12,6 +12,8 @@ import org.mockito.Mockito;
 import com.ulfric.commons.exception.Try;
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.TestObjectFactory;
+import com.ulfric.dragoon.initialize.Initialize;
+import com.ulfric.dragoon.inject.Inject;
 import com.ulfric.verify.Verify;
 
 @RunWith(JUnitPlatform.class)
@@ -86,6 +88,37 @@ public class ContainerTest {
 	{
 		this.container.bind(Object.class).to(Hello.class);
 		Verify.that(this.container.request(Object.class)).isInstanceOf(Hello.class);
+	}
+
+	@Test
+	void testSharedWithChildren()
+	{
+		Container container = this.factory.requestExact(ContainerA.class);
+		container.enable();
+		Verify.that(FeatureA.lastContainer).isSameAs(container);
+	}
+
+	public static class ContainerA extends Container
+	{
+		@Initialize
+		private void initialize()
+		{
+			this.install(FeatureA.class);
+		}
+	}
+
+	public static class FeatureA extends SkeletalFeature
+	{
+		private static Container lastContainer;
+
+		@Inject
+		private Container container;
+
+		@Initialize
+		private void initialize()
+		{
+			FeatureA.lastContainer = this.container;
+		}
 	}
 
 	public static class Hello

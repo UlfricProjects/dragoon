@@ -6,7 +6,10 @@ import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.initialize.Initialize;
 import com.ulfric.dragoon.inject.Inject;
 import com.ulfric.dragoon.interceptors.Audit;
+import com.ulfric.dragoon.scope.SingletonScope;
+import com.ulfric.dragoon.scope.SingletonScopeStrategy;
 
+@SingletonScope
 public class Container extends SkeletalFeature implements Factory, Extensible<Class<?>> {
 
 	public static <T> void registerFeatureWrapper(Class<T> request, FeatureWrapper<T> wrapper)
@@ -23,6 +26,15 @@ public class Container extends SkeletalFeature implements Factory, Extensible<Cl
 	private void initializeFeatureStateController()
 	{
 		this.features = FeatureStateController.newInstance(this.factory, this);
+	}
+
+	@Initialize
+	private void bindSelfToChildren()
+	{
+		this.factory.bind(Container.class).to(this.getClass());
+		this.factory.bind(SingletonScope.class).to(SingletonScopeStrategy.class);
+		SingletonScopeStrategy scope = (SingletonScopeStrategy) this.factory.request(SingletonScope.class);
+		scope.setInstance(this);
 	}
 
 	@Override

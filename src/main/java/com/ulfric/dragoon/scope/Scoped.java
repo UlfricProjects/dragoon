@@ -4,19 +4,19 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-public final class Scoped<T> {
+public class Scoped<T> {
 
-	public static <R> Scoped<R> createEmptyScope(Class<R> request)
+	public static <T> Scoped<T> createEmptyScope(Class<T> request)
 	{
 		return new Scoped<>(request, null);
 	}
 
-	private final Class<T> request;
+	private final Class<? extends T> request;
 	private final T value;
 
 	private Set<String> reads;
 
-	public Scoped(Class<T> request, T value)
+	public Scoped(Class<? extends T> request, T value)
 	{
 		this.request = request;
 		this.value = value;

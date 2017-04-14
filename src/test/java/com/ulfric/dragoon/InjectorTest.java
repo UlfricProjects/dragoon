@@ -29,7 +29,7 @@ public class InjectorTest {
 	{
 		Scoped<Example> scoped = new Scoped<>(Example.class, new Example());
 		scoped.read("inject");
-		this.injector.injectFields(scoped);
+		this.doInjection(scoped);
 		Verify.that(scoped.read("inject").value).isNull();
 	}
 
@@ -37,7 +37,7 @@ public class InjectorTest {
 	void testInjectFields_notIsRead_isInjected()
 	{
 		Scoped<Example> scoped = new Scoped<>(Example.class, new Example());
-		this.injector.injectFields(scoped);
+		this.doInjection(scoped);
 		Verify.that(scoped.read("inject").value).isNotNull();
 	}
 
@@ -45,7 +45,12 @@ public class InjectorTest {
 	void testInjectFields_empty()
 	{
 		Scoped<Example> scoped = new Scoped<>(Example.class, null);
-		Verify.that(() -> this.injector.injectFields(scoped)).doesThrow(NoSuchElementException.class);
+		Verify.that(() -> this.doInjection(scoped)).doesThrow(NoSuchElementException.class);
+	}
+
+	private void doInjection(Scoped<?> scoped)
+	{
+		this.injector.getInjections(scoped).forEachRemaining(Runnable::run);
 	}
 
 	static final class Example
