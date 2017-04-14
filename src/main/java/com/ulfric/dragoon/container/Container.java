@@ -31,7 +31,7 @@ public class Container extends SkeletalFeature implements Factory, Extensible<Cl
 	@Initialize
 	private void bindSelfToChildren()
 	{
-		this.factory.bind(Container.class).to(this.getClass());
+		this.factory.bind(this.getClass()).to(this.getClass());
 		this.factory.bind(SingletonScope.class).to(SingletonScopeStrategy.class);
 		SingletonScopeStrategy scope = (SingletonScopeStrategy) this.factory.request(SingletonScope.class);
 		scope.setInstance(this);

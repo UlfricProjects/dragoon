@@ -99,6 +99,14 @@ public class ContainerTest {
 		Verify.that(FeatureA.lastContainer).isSameAs(container);
 	}
 
+	@Test
+	void testSharedWithChildrenAllowsExacts()
+	{
+		Container container = this.factory.requestExact(ContainerA.class);
+		Verify.that(container).isInstanceOf(ContainerA.class);
+		Verify.that(container.request(ContainerB.class)).isNotSameAs(container);
+	}
+
 	public static class ContainerA extends Container
 	{
 		@Initialize
@@ -106,6 +114,11 @@ public class ContainerTest {
 		{
 			this.install(FeatureA.class);
 		}
+	}
+
+	public static class ContainerB extends Container
+	{
+		
 	}
 
 	public static class FeatureA extends SkeletalFeature
