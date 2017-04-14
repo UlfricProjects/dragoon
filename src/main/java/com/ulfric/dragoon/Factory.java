@@ -6,4 +6,6 @@ public interface Factory {
 
 	Object request(Class<?> request);
 
+	<T> T requestExact(Class<T> request);
+
 }

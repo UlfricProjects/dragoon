@@ -56,6 +56,12 @@ public class Container extends SkeletalFeature implements Factory, Extensible<Cl
 	}
 
 	@Override
+	public final <T> T requestExact(Class<T> request)
+	{
+		return this.factory.requestExact(request);
+	}
+
+	@Override
 	public final void onStateChange()
 	{
 		this.features.refresh();
