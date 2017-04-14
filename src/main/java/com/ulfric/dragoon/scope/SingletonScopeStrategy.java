@@ -8,7 +8,7 @@ public final class SingletonScopeStrategy implements ScopeStrategy {
 	@Override
 	public <T> Scoped<T> getOrCreate(Class<T> request)
 	{
-		return (Scoped<T>) this.instance;
+		return this.getOrEmpty(request);
 	}
 
 	@SuppressWarnings("unchecked")

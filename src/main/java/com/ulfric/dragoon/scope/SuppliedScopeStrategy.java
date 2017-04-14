@@ -20,16 +20,7 @@ public final class SuppliedScopeStrategy implements ScopeStrategy {
 	@Override
 	public <T> Scoped<T> getOrCreate(Class<T> request)
 	{
-		Supplier<?> supplier = this.objectSuppliers.get(request);
-
-		if (supplier == null)
-		{
-			return new Scoped<>(request, null);
-		}
-
-		@SuppressWarnings("unchecked")
-		T object = (T) supplier.get();
-		return new Scoped<>(request, object);
+		return this.getOrEmpty(request);
 	}
 
 	@Override
