@@ -10,6 +10,8 @@ import com.ulfric.dragoon.interceptors.Asynchronous;
 import com.ulfric.dragoon.interceptors.AsynchronousInterceptor;
 import com.ulfric.dragoon.interceptors.Audit;
 import com.ulfric.dragoon.interceptors.AuditInterceptor;
+import com.ulfric.dragoon.interceptors.Cache;
+import com.ulfric.dragoon.interceptors.CacheInterceptor;
 import com.ulfric.dragoon.interceptors.InitializeInterceptor;
 import com.ulfric.dragoon.scope.Default;
 import com.ulfric.dragoon.scope.DefaultScopeStrategy;
@@ -61,9 +63,9 @@ public final class ObjectFactory extends Child<ObjectFactory> implements Factory
 		this.scopes.registerBinding(SingletonScope.class, SharedScopeStrategy.class);
 		this.scopes.registerBinding(Supplied.class, SuppliedScopeStrategy.class);
 
-		this.bindings.registerBinding(Audit.class, AuditInterceptor.class);
-
 		this.bindings.registerBinding(Initialize.class, InitializeInterceptor.class);
+		this.bindings.registerBinding(Audit.class, AuditInterceptor.class);
+		this.bindings.registerBinding(Cache.class, CacheInterceptor.class);
 		this.bindings.registerBinding(Asynchronous.class, AsynchronousInterceptor.class);
 
 		SuppliedScopeStrategy strategy = (SuppliedScopeStrategy) this.request(Supplied.class);
