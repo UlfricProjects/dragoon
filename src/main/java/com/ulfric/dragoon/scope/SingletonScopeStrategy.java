@@ -4,7 +4,6 @@ public final class SingletonScopeStrategy implements ScopeStrategy {
 
 	private Scoped<Object> instance;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Scoped<T> getOrCreate(Class<T> request)
 	{
