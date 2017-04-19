@@ -40,24 +40,6 @@ public class ContainerTest {
 	}
 
 	@Test
-	void testRegisterFeatureWrapper_nullRequest()
-	{
-		Verify.that(() -> Container.registerFeatureWrapper(null, (ignore, o) -> Mockito.mock(Feature.class))).doesThrow(NullPointerException.class);
-	}
-
-	@Test
-	void testRegisterFeatureWrapper_nullWrapper()
-	{
-		Verify.that(() -> Container.registerFeatureWrapper(Hello.class, null)).doesThrow(NullPointerException.class);
-	}
-
-	@Test
-	void testRegisterFeatureWrapper_validValues()
-	{
-		Verify.that(() -> Container.registerFeatureWrapper(Hello.class, new HelloFeature())).runsWithoutExceptions();
-	}
-
-	@Test
 	void testInstall_container()
 	{
 		Verify.that(() -> this.container.install(TestContainer.class)).runsWithoutExceptions();

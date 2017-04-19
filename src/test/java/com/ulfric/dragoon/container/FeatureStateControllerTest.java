@@ -65,7 +65,7 @@ public class FeatureStateControllerTest {
 	void testInstall_wrappedClass()
 	{
 		this.container.enable();
-		Container.registerFeatureWrapper(Hello.class, new HelloFeature());
+		FeatureStateController.registerFeatureWrapper(Hello.class, new HelloFeature());
 		Verify.that(() -> this.states.install(Hello.class)).runsWithoutExceptions();
 	}
 
@@ -85,20 +85,21 @@ public class FeatureStateControllerTest {
 	@Test
 	void testGetFeatureWrapper_superclassRequest()
 	{
-		Container.registerFeatureWrapper(Hello.class, new HelloFeature());
-		Verify.that(this.getFeatureWrapper(SubHello.class)).isInstanceOf(HelloFeature.class);
+		FeatureStateController.registerFeatureWrapper(Hello.class, new HelloFeature());
+		Verify.that(this.getFeatureWrapper(SubHello.class)).isNotNull();
 	}
 
 	@Test
 	void testGetFeatureWrapper_exactRequest()
 	{
-		Container.registerFeatureWrapper(Hello.class, new HelloFeature());
-		Verify.that(this.getFeatureWrapper(Hello.class)).isInstanceOf(HelloFeature.class);
+		FeatureStateController.registerFeatureWrapper(Hello.class, new HelloFeature());
+		Verify.that(this.getFeatureWrapper(Hello.class)).isNotNull();
 	}
 
 	private <T> FeatureWrapper<T> getFeatureWrapper(Class<T> request)
 	{
-		return Try.to(() -> {
+		return Try.to(() ->
+		{
 			Method method = MethodUtils.getMatchingMethod(FeatureStateController.class, "getFeatureWrapper", Class.class);
 			method.setAccessible(true);
 			@SuppressWarnings("unchecked")

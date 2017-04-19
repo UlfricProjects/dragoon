@@ -12,11 +12,6 @@ import com.ulfric.dragoon.scope.SingletonScopeStrategy;
 @SingletonScope
 public class Container extends SkeletalFeature implements Factory, Extensible<Class<?>> {
 
-	public static <T> void registerFeatureWrapper(Class<T> request, FeatureWrapper<T> wrapper)
-	{
-		FeatureStateController.registerFeatureWrapper(request, wrapper);
-	}
-
 	@Inject
 	private ObjectFactory factory;
 

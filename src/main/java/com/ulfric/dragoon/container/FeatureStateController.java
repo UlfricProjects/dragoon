@@ -6,17 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
-
-import org.apache.commons.lang3.ClassUtils;
+import java.util.stream.Collectors;
 
 import com.ulfric.dragoon.ObjectFactory;
 
-final class FeatureStateController {
+public final class FeatureStateController {
 
 	private static final Map<Class<?>, FeatureWrapper<?>> FEATURE_WRAPPERS =
 			Collections.synchronizedMap(new LinkedHashMap<>());
 
-	static <T> void registerFeatureWrapper(Class<T> request, FeatureWrapper<T> wrapper)
+	public static <T> void registerFeatureWrapper(Class<T> request, FeatureWrapper<T> wrapper)
 	{
 		Objects.requireNonNull(request);
 		Objects.requireNonNull(wrapper);
@@ -26,43 +25,20 @@ final class FeatureStateController {
 
 	private static <T> FeatureWrapper<T> getFeatureWrapper(Class<T> request)
 	{
-		FeatureWrapper<T> wrapper = FeatureStateController.getExactFeatureWrapper(request);
-		if (wrapper != null)
-		{
-			return wrapper;
-		}
-
-		wrapper = FeatureStateController.getExactFeatureWrapperFromOneOf(ClassUtils.getAllSuperclasses(request));
-		if (wrapper != null)
-		{
-			return wrapper;
-		}
-
-		wrapper = FeatureStateController.getExactFeatureWrapperFromOneOf(ClassUtils.getAllInterfaces(request));
-		return wrapper;
-	}
-
-	private static <T> FeatureWrapper<T> getExactFeatureWrapperFromOneOf(List<Class<?>> requests)
-	{
-		for (Class<?> request : requests)
-		{
-			@SuppressWarnings("unchecked")
-			FeatureWrapper<T> wrapper = (FeatureWrapper<T>) FeatureStateController.getExactFeatureWrapper(request);
-
-			if (wrapper != null)
-			{
-				return wrapper;
-			}
-		}
-
-		return null;
-	}
-
-	private static <T> FeatureWrapper<T> getExactFeatureWrapper(Class<T> request)
-	{
 		@SuppressWarnings("unchecked")
-		FeatureWrapper<T> wrapper = (FeatureWrapper<T>) FeatureStateController.FEATURE_WRAPPERS.get(request);
-		return wrapper;
+		List<FeatureWrapper<T>> wrappers = FeatureStateController.FEATURE_WRAPPERS.entrySet()
+			.stream()
+			.filter(entry -> entry.getKey().isAssignableFrom(request))
+			.map(Map.Entry::getValue)
+			.map(wrapper -> (FeatureWrapper<T>) wrapper)
+			.collect(Collectors.toList());
+
+		if (wrappers.isEmpty())
+		{
+			return null;
+		}
+
+		return new MultiFeatureWrapper<>(wrappers);
 	}
 
 	public static FeatureStateController newInstance(ObjectFactory factory, Feature owner)
