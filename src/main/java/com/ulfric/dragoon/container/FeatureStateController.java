@@ -1,12 +1,15 @@
 package com.ulfric.dragoon.container;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.IterableUtils;
 
 import com.ulfric.dragoon.ObjectFactory;
 
@@ -59,17 +62,25 @@ public final class FeatureStateController {
 		this.owner = owner;
 	}
 
-	void refresh()
+	void refresh(RefreshOrder order)
 	{
-		this.states.entrySet().forEach(entry ->
+		if (order == RefreshOrder.REVERSE)
 		{
-			if (entry.getValue() != null)
-			{
-				this.refreshFeature(entry.getValue());
-				return;
-			}
+			this.refresh(IterableUtils.reversedIterable(this.states.entrySet()).iterator());
+			return;
+		}
 
-			this.installNow(entry.getKey());
+		this.refresh(this.states.entrySet().iterator());
+	}
+
+	private void refresh(Iterator<Map.Entry<Class<?>, Feature>> states)
+	{
+		states.forEachRemaining(entry ->
+		{
+			if (entry.getValue() == null)
+			{
+				this.installNow(entry.getKey());
+			}
 			this.refreshFeature(entry.getValue());
 		});
 	}
@@ -171,6 +182,12 @@ public final class FeatureStateController {
 	private boolean shouldChange(Feature feature, Predicate<Feature> statePredicate)
 	{
 		return statePredicate.test(this.owner) && !statePredicate.test(feature);
+	}
+
+	enum RefreshOrder
+	{
+		NORMAL,
+		REVERSE;
 	}
 
 }

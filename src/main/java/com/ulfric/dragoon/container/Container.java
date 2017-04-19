@@ -3,6 +3,7 @@ package com.ulfric.dragoon.container;
 import com.ulfric.dragoon.Binding;
 import com.ulfric.dragoon.Factory;
 import com.ulfric.dragoon.ObjectFactory;
+import com.ulfric.dragoon.container.FeatureStateController.RefreshOrder;
 import com.ulfric.dragoon.initialize.Initialize;
 import com.ulfric.dragoon.inject.Inject;
 import com.ulfric.dragoon.interceptors.Audit;
@@ -59,7 +60,7 @@ public class Container extends SkeletalFeature implements Factory, Extensible<Cl
 	@Override
 	public final void onStateChange()
 	{
-		this.features.refresh();
+		this.features.refresh(this.isEnabled() ? RefreshOrder.NORMAL : RefreshOrder.REVERSE);
 	}
 
 	@Override
