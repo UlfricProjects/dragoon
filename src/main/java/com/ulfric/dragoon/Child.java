@@ -37,7 +37,10 @@ abstract class Child<T> {
 
 	T createChild()
 	{
-		return Try.to(() -> (T) this.getOrCreateConstructorHandle().invokeExact(this));
+		@SuppressWarnings("unchecked")
+		T child = (T) Try.to(() -> this.getOrCreateConstructorHandle().invokeExact(this));
+
+		return child;
 	}
 
 	private MethodHandle getOrCreateConstructorHandle()

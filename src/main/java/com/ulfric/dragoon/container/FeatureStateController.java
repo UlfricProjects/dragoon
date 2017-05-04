@@ -187,7 +187,7 @@ public final class FeatureStateController {
 	enum RefreshOrder
 	{
 		NORMAL,
-		REVERSE;
+		REVERSE
 	}
 
 }

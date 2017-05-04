@@ -42,7 +42,7 @@ final class Initializer {
 					.stream()
 					.map(Initializer::getInitializables)
 					.flatMap(List::stream)
-					.map(initializer -> (Consumer<Object>) toInitialize -> initializer.initialize(toInitialize))
+					.map(initializer -> (Consumer<Object>) initializer::initialize)
 					.collect(Collectors.toList()))
 				.stream()
 				.map(consumer -> (Runnable) () -> consumer.accept(initialize))

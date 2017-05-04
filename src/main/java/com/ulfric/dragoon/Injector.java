@@ -57,7 +57,7 @@ final class Injector {
 				.map(Injector::getInjectables)
 				.flatMap(List::stream)
 				.map(injector ->
-					(BiConsumer<Object, ObjectFactory>) (object, factory) -> injector.inject(object, factory))
+					(BiConsumer<Object, ObjectFactory>) injector::inject)
 				.collect(Collectors.toList());
 	}
 
