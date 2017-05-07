@@ -1,182 +1,187 @@
 package com.ulfric.dragoon;
 
-import java.util.Iterator;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
-import com.ulfric.commons.naming.Name;
-import com.ulfric.commons.service.Service;
-import com.ulfric.dragoon.initialize.Initialize;
-import com.ulfric.dragoon.interceptors.Asynchronous;
-import com.ulfric.dragoon.interceptors.AsynchronousInterceptor;
-import com.ulfric.dragoon.interceptors.Audit;
-import com.ulfric.dragoon.interceptors.AuditInterceptor;
-import com.ulfric.dragoon.interceptors.Cache;
-import com.ulfric.dragoon.interceptors.CacheInterceptor;
-import com.ulfric.dragoon.interceptors.InitializeInterceptor;
-import com.ulfric.dragoon.scope.Default;
-import com.ulfric.dragoon.scope.DefaultScopeStrategy;
-import com.ulfric.dragoon.scope.Scope;
-import com.ulfric.dragoon.scope.Scoped;
-import com.ulfric.dragoon.scope.Shared;
-import com.ulfric.dragoon.scope.SharedScopeStrategy;
-import com.ulfric.dragoon.scope.SingletonScope;
-import com.ulfric.dragoon.scope.Supplied;
-import com.ulfric.dragoon.scope.SuppliedScopeStrategy;
+import com.ulfric.dragoon.extension.Extensible;
+import com.ulfric.dragoon.extension.Extension;
+import com.ulfric.dragoon.extension.creator.CreatorExtension;
+import com.ulfric.dragoon.extension.inject.InjectExtension;
+import com.ulfric.dragoon.inheritance.SkeletalFamily;
 
-@Name("ObjectFactory")
-@Supplied
-public final class ObjectFactory extends Child<ObjectFactory> implements Factory, Service {
+public class ObjectFactory extends SkeletalFamily<ObjectFactory> implements Factory, Extensible<Class<? extends Extension>> {
 
 	public static ObjectFactory newInstance()
 	{
 		return new ObjectFactory();
 	}
 
-	private final Bindings bindings;
-	private final Scopes scopes;
-	private final Subclasser implementationFactory = new Subclasser(this);
-	private final Injector injector = new Injector(this);
-	private final Initializer initializer = new Initializer();
+	private final List<Extension> extensions = new ArrayList<>();
+	private final Map<Class<?>, Class<?>> bindings = new IdentityHashMap<>();
 
 	private ObjectFactory()
 	{
-		this.bindings = new Bindings();
-		this.scopes = new Scopes();
-
-		this.init();
+		this(null);
 	}
 
 	private ObjectFactory(ObjectFactory parent)
 	{
 		super(parent);
 
-		this.bindings = new Bindings(parent.bindings);
-		this.scopes = new Scopes(parent.scopes);
-
-		this.init();
-	}
-
-	private void init()
-	{
-		this.scopes.registerBinding(Default.class, DefaultScopeStrategy.class);
-		this.scopes.registerBinding(Shared.class, SharedScopeStrategy.class);
-		this.scopes.registerBinding(SingletonScope.class, SharedScopeStrategy.class);
-		this.scopes.registerBinding(Supplied.class, SuppliedScopeStrategy.class);
-
-		this.bindings.registerBinding(Initialize.class, InitializeInterceptor.class);
-		this.bindings.registerBinding(Audit.class, AuditInterceptor.class);
-		this.bindings.registerBinding(Cache.class, CacheInterceptor.class);
-		this.bindings.registerBinding(Asynchronous.class, AsynchronousInterceptor.class);
-
-		SuppliedScopeStrategy strategy = (SuppliedScopeStrategy) this.request(Supplied.class);
-		strategy.register(ObjectFactory.class, this::createChild);
+		this.extensions.add(new CreatorExtension(this));
+		this.install(InjectExtension.class);
+		//this.install(InjectExtension.class);
+		//this.install(InterceptExtension.class);
 	}
 
 	@Override
-	public Binding bind(Class<?> request)
+	public ObjectFactory createChild()
 	{
-		Objects.requireNonNull(request);
+		return new ObjectFactory(this);
+	}
 
-		if (this.isScope(request))
+	// TODO cache type transformations
+	@Override
+	public void install(Class<? extends Extension> extension)
+	{
+		Objects.requireNonNull(extension, "extension type");
+
+		Extension value = this.request(extension);
+		Objects.requireNonNull(extension, () -> "extension instance: " + extension);
+		this.extensions.add(value);
+	}
+
+	@Override
+	public <T> T request(Class<T> type)
+	{
+		return this.request(type, new Object[0]); // TODO array constant
+	}
+
+	public <T> T request(Class<T> type, Object... parameters)
+	{
+		Object value = this.requestNotNull(type, parameters);
+		if (type.isInstance(value))
 		{
-			return this.scopes.createBinding(request);
+			@SuppressWarnings("unchecked")
+			T casted = (T) value;
+			return casted;
 		}
 
-		return this.bindings.createBinding(request);
+		// TODO throw sane exception
+		throw new RuntimeException();
 	}
 
-	private boolean isScope(Class<?> request)
+	public Object requestNotNull(Class<?> type)
 	{
-		return request.isAnnotation() && request.isAnnotationPresent(Scope.class);
+		return this.requestNotNull(type, new Object[0]); // TODO array constant
 	}
 
-	@Override
-	public <T> T requestExact(Class<T> request)
+	public Object requestNotNull(Class<?> type, Object... parameters)
 	{
-		Object value = this.request(request);
+		Object value = this.requestUnchecked(type, parameters);
+		Objects.requireNonNull(value);
+		return value;
+	}
 
-		if (!request.isInstance(value))
+	public Object requestUnchecked(Class<?> type)
+	{
+		return this.requestUnchecked(type, new Object[0]); // TODO array constant
+	}
+
+	public Object requestUnchecked(Class<?> type, Object... parameters)
+	{
+		Class<?> transformedType = this.getBinding(type);
+		transformedType = this.transformType(transformedType);
+
+		Object value = this.createValue(transformedType, parameters);
+		value = this.transformValue(value);
+		return value;
+	}
+
+	private Class<?> getBinding(Class<?> type)
+	{
+		Class<?> binding = this.bindings.get(type);
+
+		if (binding == null)
 		{
-			throw new IllegalArgumentException("Wrong request type");
+			return type;
 		}
 
-		@SuppressWarnings("unchecked")
-		T casted = (T) value;
-		return casted;
+		return this.getBinding(binding);
 	}
 
-	@Override
-	public Object request(Class<?> request)
+	public Binding bind(Class<?> bind)
 	{
-		Objects.requireNonNull(request);
+		Objects.requireNonNull(bind, "bind");
 
-		Class<?> implementation = this.bindings.getRegisteredBinding(request);
+		return new Binding(bind);
+	}
 
-		if (implementation == null)
+	// TODO cache type transformations
+	private Class<?> transformType(Class<?> type)
+	{
+		Class<?> transformed = type;
+		for (Extension extension : this.extensions)
 		{
-			implementation = this.tryToCreateAndRegisterImplementation(request);
+			transformed = extension.transform(transformed);
+		}
+		return transformed;
+	}
 
+	private Object transformValue(Object value)
+	{
+		Object transformed = value;
+		for (Extension extension : this.extensions)
+		{
+			transformed = extension.transform(transformed);
+		}
+		return transformed;
+	}
+
+	// TODO cleanup
+	private Object createValue(Class<?> type, Object... parameters)
+	{
+		// TODO scopes n shit
+		try {
+			// TODO array constants for empty parameters
+			Class<?>[] parameterTypes = new Class<?>[parameters.length];
+			for (int x = 0, l = parameters.length; x < l; x++)
+			{
+				Object element = parameters[x];
+				parameterTypes[x] = element == null ? null : element.getClass();
+			}
+
+			return type.getDeclaredConstructor(parameterTypes).newInstance(parameters);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}
+	}
+
+	public final class Binding
+	{
+		private final Class<?> bind;
+
+		Binding(Class<?> bind)
+		{
+			this.bind = bind;
+		}
+
+		public void to(Class<?> implementation)
+		{
 			if (implementation == null)
 			{
-				if (this.couldBeScope(request))
-				{
-					return this.scopes.getScope(request);
-				}
-
-				return null;
+				ObjectFactory.this.bindings.remove(this.bind);
+				return;
 			}
+
+			ObjectFactory.this.bindings.put(this.bind, implementation);
 		}
-
-		return this.getStatefulObject(implementation);
-	}
-
-	private boolean couldBeScope(Class<?> request)
-	{
-		return request.isAnnotation();
-	}
-
-	private Object getStatefulObject(Class<?> implementation)
-	{
-		Scoped<?> scoped = this.scopes.getScopedObject(implementation);
-
-		Iterator<Runnable> injectionLayers = this.injector.getInjections(scoped);
-		Iterator<Runnable> initializationLayers = this.initializer.getInitializers(scoped);
-		do
-		{
-			boolean finished = true;
-
-			if (injectionLayers.hasNext())
-			{
-				injectionLayers.next().run();
-				finished = false;
-			}
-
-			if (initializationLayers.hasNext())
-			{
-				initializationLayers.next().run();
-				finished = false;
-			}
-
-			if (finished)
-			{
-				break;
-			}
-		}
-		while (true);
-
-		return scoped.read();
-	}
-
-	private Class<?> tryToCreateAndRegisterImplementation(Class<?> request)
-	{
-		Class<?> implementation = this.implementationFactory.createImplementationClass(request);
-
-		if (implementation != null)
-		{
-			this.bindings.registerBinding(request, implementation);
-		}
-
-		return implementation;
 	}
 
 }
