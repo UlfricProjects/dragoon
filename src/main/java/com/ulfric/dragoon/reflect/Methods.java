@@ -39,7 +39,7 @@ public class Methods {
 
 			currentType = currentType.getSuperclass();
 		}
-		while (!isRootType(currentType));
+		while (!Methods.isRootType(currentType));
 
 		return result.values()
 				.stream()
