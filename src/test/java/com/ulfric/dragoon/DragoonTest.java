@@ -1,11 +1,5 @@
 package com.ulfric.dragoon;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.NoSuchElementException;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +8,14 @@ import org.junit.runner.RunWith;
 
 import com.ulfric.dragoon.extension.inject.Inject;
 import com.ulfric.dragoon.extension.intercept.Intercept;
+import com.ulfric.dragoon.extension.intercept.Interceptor;
+
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.NoSuchElementException;
 
 @RunWith(JUnitPlatform.class)
 @DisplayName("Dragoon Acceptance Tests")
@@ -52,9 +54,12 @@ class DragoonTest {
 		Class<? extends RuntimeException> value();
 	}
 
-	public static class ThrowInterceptor
+	public static class ThrowInterceptor extends Interceptor
 	{
-		
+		public ThrowInterceptor(Annotation declaration)
+		{
+			super(declaration);
+		}
 	}
 
 }

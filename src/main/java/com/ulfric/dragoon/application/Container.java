@@ -1,8 +1,8 @@
-package com.ulfric.dragoon.container;
+package com.ulfric.dragoon.application;
 
 import com.ulfric.dragoon.extension.Extensible;
 
-public class Container implements Extensible<Class<? extends Content>>, Content {
+public class Container implements Extensible<Class<? extends Application>>, Application {
 
 	private boolean running;
 
@@ -22,7 +22,7 @@ public class Container implements Extensible<Class<? extends Content>>, Content 
 	}
 
 	@Override
-	public void install(Class<? extends Content> extension)
+	public void install(Class<? extends Application> extension)
 	{
 		// TODO Auto-generated method stub
 	}

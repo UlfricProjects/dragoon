@@ -1,4 +1,4 @@
-package com.ulfric.dragoon.inheritance;
+package com.ulfric.dragoon.extension;
 
 public interface Family<T extends Family<T>> {
 

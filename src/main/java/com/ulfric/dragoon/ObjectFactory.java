@@ -1,17 +1,18 @@
 package com.ulfric.dragoon;
 
-import java.lang.reflect.InvocationTargetException;
+import com.ulfric.dragoon.extension.Extensible;
+import com.ulfric.dragoon.extension.Extension;
+import com.ulfric.dragoon.extension.SkeletalFamily;
+import com.ulfric.dragoon.extension.creator.CreatorExtension;
+import com.ulfric.dragoon.extension.inject.InjectExtension;
+import com.ulfric.dragoon.extension.intercept.InterceptExtension;
+import com.ulfric.dragoon.reflect.Instances;
+
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import com.ulfric.dragoon.extension.Extensible;
-import com.ulfric.dragoon.extension.Extension;
-import com.ulfric.dragoon.extension.creator.CreatorExtension;
-import com.ulfric.dragoon.extension.inject.InjectExtension;
-import com.ulfric.dragoon.inheritance.SkeletalFamily;
 
 public class ObjectFactory extends SkeletalFamily<ObjectFactory> implements Factory, Extensible<Class<? extends Extension>> {
 
@@ -34,8 +35,7 @@ public class ObjectFactory extends SkeletalFamily<ObjectFactory> implements Fact
 
 		this.extensions.add(new CreatorExtension(this));
 		this.install(InjectExtension.class);
-		//this.install(InjectExtension.class);
-		//this.install(InterceptExtension.class);
+		this.install(InterceptExtension.class);
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class ObjectFactory extends SkeletalFamily<ObjectFactory> implements Fact
 	{
 		Class<?> binding = this.bindings.get(type);
 
-		if (binding == null)
+		if (binding == null || binding == type)
 		{
 			return type;
 		}
@@ -142,25 +142,10 @@ public class ObjectFactory extends SkeletalFamily<ObjectFactory> implements Fact
 		return transformed;
 	}
 
-	// TODO cleanup
 	private Object createValue(Class<?> type, Object... parameters)
 	{
 		// TODO scopes n shit
-		try {
-			// TODO array constants for empty parameters
-			Class<?>[] parameterTypes = new Class<?>[parameters.length];
-			for (int x = 0, l = parameters.length; x < l; x++)
-			{
-				Object element = parameters[x];
-				parameterTypes[x] = element == null ? null : element.getClass();
-			}
-
-			return type.getDeclaredConstructor(parameterTypes).newInstance(parameters);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(e);
-		}
+		return Instances.newInstance(type, parameters);
 	}
 
 	public final class Binding

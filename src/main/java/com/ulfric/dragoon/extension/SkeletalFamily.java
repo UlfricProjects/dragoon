@@ -1,4 +1,4 @@
-package com.ulfric.dragoon.inheritance;
+package com.ulfric.dragoon.extension;
 
 public abstract class SkeletalFamily<T extends SkeletalFamily<T>> implements Family<T> {
 

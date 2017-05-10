@@ -2,7 +2,7 @@ package com.ulfric.dragoon.extension;
 
 public abstract class Extension {
 
-	public <T> Class<T> transform(Class<T> type)
+	public <T> Class<? extends T> transform(Class<T> type)
 	{
 		return type;
 	}

@@ -82,6 +82,28 @@ public class Stereotypes {
 		return annotations;
 	}
 
+	public static List<Annotation> getStereotypes(AnnotatedElement holder, Class<? extends Annotation> stereotype)
+	{
+		List<Annotation> annotations = new ArrayList<>();
+
+		for (Annotation held : holder.getAnnotations())
+		{
+			Class<?> heldType = held.annotationType();
+
+			if (heldType.isAnnotationPresent(stereotype))
+			{
+				annotations.add(held);
+			}
+
+			if (heldType.isAnnotationPresent(Stereotype.class))
+			{
+				annotations.addAll(Stereotypes.getStereotypes(heldType, stereotype));
+			}
+		}
+
+		return annotations;
+	}
+
 	private Stereotypes() { }
 
 }
