@@ -4,49 +4,38 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Methods {
 
-	// TODO this method is way too big
+	private static final Map<Method, Class<?>[]> PARAMETERS = new HashMap<>();
+
 	public static List<Method> getOverridableMethods(Class<?> type)
 	{
 		Map<String, List<Method>> result = new LinkedHashMap<>();
 
 		Class<?> currentType = type;
+
 		do
 		{
-			declaredMethods: for (Method method : type.getDeclaredMethods())
-			{
-				if (isOverridable(method))
-				{
-					String name = method.getName();
-					List<Method> methods = result.computeIfAbsent(name, ignore -> new ArrayList<>());
-
-					if (!methods.isEmpty())
+			Stream.of(type.getDeclaredMethods())
+					.filter(Methods::isOverridable)
+					.forEach(method ->
 					{
-						Class<?>[] parameterTypes = method.getParameterTypes();
+						String name = method.getName();
+						List<Method> methods = result.computeIfAbsent(name, ignore -> new ArrayList<>());
 
-						for (Method existingMethod : methods)
+						if (methods.stream()
+								.noneMatch(existingMethod -> Methods.methodNamesAndParamsEqual(method, existingMethod)))
 						{
-							if (existingMethod.getName().equals(name))
-							{
-								Class<?>[] existingParameterTypes = method.getParameterTypes(); // TODO caching
-
-								if (Arrays.equals(parameterTypes, existingParameterTypes))
-								{
-									continue declaredMethods;
-								}
-							}
+							methods.add(method);
 						}
-					}
-
-					methods.add(method);
-				}
-			}
+					});
 
 			currentType = currentType.getSuperclass();
 		}
@@ -58,6 +47,28 @@ public class Methods {
 				.collect(Collectors.toList());
 	}
 
+	private static Class<?>[] retrieveParameters(Method method)
+	{
+		return Methods.PARAMETERS.computeIfAbsent(method, Methods::computeParameters);
+	}
+
+	private static Class<?>[] computeParameters(Method method)
+	{
+		return method.getParameterTypes();
+	}
+
+	private static boolean methodNamesAndParamsEqual(Method method1, Method method2)
+	{
+		boolean namesEqual = method1.getName().equals(method2.getName());
+
+		boolean paramsEqual = Arrays.equals(
+				Methods.retrieveParameters(method1),
+				Methods.retrieveParameters(method2)
+		);
+
+		return namesEqual && paramsEqual;
+	}
+
 	private static boolean isOverridable(Method method)
 	{
 		if (method.isSynthetic())
@@ -66,6 +77,7 @@ public class Methods {
 		}
 
 		int modifiers = method.getModifiers();
+
 		return !Modifier.isStatic(modifiers)
 				&& !Modifier.isPrivate(modifiers)
 				&& !Modifier.isFinal(modifiers)
