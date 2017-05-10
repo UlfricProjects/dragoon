@@ -31,8 +31,7 @@ public class Methods {
 						List<Method> methods = result.computeIfAbsent(name, ignore -> new ArrayList<>());
 
 						if (methods.stream()
-								.filter(existingMethod -> Methods.methodNamesAndParamsEqual(method, existingMethod))
-								.count() == 0)
+								.noneMatch(existingMethod -> Methods.methodNamesAndParamsEqual(method, existingMethod)))
 						{
 							methods.add(method);
 						}
