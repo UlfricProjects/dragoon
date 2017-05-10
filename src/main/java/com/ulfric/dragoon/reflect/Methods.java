@@ -49,12 +49,7 @@ public class Methods {
 
 	private static Class<?>[] retrieveParameters(Method method)
 	{
-		return Methods.PARAMETERS.computeIfAbsent(method, Methods::computeParameters);
-	}
-
-	private static Class<?>[] computeParameters(Method method)
-	{
-		return method.getParameterTypes();
+		return Methods.PARAMETERS.computeIfAbsent(method, Method::getParameterTypes);
 	}
 
 	private static boolean methodNamesAndParamsEqual(Method method1, Method method2)
