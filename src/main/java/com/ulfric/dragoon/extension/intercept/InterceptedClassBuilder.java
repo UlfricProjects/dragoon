@@ -27,7 +27,7 @@ public class InterceptedClassBuilder<T> {
 	{
 		this.factory = factory;
 		this.parent = parent;
-		this.builder = new ByteBuddy().subclass(parent).implement(Dynamic.class);
+		this.builder = new ByteBuddy().subclass(parent);
 	}
 
 	public Class<? extends T> build()
@@ -49,7 +49,7 @@ public class InterceptedClassBuilder<T> {
 	{
 		for (Method method : Methods.getOverridableMethods(this.parent))
 		{
-			List<Interceptor> interceptors = Stereotypes.getStereotypes(method, Intercept.class)
+			List<Interceptor<?>> interceptors = Stereotypes.getStereotypes(method, Intercept.class)
 					.stream()
 					.map(this::createInterceptor)
 					.filter(Objects::nonNull)
@@ -64,13 +64,15 @@ public class InterceptedClassBuilder<T> {
 
 			this.builder = this.builder.method(ElementMatchers.is(method))
 					.intercept(MethodDelegation.to(pipeline))
-					.annotateType(method.getDeclaredAnnotations());
+					.annotateMethod(method.getDeclaredAnnotations());
+
+			this.changed = true;
 		}
 	}
 
-	private Interceptor createInterceptor(Annotation annotation)
+	private Interceptor<?> createInterceptor(Annotation annotation)
 	{
-		return (Interceptor) this.factory.requestUnchecked(annotation.annotationType(), annotation);
+		return (Interceptor<?>) this.factory.requestUnchecked(annotation.annotationType(), annotation);
 	}
 
 }

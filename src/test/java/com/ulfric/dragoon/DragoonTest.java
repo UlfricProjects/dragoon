@@ -10,12 +10,12 @@ import com.ulfric.dragoon.extension.inject.Inject;
 import com.ulfric.dragoon.extension.intercept.Intercept;
 import com.ulfric.dragoon.extension.intercept.Interceptor;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.NoSuchElementException;
+import java.util.concurrent.Callable;
 
 @RunWith(JUnitPlatform.class)
 @DisplayName("Dragoon Acceptance Tests")
@@ -31,7 +31,15 @@ class DragoonTest {
 		SampleRequest instance = factory.request(SampleRequest.class);
 		Assertions.assertNotNull(instance.value);
 
-		Assertions.assertThrows(NoSuchElementException.class, instance::interceptMe);
+		try
+		{
+			instance.interceptMe();
+			Assertions.fail("Expected exception");
+		}
+		catch(NoSuchElementException expected)
+		{
+			
+		}
 	}
 
 	public static class SampleRequest
@@ -54,11 +62,17 @@ class DragoonTest {
 		Class<? extends RuntimeException> value();
 	}
 
-	public static class ThrowInterceptor extends Interceptor
+	public static class ThrowInterceptor extends Interceptor<Throw>
 	{
-		public ThrowInterceptor(Annotation declaration)
+		public ThrowInterceptor(Throw declaration)
 		{
 			super(declaration);
+		}
+
+		@Override
+		public Object invoke(Object[] arguments, Callable<?> proceed) throws Exception
+		{
+			throw this.getDeclaration().value().newInstance();
 		}
 	}
 
