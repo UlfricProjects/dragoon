@@ -54,14 +54,15 @@ public class Methods {
 
 	private static boolean methodNamesAndParamsEqual(Method method1, Method method2)
 	{
-		boolean namesEqual = method1.getName().equals(method2.getName());
+		if (!method1.getName().equals(method2.getName()))
+		{
+			return false;
+		}
 
-		boolean paramsEqual = Arrays.equals(
+		return Arrays.equals(
 				Methods.retrieveParameters(method1),
 				Methods.retrieveParameters(method2)
 		);
-
-		return namesEqual && paramsEqual;
 	}
 
 	private static boolean isOverridable(Method method)
