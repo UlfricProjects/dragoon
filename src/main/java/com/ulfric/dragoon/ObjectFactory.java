@@ -2,6 +2,7 @@ package com.ulfric.dragoon;
 
 import com.ulfric.dragoon.extension.Extensible;
 import com.ulfric.dragoon.extension.Extension;
+import com.ulfric.dragoon.extension.Result;
 import com.ulfric.dragoon.extension.SkeletalFamily;
 import com.ulfric.dragoon.extension.creator.CreatorExtension;
 import com.ulfric.dragoon.extension.inject.InjectExtension;
@@ -9,56 +10,67 @@ import com.ulfric.dragoon.extension.intercept.InterceptExtension;
 import com.ulfric.dragoon.reflect.Instances;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class ObjectFactory extends SkeletalFamily<ObjectFactory> implements Factory, Extensible<Class<? extends Extension>> {
+public final class ObjectFactory extends SkeletalFamily<ObjectFactory> implements Factory, Extensible<Class<? extends Extension>> {
+
+	private static final List<Class<? extends Extension>> DEFAULT_EXTENSIONS =
+			Arrays.asList(InjectExtension.class, InterceptExtension.class);
+	private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
 	public static ObjectFactory newInstance()
 	{
 		return new ObjectFactory();
 	}
 
+	private final List<Class<? extends Extension>> extensionTypes = new ArrayList<>();
 	private final List<Extension> extensions = new ArrayList<>();
 	private final Map<Class<?>, Class<?>> bindings = new IdentityHashMap<>();
 
 	private ObjectFactory()
 	{
-		this(null);
+		this(null, ObjectFactory.DEFAULT_EXTENSIONS);
 	}
 
-	private ObjectFactory(ObjectFactory parent)
+	private ObjectFactory(ObjectFactory parent, List<Class<? extends Extension>> extensions)
 	{
 		super(parent);
 
 		this.extensions.add(new CreatorExtension(this));
-		this.install(InjectExtension.class);
-		this.install(InterceptExtension.class);
+		extensions.forEach(this::install);
 	}
 
 	@Override
 	public ObjectFactory createChild()
 	{
-		return new ObjectFactory(this);
+		return new ObjectFactory(this, this.extensionTypes);
 	}
 
 	// TODO cache type transformations
 	@Override
-	public void install(Class<? extends Extension> extension)
+	public Result install(Class<? extends Extension> extension)
 	{
 		Objects.requireNonNull(extension, "extension type");
 
+		if (!this.extensionTypes.add(extension))
+		{
+			return Result.FAILURE;
+		}
+
 		Extension value = this.request(extension);
-		Objects.requireNonNull(extension, () -> "extension instance: " + extension);
 		this.extensions.add(value);
+
+		return Result.SUCCESS;
 	}
 
 	@Override
 	public <T> T request(Class<T> type)
 	{
-		return this.request(type, new Object[0]); // TODO array constant
+		return this.request(type, ObjectFactory.EMPTY_OBJECT_ARRAY); // TODO array constant
 	}
 
 	public <T> T request(Class<T> type, Object... parameters)
@@ -77,7 +89,7 @@ public class ObjectFactory extends SkeletalFamily<ObjectFactory> implements Fact
 
 	public Object requestNotNull(Class<?> type)
 	{
-		return this.requestNotNull(type, new Object[0]); // TODO array constant
+		return this.requestNotNull(type, ObjectFactory.EMPTY_OBJECT_ARRAY); // TODO array constant
 	}
 
 	public Object requestNotNull(Class<?> type, Object... parameters)
@@ -89,7 +101,7 @@ public class ObjectFactory extends SkeletalFamily<ObjectFactory> implements Fact
 
 	public Object requestUnchecked(Class<?> type)
 	{
-		return this.requestUnchecked(type, new Object[0]); // TODO array constant
+		return this.requestUnchecked(type, ObjectFactory.EMPTY_OBJECT_ARRAY); // TODO array constant
 	}
 
 	public Object requestUnchecked(Class<?> type, Object... parameters)

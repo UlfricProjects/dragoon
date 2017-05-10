@@ -25,7 +25,7 @@ class DragoonTest {
 	@DisplayName("Test everything works")
 	void testDragoon()
 	{
-		ObjectFactory factory = ObjectFactory.newInstance();
+		ObjectFactory factory = ObjectFactory.newInstance().createChild();
 		factory.bind(Throw.class).to(ThrowInterceptor.class);
 
 		SampleRequest instance = factory.request(SampleRequest.class);
