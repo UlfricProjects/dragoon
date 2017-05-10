@@ -26,7 +26,7 @@ public class InterceptedClassBuilder<T> {
 	{
 		this.factory = factory;
 		this.parent = parent;
-		this.builder = Classes.subclass(parent);
+		this.builder = Classes.extend(parent);
 	}
 
 	public Class<? extends T> build()

@@ -7,7 +7,7 @@ import com.ulfric.dragoon.Dynamic;
 
 public class Classes {
 
-	public static <T> DynamicType.Builder<T> subclass(Class<T> type)
+	public static <T> DynamicType.Builder<T> extend(Class<T> type)
 	{
 		return new ByteBuddy().subclass(type)
 				.annotateType(type.getAnnotations())
