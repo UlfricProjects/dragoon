@@ -84,7 +84,7 @@ public class Container extends Application implements Extensible<Class<? extends
 			return this.factory;
 		}
 
-		return this.factory = ObjectFactory.newInstance();
+		return this.factory = new ObjectFactory();
 	}
 
 	private void update(Application application)

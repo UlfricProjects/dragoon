@@ -121,6 +121,13 @@
 			<version>1.0.0-M4</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>com.google.truth</groupId>
+			<artifactId>truth</artifactId>
+			<version>0.32</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 </project>

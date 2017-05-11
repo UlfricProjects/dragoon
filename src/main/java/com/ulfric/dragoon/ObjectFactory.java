@@ -3,7 +3,6 @@ package com.ulfric.dragoon;
 import com.ulfric.dragoon.extension.Extensible;
 import com.ulfric.dragoon.extension.Extension;
 import com.ulfric.dragoon.extension.Result;
-import com.ulfric.dragoon.extension.SkeletalFamily;
 import com.ulfric.dragoon.extension.creator.CreatorExtension;
 import com.ulfric.dragoon.extension.inject.InjectExtension;
 import com.ulfric.dragoon.extension.intercept.InterceptExtension;
@@ -11,43 +10,32 @@ import com.ulfric.dragoon.reflect.Instances;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
-public final class ObjectFactory extends SkeletalFamily<ObjectFactory> implements Factory, Extensible<Class<? extends Extension>> {
+public final class ObjectFactory implements Factory, Extensible<Class<? extends Extension>> {
 
 	private static final List<Class<? extends Extension>> DEFAULT_EXTENSIONS =
 			Arrays.asList(InjectExtension.class, InterceptExtension.class);
 	private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
-	public static ObjectFactory newInstance()
-	{
-		return new ObjectFactory();
-	}
-
-	private final List<Class<? extends Extension>> extensionTypes = new ArrayList<>();
+	private final Set<Class<? extends Extension>> extensionTypes = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Extension> extensions = new ArrayList<>();
 	private final Map<Class<?>, Class<?>> bindings = new IdentityHashMap<>();
 
-	private ObjectFactory()
+	public ObjectFactory()
 	{
-		this(null, ObjectFactory.DEFAULT_EXTENSIONS);
+		this(ObjectFactory.DEFAULT_EXTENSIONS);
 	}
 
-	private ObjectFactory(ObjectFactory parent, List<Class<? extends Extension>> extensions)
+	private ObjectFactory(List<Class<? extends Extension>> extensions)
 	{
-		super(parent);
-
 		this.extensions.add(new CreatorExtension(this));
 		extensions.forEach(this::install);
-	}
-
-	@Override
-	public ObjectFactory createChild()
-	{
-		return new ObjectFactory(this, this.extensionTypes);
 	}
 
 	// TODO cache type transformations
@@ -110,7 +98,10 @@ public final class ObjectFactory extends SkeletalFamily<ObjectFactory> implement
 		transformedType = this.transformType(transformedType);
 
 		Object value = this.createValue(transformedType, parameters);
-		value = this.transformValue(value);
+		if (value != null)
+		{
+			value = this.transformValue(value);
+		}
 		return value;
 	}
 
