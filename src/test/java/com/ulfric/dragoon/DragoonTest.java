@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
+import com.ulfric.dragoon.application.Container;
 import com.ulfric.dragoon.extension.inject.Inject;
 import com.ulfric.dragoon.extension.intercept.Intercept;
 import com.ulfric.dragoon.extension.intercept.Interceptor;
@@ -20,6 +21,21 @@ import java.util.concurrent.Callable;
 @RunWith(JUnitPlatform.class)
 @DisplayName("Dragoon Acceptance Tests")
 class DragoonTest {
+
+	@Test
+	@DisplayName("Main")
+	void testMain()
+	{
+		
+	}
+
+	public static class HelloWorld extends Container
+	{
+		public HelloWorld()
+		{
+			
+		}
+	}
 
 	@Test
 	@DisplayName("Test everything works")
@@ -40,6 +56,8 @@ class DragoonTest {
 		{
 			
 		}
+
+		factory.request(Container.class);
 	}
 
 	public static class SampleRequest

@@ -20,14 +20,20 @@ public class Container extends Application implements Extensible<Class<? extends
 	private final Set<Class<?>> installedApplications = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Application> applications = new ArrayList<>();
 
-	@Override
-	protected final void handleStart()
+	public Container()
+	{
+		this.addStartHook(this::handleStart);
+		this.addStartHook(this::startup);
+
+		this.addShutdownHook(this::handleShutdown);
+	}
+
+	private void handleStart()
 	{
 		this.applications.forEach(this::update);
 	}
 
-	@Override
-	protected final void handleShutdown()
+	protected void handleShutdown()
 	{
 		ListIterator<Application> reverse = this.applications.listIterator(this.applications.size());
 		while (reverse.hasPrevious())
@@ -35,6 +41,8 @@ public class Container extends Application implements Extensible<Class<? extends
 			this.update(reverse.previous());
 		}
 	}
+
+	public void startup() { }
 
 	@Override
 	public InstallApplicationResult install(Class<? extends Application> application)
