@@ -22,18 +22,18 @@ public class Container extends Application implements Extensible<Class<? extends
 
 	public Container()
 	{
-		this.addStartHook(this::handleStart);
-		this.addStartHook(this::startup);
+		this.addStartHook(this::startApplications);
+		this.addStartHook(this::setup);
 
-		this.addShutdownHook(this::handleShutdown);
+		this.addShutdownHook(this::stopApplications);
 	}
 
-	private void handleStart()
+	private void startApplications()
 	{
 		this.applications.forEach(this::update);
 	}
 
-	protected void handleShutdown()
+	protected void stopApplications()
 	{
 		ListIterator<Application> reverse = this.applications.listIterator(this.applications.size());
 		while (reverse.hasPrevious())
@@ -42,7 +42,7 @@ public class Container extends Application implements Extensible<Class<? extends
 		}
 	}
 
-	public void startup() { }
+	public void setup() { }
 
 	@Override
 	public InstallApplicationResult install(Class<? extends Application> application)
