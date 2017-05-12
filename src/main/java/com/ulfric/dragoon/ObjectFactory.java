@@ -69,7 +69,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	@Override
 	public <T> T request(Class<T> type)
 	{
-		return this.request(type, ObjectFactory.EMPTY_OBJECT_ARRAY); // TODO array constant
+		return this.request(type, ObjectFactory.EMPTY_OBJECT_ARRAY);
 	}
 
 	public <T> T request(Class<T> type, Object... parameters)
@@ -87,8 +87,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 			return null;
 		}
 
-		// TODO throw sane exception
-		throw new RuntimeException();
+		throw new RequestFailedException(type, parameters);
 	}
 
 	public Object requestUnspecific(Class<?> type)
@@ -151,7 +150,6 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 
 	private Object createValue(Class<?> type, Object... parameters)
 	{
-		// TODO scopes n shit
 		return Instances.newInstance(type, parameters);
 	}
 

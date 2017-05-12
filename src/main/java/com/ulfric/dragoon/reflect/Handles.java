@@ -4,10 +4,26 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.function.Supplier;
 
 public class Handles {
+
+	public static MethodHandle constructor(Constructor<?> constructor)
+	{
+		return Handles.accessibly(constructor, () ->
+		{
+			try
+			{
+				return Handles.generic(MethodHandles.lookup().unreflectConstructor(constructor));
+			}
+			catch (IllegalAccessException e)
+			{
+				throw new RuntimeException(e);
+			}
+		});
+	}
 
 	public static MethodHandle getter(Field field)
 	{

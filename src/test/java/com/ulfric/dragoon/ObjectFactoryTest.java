@@ -2,6 +2,7 @@ package com.ulfric.dragoon;
 
 import com.google.common.truth.Truth;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
@@ -24,6 +25,26 @@ class ObjectFactoryTest {
 	void testRequest()
 	{
 		Truth.assertThat(this.factory.request(Example.class)).isInstanceOf(Example.class);
+	}
+
+	@Test
+	void testRequestReturnsNull()
+	{
+		Truth.assertThat(this.factory.request(NoInstances.class)).isNull();
+	}
+
+	@Test
+	void testRequestIncompatible()
+	{
+		this.factory.bind(NoInstances.class).to(Object.class);
+		Assertions.assertThrows(RequestFailedException.class, () -> this.factory.request(NoInstances.class));
+	}
+
+	@Test
+	void testRequestIncompatibleButUnspecofoc()
+	{
+		this.factory.bind(NoInstances.class).to(Object.class);
+		Truth.assertThat(this.factory.requestUnspecific(NoInstances.class)).isNotNull();
 	}
 
 	@Test
@@ -61,6 +82,12 @@ class ObjectFactoryTest {
 		Truth.assertThat(this.factory.install(ExampleExtension.class).isSuccess()).isFalse();
 	}
 
+	@Test
+	void testFailingInstallation()
+	{
+		Truth.assertThat(this.factory.install(Extension.class).isSuccess()).isFalse();
+	}
+
 	static class ExampleExtension extends Extension
 	{
 		
@@ -69,6 +96,14 @@ class ObjectFactoryTest {
 	static class Example
 	{
 		
+	}
+
+	static class NoInstances
+	{
+		NoInstances()
+		{
+			throw new RuntimeException();
+		}
 	}
 
 }

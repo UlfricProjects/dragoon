@@ -23,6 +23,7 @@ public class Instances {
 			}
 		}
 
+		constructor.setAccessible(true);
 		return Instances.newInstance(constructor, parameters);
 	}
 
@@ -55,15 +56,14 @@ public class Instances {
 
 	private static <T> T newInstance(Constructor<T> constructor, Object... parameters)
 	{
-		constructor.setAccessible(true);
 		try
 		{
 			return constructor.newInstance(parameters);
 		}
 		catch (InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException rethrow)
+				| IllegalArgumentException | InvocationTargetException ignore)
 		{
-			throw new RuntimeException(rethrow);
+			return null;
 		}
 	}
 

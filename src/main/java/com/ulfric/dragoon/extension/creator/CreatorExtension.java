@@ -11,12 +11,12 @@ public class CreatorExtension extends Extension {
 	public CreatorExtension(Factory holder)
 	{
 		this.fields = FieldProfile.builder()
-				.setFactory(new SelfThenDelegateFactory(holder))
+				.setFactory(new IdentityFactory(holder))
 				.setFlagToSearchFor(Creator.class)
 				.setFilterForIgnoringFieldsEachInvocation(handle ->
 				{
 					Class<?> type = handle.getField().getType();
-					return Factory.class.isAssignableFrom(type);
+					return type.isAssignableFrom(Factory.class);
 				})
 				.build();
 	}
@@ -28,25 +28,20 @@ public class CreatorExtension extends Extension {
 		return value;
 	}
 
-	private static final class SelfThenDelegateFactory implements Factory
+	private static final class IdentityFactory implements Factory
 	{
 		private final Factory delegate;
 
-		SelfThenDelegateFactory(Factory delegate)
+		IdentityFactory(Factory delegate)
 		{
 			this.delegate = delegate;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public <T> T request(Class<T> type)
 		{
-			if (type.isInstance(this.delegate))
-			{
-				@SuppressWarnings("unchecked")
-				T casted = (T) this.delegate;
-				return casted;
-			}
-			return this.delegate.request(type);
+			return (T) this.delegate;
 		}
 	}
 
