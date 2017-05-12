@@ -6,8 +6,8 @@ import java.util.Objects;
 
 public class Application {
 
-	private final List<StateHook> start = new ArrayList<>();
-	private final List<StateHook> shutdown = new ArrayList<>();
+	private final List<Runnable> start = new ArrayList<>();
+	private final List<Runnable> shutdown = new ArrayList<>();
 	private boolean running;
 
 	public final boolean isRunning()
@@ -23,7 +23,7 @@ public class Application {
 		}
 
 		this.running = true;
-		this.start.forEach(StateHook::run);
+		this.start.forEach(Runnable::run);
 	}
 
 	public final void shutdown()
@@ -34,16 +34,16 @@ public class Application {
 		}
 
 		this.running = false;
-		this.shutdown.forEach(StateHook::run);
+		this.shutdown.forEach(Runnable::run);
 	}
 
-	public final void addStartHook(StateHook hook)
+	public final void addStartHook(Runnable hook)
 	{
 		Objects.requireNonNull(hook, "hook");
 		this.start.add(hook);
 	}
 
-	public final void addShutdownHook(StateHook hook)
+	public final void addShutdownHook(Runnable hook)
 	{
 		Objects.requireNonNull(hook, "hook");
 		this.shutdown.add(hook);
