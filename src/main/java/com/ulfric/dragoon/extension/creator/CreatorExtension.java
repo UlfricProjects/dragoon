@@ -16,7 +16,7 @@ public class CreatorExtension extends Extension {
 				.setFilterForIgnoringFieldsEachInvocation(handle ->
 				{
 					Class<?> type = handle.getField().getType();
-					return type.isAssignableFrom(Factory.class);
+					return type == Object.class || Factory.class.isAssignableFrom(type);
 				})
 				.build();
 	}

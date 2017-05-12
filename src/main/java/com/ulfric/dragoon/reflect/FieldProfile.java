@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.ulfric.dragoon.Factory;
+import com.ulfric.dragoon.exception.Try;
 import com.ulfric.dragoon.stereotype.Stereotypes;
 
 public final class FieldProfile implements Consumer<Object> {
@@ -84,19 +85,11 @@ public final class FieldProfile implements Consumer<Object> {
 				continue;
 			}
 
-			try
-			{
-				Object value = this.factory.request(handle.type);
+			Object value = this.factory.request(handle.type);
 
-				if (value != null)
-				{
-					handle.setter.invokeExact(setValues, value);
-				}
-			}
-			catch (Throwable e)
+			if (value != null)
 			{
-				// TODO handle exceptions
-				throw new RuntimeException(e);
+				Try.to(() -> { handle.setter.invokeExact(setValues, value); });
 			}
 		}
 	}
@@ -107,9 +100,8 @@ public final class FieldProfile implements Consumer<Object> {
 				.stream()
 				.map(field ->
 				{
-					MethodHandle getter = Handles.getter(field);
 					MethodHandle setter = Handles.setter(field);
-					return new GetterAndSetter(field, getter, setter);
+					return new GetterAndSetter(field, setter);
 				})
 				.collect(Collectors.toList());
 	}
@@ -118,14 +110,12 @@ public final class FieldProfile implements Consumer<Object> {
 	{
 		final Field field;
 		final Class<?> type;
-		final MethodHandle getter;
 		final MethodHandle setter;
 
-		GetterAndSetter(Field field, MethodHandle getter, MethodHandle setter)
+		GetterAndSetter(Field field, MethodHandle setter)
 		{
 			this.field = field;
 			this.type = field.getType();
-			this.getter = getter;
 			this.setter = setter;
 		}
 
@@ -133,23 +123,6 @@ public final class FieldProfile implements Consumer<Object> {
 		{
 			// TODO clone?
 			return this.field;
-		}
-
-		public MethodHandle getGetter()
-		{
-			return this.getter;
-		}
-
-		public MethodHandle getSetter()
-		{
-			return this.setter;
-		}
-
-		@Override
-		public String toString()
-		{
-			System.out.println(this.field.getDeclaringClass());
-			return null;
 		}
 	}
 

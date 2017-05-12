@@ -34,7 +34,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 
 	private ObjectFactory(List<Class<? extends Extension>> extensions)
 	{
-		this.install(CreatorExtension.class, this);
+		this.install(CreatorExtension.class, this).isSuccess();
 		extensions.forEach(this::install);
 	}
 
