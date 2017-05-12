@@ -6,6 +6,7 @@ import com.ulfric.dragoon.extension.Result;
 import com.ulfric.dragoon.extension.creator.CreatorExtension;
 import com.ulfric.dragoon.extension.inject.InjectExtension;
 import com.ulfric.dragoon.extension.intercept.InterceptExtension;
+import com.ulfric.dragoon.extension.loader.LoaderExtension;
 import com.ulfric.dragoon.reflect.Instances;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.Set;
 public final class ObjectFactory implements Factory, Extensible<Class<? extends Extension>> {
 
 	private static final List<Class<? extends Extension>> DEFAULT_EXTENSIONS =
-			Arrays.asList(InjectExtension.class, InterceptExtension.class);
+			Arrays.asList(InjectExtension.class, InterceptExtension.class, LoaderExtension.class);
 	private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
 	private final Set<Class<? extends Extension>> extensionTypes = Collections.newSetFromMap(new IdentityHashMap<>());
@@ -38,7 +39,6 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		extensions.forEach(this::install);
 	}
 
-	// TODO cache type transformations
 	@Override
 	public Result install(Class<? extends Extension> extension)
 	{
@@ -127,7 +127,6 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		return new Binding(bind);
 	}
 
-	// TODO cache type transformations
 	private Class<?> transformType(Class<?> type)
 	{
 		Class<?> transformed = type;

@@ -4,6 +4,7 @@ import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.extension.Extensible;
 import com.ulfric.dragoon.extension.Result;
 import com.ulfric.dragoon.extension.creator.Creator;
+import com.ulfric.dragoon.extension.loader.Loader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
 
+@Loader
 public class Container extends Application implements Extensible<Class<? extends Application>> {
 
 	@Creator
