@@ -20,10 +20,9 @@ public class Methods {
 		Map<String, List<Method>> result = new LinkedHashMap<>();
 
 		Class<?> currentType = type;
-
 		do
 		{
-			Stream.of(type.getDeclaredMethods())
+			Stream.of(currentType.getDeclaredMethods())
 					.filter(Methods::isOverridable)
 					.forEach(method ->
 					{
@@ -31,7 +30,7 @@ public class Methods {
 						List<Method> methods = result.computeIfAbsent(name, ignore -> new ArrayList<>());
 
 						if (methods.stream()
-								.noneMatch(existingMethod -> Methods.methodNamesAndParamsEqual(method, existingMethod)))
+								.noneMatch(existingMethod -> Methods.methodParametersEqual(method, existingMethod)))
 						{
 							methods.add(method);
 						}
@@ -52,13 +51,8 @@ public class Methods {
 		return Methods.PARAMETERS.computeIfAbsent(method, Method::getParameterTypes);
 	}
 
-	private static boolean methodNamesAndParamsEqual(Method method1, Method method2)
+	private static boolean methodParametersEqual(Method method1, Method method2)
 	{
-		if (!method1.getName().equals(method2.getName()))
-		{
-			return false;
-		}
-
 		return Arrays.equals(
 				Methods.retrieveParameters(method1),
 				Methods.retrieveParameters(method2)

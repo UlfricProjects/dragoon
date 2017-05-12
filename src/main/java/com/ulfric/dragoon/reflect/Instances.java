@@ -2,25 +2,15 @@ package com.ulfric.dragoon.reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 
 public class Instances {
 
 	public static <T> T newInstance(Class<T> type, Object... parameters)
 	{
-		Constructor<T> constructor;
-		try
+		Constructor<T> constructor = Instances.findConstructor(type, parameters);
+		if (constructor == null)
 		{
-			constructor = type.getDeclaredConstructor(Instances.toClasses(parameters));
-		}
-		catch (NoSuchMethodException | SecurityException thatsOk)
-		{
-			constructor = Instances.findConstructor(type, parameters);
-
-			if (constructor == null)
-			{
-				return null;
-			}
+			return null;
 		}
 
 		constructor.setAccessible(true);
@@ -65,18 +55,6 @@ public class Instances {
 		{
 			return null;
 		}
-	}
-
-	private static Class<?>[] toClasses(Object[] objects)
-	{
-		return Arrays.stream(objects)
-				.map(Instances::classOf)
-				.toArray(Class<?>[]::new);
-	}
-
-	private static Class<?> classOf(Object object)
-	{
-		return object == null ? null : object.getClass();
 	}
 
 	private Instances() { }

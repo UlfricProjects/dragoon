@@ -58,30 +58,6 @@ public class Stereotypes {
 		return false;
 	}
 
-	public static <T extends Annotation> List<T> getAnnotations(AnnotatedElement holder, Class<T> annotation)
-	{
-		List<T> annotations = new ArrayList<>();
-
-		for (Annotation held : holder.getAnnotations())
-		{
-			Class<?> heldType = held.annotationType();
-			if (heldType == annotation)
-			{
-				@SuppressWarnings("unchecked")
-				T casted = (T) held;
-				annotations.add(casted);
-				continue;
-			}
-
-			if (heldType.isAnnotationPresent(Stereotype.class))
-			{
-				annotations.addAll(Stereotypes.getAnnotations(heldType, annotation));
-			}
-		}
-
-		return annotations;
-	}
-
 	public static List<Annotation> getStereotypes(AnnotatedElement holder, Class<? extends Annotation> stereotype)
 	{
 		List<Annotation> annotations = new ArrayList<>();

@@ -99,19 +99,11 @@ public class Container extends Application implements Extensible<Class<? extends
 	{
 		if (this.isRunning())
 		{
-			if (application.isRunning())
-			{
-				return;
-			}
-
 			application.start();
 			return;
 		}
 
-		if (application.isRunning())
-		{
-			application.shutdown();
-		}
+		application.shutdown();
 	}
 
 }
