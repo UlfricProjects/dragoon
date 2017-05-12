@@ -34,13 +34,18 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 
 	private ObjectFactory(List<Class<? extends Extension>> extensions)
 	{
-		this.extensions.add(new CreatorExtension(this));
+		this.install(CreatorExtension.class, this);
 		extensions.forEach(this::install);
 	}
 
 	// TODO cache type transformations
 	@Override
 	public Result install(Class<? extends Extension> extension)
+	{
+		return this.install(extension, ObjectFactory.EMPTY_OBJECT_ARRAY);
+	}
+
+	public Result install(Class<? extends Extension> extension, Object... parameters)
 	{
 		Objects.requireNonNull(extension, "extension type");
 
@@ -49,7 +54,13 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 			return Result.FAILURE;
 		}
 
-		Extension value = this.request(extension);
+		Extension value = this.request(extension, parameters);
+
+		if (value == null)
+		{
+			return Result.FAILURE;
+		}
+
 		this.extensions.add(value);
 
 		return Result.SUCCESS;
@@ -63,7 +74,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 
 	public <T> T request(Class<T> type, Object... parameters)
 	{
-		Object value = this.requestNotNull(type, parameters);
+		Object value = this.requestUnspecific(type, parameters);
 		if (type.isInstance(value))
 		{
 			@SuppressWarnings("unchecked")
@@ -71,28 +82,21 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 			return casted;
 		}
 
+		if (value == null)
+		{
+			return null;
+		}
+
 		// TODO throw sane exception
 		throw new RuntimeException();
 	}
 
-	public Object requestNotNull(Class<?> type)
+	public Object requestUnspecific(Class<?> type)
 	{
-		return this.requestNotNull(type, ObjectFactory.EMPTY_OBJECT_ARRAY); // TODO array constant
+		return this.requestUnspecific(type, ObjectFactory.EMPTY_OBJECT_ARRAY);
 	}
 
-	public Object requestNotNull(Class<?> type, Object... parameters)
-	{
-		Object value = this.requestUnchecked(type, parameters);
-		Objects.requireNonNull(value);
-		return value;
-	}
-
-	public Object requestUnchecked(Class<?> type)
-	{
-		return this.requestUnchecked(type, ObjectFactory.EMPTY_OBJECT_ARRAY); // TODO array constant
-	}
-
-	public Object requestUnchecked(Class<?> type, Object... parameters)
+	public Object requestUnspecific(Class<?> type, Object... parameters)
 	{
 		Class<?> transformedType = this.getBinding(type);
 		transformedType = this.transformType(transformedType);

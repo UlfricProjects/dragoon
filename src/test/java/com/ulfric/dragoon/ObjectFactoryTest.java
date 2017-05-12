@@ -23,7 +23,7 @@ class ObjectFactoryTest {
 	@Test
 	void testRequest()
 	{
-		Truth.assertThat(this.factory.requestNotNull(Example.class)).isInstanceOf(Example.class);
+		Truth.assertThat(this.factory.request(Example.class)).isInstanceOf(Example.class);
 	}
 
 	@Test

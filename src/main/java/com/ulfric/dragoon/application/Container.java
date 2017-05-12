@@ -2,6 +2,7 @@ package com.ulfric.dragoon.application;
 
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.extension.Extensible;
+import com.ulfric.dragoon.extension.Result;
 import com.ulfric.dragoon.extension.creator.Creator;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class Container extends Application implements Extensible<Class<? extends
 	@Creator
 	private ObjectFactory factory;
 
-	private final Set<Class<?>> installedApplications = Collections.newSetFromMap(new IdentityHashMap<>());
+	private final Set<Class<?>> applicationTypes = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Application> applications = new ArrayList<>();
 
 	public Container()
@@ -45,36 +46,43 @@ public class Container extends Application implements Extensible<Class<? extends
 	public void setup() { }
 
 	@Override
-	public InstallApplicationResult install(Class<? extends Application> application)
+	public Result install(Class<? extends Application> application)
 	{
-		InstallApplicationResult validation = this.validate(application);
+		Result validation = this.validate(application);
 		if (!validation.isSuccess())
 		{
 			return validation;
 		}
 
 		Application install = this.getFactory().request(application);
+
+		if (install == null)
+		{
+			return Result.FAILURE;
+		}
+
+		this.applicationTypes.add(application);
 		this.applications.add(install);
 		this.update(install);
 
-		return InstallApplicationResult.SUCCESS;
+		return Result.SUCCESS;
 	}
 
-	private InstallApplicationResult validate(Class<?> application)
+	private Result validate(Class<?> application)
 	{
 		Objects.requireNonNull(application, "application");
 
 		if (application == this.getClass())
 		{
-			return InstallApplicationResult.SELF_INSTALLATION;
+			return Result.FAILURE;
 		}
 
-		if (!this.installedApplications.add(application))
+		if (this.applicationTypes.contains(application))
 		{
-			return InstallApplicationResult.ALREADY_INSTALLED;
+			return Result.FAILURE;
 		}
 
-		return InstallApplicationResult.SUCCESS;
+		return Result.SUCCESS;
 	}
 
 	private ObjectFactory getFactory()

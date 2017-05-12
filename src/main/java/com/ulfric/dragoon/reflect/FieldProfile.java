@@ -87,7 +87,11 @@ public final class FieldProfile implements Consumer<Object> {
 			try
 			{
 				Object value = this.factory.request(handle.type);
-				handle.setter.invokeExact(setValues, value);
+
+				if (value != null)
+				{
+					handle.setter.invokeExact(setValues, value);
+				}
 			}
 			catch (Throwable e)
 			{

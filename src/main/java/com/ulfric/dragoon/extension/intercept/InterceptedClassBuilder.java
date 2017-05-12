@@ -70,7 +70,7 @@ public class InterceptedClassBuilder<T> {
 
 	private Interceptor<?> createInterceptor(Annotation annotation)
 	{
-		return (Interceptor<?>) this.factory.requestUnchecked(annotation.annotationType(), annotation);
+		return (Interceptor<?>) this.factory.requestUnspecific(annotation.annotationType(), annotation);
 	}
 
 }
