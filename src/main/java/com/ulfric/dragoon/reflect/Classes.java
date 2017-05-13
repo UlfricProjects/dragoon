@@ -15,6 +15,31 @@ public class Classes {
 				.implement(Dynamic.class);
 	}
 
+	public static boolean isRoot(Class<?> type)
+	{
+		return type == Object.class || type == null;
+	}
+
+	public static boolean isDescendedFromClassLoader(Class<?> type, Class<? extends ClassLoader> parent)
+	{
+		return Classes.isClassLoaderDescendedFromClassLoader(type.getClassLoader(), parent);
+	}
+
+	private static boolean isClassLoaderDescendedFromClassLoader(ClassLoader loader, Class<? extends ClassLoader> parent)
+	{
+		if (loader == null)
+		{
+			return false;
+		}
+
+		if (parent.isInstance(loader))
+		{
+			return true;
+		}
+
+		return Classes.isClassLoaderDescendedFromClassLoader(loader.getParent(), parent);
+	}
+
 	private Classes() { }
 
 }

@@ -38,7 +38,7 @@ public class Methods {
 
 			currentType = currentType.getSuperclass();
 		}
-		while (!Methods.isRootType(currentType));
+		while (!Classes.isRoot(currentType));
 
 		return result.values()
 				.stream()
@@ -72,11 +72,6 @@ public class Methods {
 				&& !Modifier.isPrivate(modifiers)
 				&& !Modifier.isFinal(modifiers)
 				&& !Modifier.isNative(modifiers);
-	}
-
-	private static boolean isRootType(Class<?> type)
-	{
-		return type == Object.class || type == null;
 	}
 
 	private Methods() { }

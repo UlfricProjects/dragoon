@@ -2,14 +2,9 @@ package com.ulfric.dragoon.extension.loader;
 
 import com.ulfric.dragoon.Factory;
 
-public class LoaderFactory implements Factory {
+public enum LoaderFactory implements Factory {
 
-	private final Factory delegate;
-
-	public LoaderFactory(Factory delegate)
-	{
-		this.delegate = delegate;
-	}
+	INSTANCE;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -20,7 +15,7 @@ public class LoaderFactory implements Factory {
 		{
 			return (T) ((OwnedClassLoader) loader).getOwner();
 		}
-		return this.delegate.request(type);
+		return null;
 	}
 
 }

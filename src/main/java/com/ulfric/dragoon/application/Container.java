@@ -22,11 +22,12 @@ public class Container extends Application implements Extensible<Class<? extends
 
 	private final Set<Class<?>> applicationTypes = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Application> applications = new ArrayList<>();
+	private boolean hasSetup;
 
 	public Container()
 	{
 		this.addStartHook(this::startApplications);
-		this.addStartHook(this::setup);
+		this.addStartHook(this::runSetup);
 
 		this.addShutdownHook(this::stopApplications);
 	}
@@ -43,6 +44,17 @@ public class Container extends Application implements Extensible<Class<? extends
 		{
 			this.update(reverse.previous());
 		}
+	}
+
+	private void runSetup()
+	{
+		if (this.hasSetup)
+		{
+			return;
+		}
+
+		this.hasSetup = true;
+		this.setup();
 	}
 
 	public void setup() { }

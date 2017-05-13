@@ -1,48 +1,81 @@
 package com.ulfric.dragoon.extension.loader;
 
-import com.ulfric.dragoon.Factory;
 import com.ulfric.dragoon.extension.Extension;
-import com.ulfric.dragoon.extension.creator.Creator;
 import com.ulfric.dragoon.reflect.Classes;
 import com.ulfric.dragoon.reflect.FieldProfile;
-import com.ulfric.dragoon.value.Lazy;
+
+import java.lang.reflect.Field;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 public class LoaderExtension extends Extension {
 
-	@Creator
-	private Factory factory;
+	private static final Map<Class<?>, Boolean> INJECTIONS = new IdentityHashMap<>();
 
-	private final Lazy<FieldProfile> fields = Lazy.of(this::createFieldProfile);
-
-	private FieldProfile createFieldProfile()
+	static boolean isInjectionTarget(Class<?> type)
 	{
-		return FieldProfile.builder()
-				.setFactory(new LoaderFactory(this.factory))
-				.setFlagToSearchFor(Loader.class)
-				.build();
+		return LoaderExtension.INJECTIONS.computeIfAbsent(type, LoaderExtension::computeInjectionTarget);
 	}
 
+	private static boolean computeInjectionTarget(Class<?> type)
+	{
+		if (Classes.isRoot(type))
+		{
+			return false;
+		}
+
+		if (type.isAnnotationPresent(Loader.class))
+		{
+			return true;
+		}
+
+		for (Field field : type.getDeclaredFields())
+		{
+			if (field.isAnnotationPresent(Loader.class))
+			{
+				return true;
+			}
+		}
+
+		return LoaderExtension.computeInjectionTarget(type.getSuperclass());
+	}
+
+	private final FieldProfile fields = FieldProfile.builder()
+			.setFactory(LoaderFactory.INSTANCE)
+			.setFlagToSearchFor(Loader.class)
+			.build();
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Class<? extends T> transform(Class<T> type)
 	{
-		if (!type.isAnnotationPresent(Loader.class))
+		if (!LoaderExtension.isInjectionTarget(type))
 		{
 			return type;
 		}
 
 		OwnedClassLoader redefiner = new OwnedClassLoader(type.getClassLoader());
-		return Classes.extend(type).make().load(redefiner).getLoaded(); // TODO redefine(type) instead?
+		try {
+			return (Class<? extends T>) redefiner.reloadClass(type);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return type;
+		}
 	}
 
 	@Override
 	public <T> T transform(T value)
 	{
 		Class<?> type = value.getClass();
-		if (type.isAnnotationPresent(Loader.class))
+		if (LoaderExtension.isInjectionTarget(type))
 		{
-			this.injectLoader(value);
+			if (type.isAnnotationPresent(Loader.class))
+			{
+				this.injectLoader(value);
+			}
+
+			this.fields.accept(value);
 		}
-		this.fields.get().accept(value);
 		return value;
 	}
 

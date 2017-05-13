@@ -9,9 +9,9 @@ public class RequestFailedException extends RuntimeException {
 		return arguments.length == 0 ? "" : " Arguments: " + Arrays.toString(arguments);
 	}
 
-	public RequestFailedException(Class<?> type, Object[] arguments)
+	public RequestFailedException(Class<?> type, Object[] arguments, Exception cause)
 	{
-		super("Request failed: " + type + RequestFailedException.arguments(arguments));
+		super("Request failed: " + type + RequestFailedException.arguments(arguments), cause);
 	}
 
 }
