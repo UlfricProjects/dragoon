@@ -76,21 +76,19 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	{
 		Object value = this.requestUnspecific(type, parameters);
 
-		if (value == null)
+		if (!type.isInstance(value))
 		{
-			return null;
+			if (value == null)
+			{
+				return null;
+			}
+
+			throw new RequestFailedException(type, parameters);
 		}
 
-		try
-		{
-			@SuppressWarnings("unchecked")
-			T casted = (T) value;
-			return casted;
-		}
-		catch (ClassCastException exception)
-		{
-			throw new RequestFailedException(type, parameters, exception);
-		}
+		@SuppressWarnings("unchecked")
+		T casted = (T) value;
+		return casted;
 	}
 
 	public Object requestUnspecific(Class<?> type)

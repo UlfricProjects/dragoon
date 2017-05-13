@@ -41,7 +41,7 @@ class ObjectFactoryTest {
 	}
 
 	@Test
-	void testRequestIncompatibleButUnspecofoc()
+	void testRequestIncompatibleButUnspecific()
 	{
 		this.factory.bind(NoInstances.class).to(Object.class);
 		Truth.assertThat(this.factory.requestUnspecific(NoInstances.class)).isNotNull();

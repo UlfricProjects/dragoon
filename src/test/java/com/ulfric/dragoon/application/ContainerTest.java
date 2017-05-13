@@ -71,16 +71,6 @@ class ContainerTest {
 	}
 
 	@Test
-	void testInstallOnRequested()
-	{
-		this.container = new ObjectFactory().request(Container.class);
-		this.container.start();
-		this.container.install(ApplicationExample.class);
-		this.container.shutdown();
-		Truth.assertThat(ApplicationExample.last).isNotNull();
-	}
-
-	@Test
 	void testInstallTwice()
 	{
 		Truth.assertThat(this.container.install(ApplicationExample.class).isSuccess()).isTrue();
