@@ -4,6 +4,8 @@ import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.extension.Extensible;
 import com.ulfric.dragoon.extension.Result;
 import com.ulfric.dragoon.extension.creator.Creator;
+import com.ulfric.dragoon.extension.loader.Loader;
+import com.ulfric.dragoon.reflect.Classes;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +14,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
+@Loader
 public class Container extends Application implements Extensible<Class<? extends Application>> {
 
 	@Creator
@@ -20,6 +24,7 @@ public class Container extends Application implements Extensible<Class<? extends
 
 	private final Set<Class<?>> applicationTypes = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Application> applications = new ArrayList<>();
+	private String name;
 	private boolean hasSetup;
 
 	public Container()
@@ -28,6 +33,27 @@ public class Container extends Application implements Extensible<Class<? extends
 		this.addStartHook(this::runSetup);
 
 		this.addShutdownHook(this::stopApplications);
+	}
+
+	public String getName()
+	{
+		if (this.name != null)
+		{
+			return this.name;
+		}
+
+		this.name = this.resolveName();
+		return this.name;
+	}
+
+	private String resolveName()
+	{
+		String name = this.getClass().getName();
+		if (name.equals(Container.class.getName()))
+		{
+			return UUID.randomUUID().toString();
+		}
+		return name;
 	}
 
 	private void startApplications()
@@ -66,7 +92,8 @@ public class Container extends Application implements Extensible<Class<? extends
 			return validation;
 		}
 
-		Application install = this.getFactory().request(application);
+		Class<? extends Application> implementation = this.getAsOwnedClass(application);
+		Application install = this.getFactory().request(implementation);
 
 		if (install == null)
 		{
@@ -78,6 +105,15 @@ public class Container extends Application implements Extensible<Class<? extends
 		this.update(install);
 
 		return Result.SUCCESS;
+	}
+
+	private <T> Class<? extends T> getAsOwnedClass(Class<T> type)
+	{
+		if (type.isAnnotationPresent(Loader.class))
+		{
+			return type;
+		}
+		return Classes.translate(type, this.getClass().getClassLoader());
 	}
 
 	private Result validate(Class<?> application)
