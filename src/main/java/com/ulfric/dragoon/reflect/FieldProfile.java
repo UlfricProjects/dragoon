@@ -11,6 +11,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -29,6 +30,7 @@ public final class FieldProfile implements Consumer<Object> {
 		private Class<? extends Annotation> flag;
 		private Predicate<GetterAndSetter> filter;
 		private BiFunction<Object, Field, Class<?>> typeResolver;
+		private BiConsumer<Class<?>, Field> failureStrategy;
 
 		Builder() { }
 
@@ -49,7 +51,16 @@ public final class FieldProfile implements Consumer<Object> {
 				typeResolver = (ignore, field) -> field.getType();
 			}
 
-			return new FieldProfile(this.factory, this.flag, filter, typeResolver);
+			BiConsumer<Class<?>, Field> failureStrategy = this.failureStrategy;
+			if (failureStrategy == null)
+			{
+				failureStrategy = (type, field) ->
+				{
+					throw new IllegalArgumentException("Failed to inject " + type + " into field " + field.getName());
+				};
+			}
+
+			return new FieldProfile(this.factory, this.flag, filter, typeResolver, failureStrategy);
 		}
 
 		public Builder setFactory(Factory factory)
@@ -75,23 +86,32 @@ public final class FieldProfile implements Consumer<Object> {
 			this.typeResolver = typeResolver;
 			return this;
 		}
+
+		public Builder setFailureStrategy(BiConsumer<Class<?>, Field> failureStrategy)
+		{
+			this.failureStrategy = failureStrategy;
+			return this;
+		}
 	}
 
 	private final Factory factory;
 	private final Class<? extends Annotation> flag;
 	private final Predicate<GetterAndSetter> filter;
 	private final BiFunction<Object, Field, Class<?>> typeResolver;
+	private final BiConsumer<Class<?>, Field> failureStrategy;
 	private final Map<Class<?>, List<GetterAndSetter>> requests = new IdentityHashMap<>();
 
 	private FieldProfile(Factory factory,
 			Class<? extends Annotation> flag,
 			Predicate<GetterAndSetter> filter,
-			BiFunction<Object, Field, Class<?>> typeResolver)
+			BiFunction<Object, Field, Class<?>> typeResolver,
+			BiConsumer<Class<?>, Field> failureStrategy)
 	{
 		this.factory = factory;
 		this.flag = flag;
 		this.filter = filter;
 		this.typeResolver = typeResolver;
+		this.failureStrategy = failureStrategy;
 	}
 
 	@Override
@@ -104,11 +124,16 @@ public final class FieldProfile implements Consumer<Object> {
 				continue;
 			}
 
-			Object value = this.factory.request(this.typeResolver.apply(setValues, handle.field));
+			Class<?> injectType = this.typeResolver.apply(setValues, handle.field);
+			Object value = this.factory.request(injectType);
 
 			if (value != null)
 			{
 				Try.to(() -> { handle.setter.invokeExact(setValues, value); });
+			}
+			else
+			{
+				this.failureStrategy.accept(injectType, handle.field);
 			}
 		}
 	}

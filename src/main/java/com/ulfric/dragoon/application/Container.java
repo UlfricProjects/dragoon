@@ -4,6 +4,7 @@ import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.extension.Extensible;
 import com.ulfric.dragoon.extension.Result;
 import com.ulfric.dragoon.extension.creator.Creator;
+import com.ulfric.dragoon.extension.inject.Inject;
 import com.ulfric.dragoon.extension.loader.Loader;
 import com.ulfric.dragoon.reflect.Classes;
 
@@ -15,12 +16,17 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 @Loader
 public class Container extends Application implements Extensible<Class<? extends Application>> {
 
 	@Creator
 	private ObjectFactory factory;
+
+	@Inject(optional = true)
+	private Logger logger; // TODO AOP auditing
 
 	private final Set<Class<?>> applicationTypes = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Application> applications = new ArrayList<>();
@@ -29,10 +35,12 @@ public class Container extends Application implements Extensible<Class<? extends
 
 	public Container()
 	{
+		this.addStartHook(() -> this.log("Booting " + this.getName())); // TODO AOP auditing
 		this.addStartHook(this::startApplications);
 		this.addStartHook(this::runSetup);
 
 		this.addShutdownHook(this::stopApplications);
+		this.addShutdownHook(() -> this.log("Shutting down " + this.getName())); // TODO AOP auditing
 	}
 
 	public String getName()
@@ -48,10 +56,10 @@ public class Container extends Application implements Extensible<Class<? extends
 
 	private String resolveName()
 	{
-		String name = this.getClass().getName();
-		if (name.equals(Container.class.getName()))
+		String name = Classes.getNonDynamic(this.getClass()).getSimpleName();
+		if (name.equals(Container.class.getSimpleName()))
 		{
-			return UUID.randomUUID().toString();
+			return name + '-' + UUID.randomUUID();
 		}
 		return name;
 	}
@@ -141,6 +149,27 @@ public class Container extends Application implements Extensible<Class<? extends
 		}
 
 		return this.factory = new ObjectFactory();
+	}
+
+	private void log(String message) // TODO AOP auditing
+	{
+		Logger logger = this.getLogger();
+		if (logger == null)
+		{
+			System.out.println('[' + this.getName() + "] " + message);
+			return;
+		}
+		logger.info(message);
+	}
+
+	private Logger getLogger() // TODO AOP auditing
+	{
+		if (this.logger != null)
+		{
+			return this.logger;
+		}
+
+		return this.logger = LogManager.getLogManager().getLogger(this.getName());
 	}
 
 	private void update(Application application)

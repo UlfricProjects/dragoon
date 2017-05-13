@@ -7,7 +7,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Stereotypes {
+public class Stereotypes { // TODO refactor method names
 
 	public static List<Field> getAnnotatedInstanceFields(Class<?> type, Class<? extends Annotation> annotation)
 	{
@@ -78,6 +78,35 @@ public class Stereotypes {
 		}
 
 		return annotations;
+	}
+
+	public static <T extends Annotation> T getFirst(AnnotatedElement holder, Class<T> stereotype)
+	{
+		for (Annotation held : holder.getAnnotations())
+		{
+			Class<?> heldType = held.annotationType();
+
+			if (heldType == stereotype)
+			{
+				return stereotype.cast(held);
+			}
+
+			T inherited = heldType.getAnnotation(stereotype);
+			if (inherited == null)
+			{
+				if (heldType.isAnnotationPresent(Stereotype.class))
+				{
+					inherited = Stereotypes.getFirst(heldType, stereotype);
+				}
+			}
+
+			if (inherited != null)
+			{
+				return inherited;
+			}
+		}
+
+		return null;
 	}
 
 	private Stereotypes() { }

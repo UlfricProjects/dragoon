@@ -22,6 +22,21 @@ public class Classes {
 				.getLoaded();
 	}
 
+	public static Class<?> getNonDynamic(Class<?> type)
+	{
+		if (type == null)
+		{
+			return null;
+		}
+
+		if (!Dynamic.class.isAssignableFrom(type))
+		{
+			return type;
+		}
+
+		return Classes.getNonDynamic(type.getSuperclass());
+	}
+
 	public static boolean isRoot(Class<?> type)
 	{
 		return type == Object.class || type == null;

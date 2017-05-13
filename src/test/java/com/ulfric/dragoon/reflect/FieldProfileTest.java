@@ -2,6 +2,7 @@ package com.ulfric.dragoon.reflect;
 
 import com.google.common.truth.Truth;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
@@ -34,12 +35,11 @@ class FieldProfileTest {
 	}
 
 	@Test
-	void testIgnoresNullValues()
+	void testDefaultFailureStrategyThrowsException()
 	{
 		InjectMe inject = new InjectMe();
 		this.factory.bind(Object.class).to(NoInstances.class);
-		this.builder.build().accept(inject);
-		Truth.assertThat(inject.object).isNull();
+		Assertions.assertThrows(IllegalArgumentException.class, () -> this.builder.build().accept(inject));
 	}
 
 	static class InjectMe
