@@ -25,7 +25,7 @@
 					<dependency>
 						<groupId>org.junit.platform</groupId>
 						<artifactId>junit-platform-surefire-provider</artifactId>
-						<version>1.0.0-M3</version>
+						<version>1.0.0-M5</version>
 					</dependency>
 				</dependencies>
 			</plugin>
@@ -98,41 +98,41 @@
 		<dependency>
 			<groupId>net.bytebuddy</groupId>
 			<artifactId>byte-buddy</artifactId>
-			<version>1.6.14</version>
+			<version>1.7.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.0.0-M4</version>
+			<version>5.0.0-M5</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-runner</artifactId>
-			<version>1.0.0-M4</version>
+			<version>1.0.0-M5</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-runner</artifactId>
-			<version>1.0.0-M4</version>
+			<version>1.0.0-M5</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.google.truth</groupId>
 			<artifactId>truth</artifactId>
-			<version>0.32</version>
+			<version>0.34</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.google.truth.extensions</groupId>
 			<artifactId>truth-java8-extension</artifactId>
-			<version>0.32</version>
+			<version>0.34</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
