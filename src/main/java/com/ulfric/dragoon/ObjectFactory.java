@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 public final class ObjectFactory implements Factory, Extensible<Class<? extends Extension>> {
 
@@ -26,20 +27,20 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 
 	private final Set<Class<? extends Extension>> extensionTypes = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Extension> extensions = new ArrayList<>();
-	private final Map<Class<?>, Class<?>> bindings = new IdentityHashMap<>();
+	private final Map<Class<?>, Binding> bindings = new IdentityHashMap<>();
 
 	public ObjectFactory() {
 		this(ObjectFactory.DEFAULT_EXTENSIONS);
 	}
 
 	private ObjectFactory(List<Class<? extends Extension>> extensions) {
-		this.install(CreatorExtension.class, this).isSuccess();
+		install(CreatorExtension.class, this).isSuccess();
 		extensions.forEach(this::install);
 	}
 
 	@Override
 	public Result install(Class<? extends Extension> extension) {
-		return this.install(extension, ObjectFactory.EMPTY_OBJECT_ARRAY);
+		return install(extension, ObjectFactory.EMPTY_OBJECT_ARRAY);
 	}
 
 	public Result install(Class<? extends Extension> extension, Object... parameters) {
@@ -49,7 +50,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 			return Result.FAILURE;
 		}
 
-		Extension value = this.request(extension, parameters);
+		Extension value = request(extension, parameters);
 
 		if (value == null) {
 			return Result.FAILURE;
@@ -62,11 +63,11 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 
 	@Override
 	public <T> T request(Class<T> type) {
-		return this.request(type, ObjectFactory.EMPTY_OBJECT_ARRAY);
+		return request(type, ObjectFactory.EMPTY_OBJECT_ARRAY);
 	}
 
 	public <T> T request(Class<T> type, Object... parameters) {
-		Object value = this.requestUnspecific(type, parameters);
+		Object value = requestUnspecific(type, parameters);
 
 		try {
 			return type.cast(value);
@@ -76,39 +77,40 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	}
 
 	public Object requestUnspecific(Class<?> type) {
-		return this.requestUnspecific(type, ObjectFactory.EMPTY_OBJECT_ARRAY);
+		return requestUnspecific(type, ObjectFactory.EMPTY_OBJECT_ARRAY);
 	}
 
 	public Object requestUnspecific(Class<?> type, Object... parameters) {
-		Class<?> transformedType = this.getBinding(type);
-		transformedType = this.transformType(transformedType);
-
-		Object value = this.createValue(transformedType, parameters);
-		if (value != null) {
-			value = this.transformValue(value);
-		}
-		return value;
-	}
-
-	private Class<?> getBinding(Class<?> type) {
-		Class<?> binding = this.bindings.get(type);
-
-		if (binding == null || binding == type) {
-			return type;
+		Binding binding = getBinding(type);
+		if (binding == null) {
+			return null;
 		}
 
-		return this.getBinding(binding);
+		Object value = binding.create(parameters);
+		if (value == null) {
+			return null;
+		}
+		return transformValue(value);
 	}
 
-	public Binding bind(Class<?> bind) {
+	private Binding getBinding(Class<?> type) {
+		Binding binding = bindings.get(type);
+		if (binding == null) {
+			bind(type).to(type);
+			return getBinding(type);
+		}
+		return binding;
+	}
+
+	public CreateBinding bind(Class<?> bind) {
 		Objects.requireNonNull(bind, "bind");
 
-		return new Binding(bind);
+		return new CreateBinding(bind);
 	}
 
 	private Class<?> transformType(Class<?> type) {
 		Class<?> transformed = type;
-		for (Extension extension : this.extensions) {
+		for (Extension extension : extensions) {
 			transformed = extension.transform(transformed);
 		}
 		return transformed;
@@ -116,7 +118,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 
 	private Object transformValue(Object value) {
 		Object transformed = value;
-		for (Extension extension : this.extensions) {
+		for (Extension extension : extensions) {
 			transformed = extension.transform(transformed);
 		}
 		return transformed;
@@ -126,20 +128,78 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		return Instances.newInstance(type, parameters);
 	}
 
-	public final class Binding {
+	public final class CreateBinding {
 		private final Class<?> bind;
 
-		Binding(Class<?> bind) {
+		CreateBinding(Class<?> bind) {
 			this.bind = bind;
 		}
 
-		public void to(Class<?> implementation) {
+		public void to(Object implementation) {
 			if (implementation == null) {
-				ObjectFactory.this.bindings.remove(this.bind);
+				bindings.remove(bind);
 				return;
 			}
 
-			ObjectFactory.this.bindings.put(this.bind, implementation);
+			Binding binding;
+
+			if (implementation instanceof Class) {
+				binding = new ClassBinding((Class<?>) implementation);
+			} else if (implementation instanceof Function) {
+				@SuppressWarnings("unchecked")
+				Function<Object[], ?> casted = (Function<Object[], ?>) implementation;
+				binding = new FunctionBinding(casted);
+			} else if (bind.isInstance(implementation)) {
+				binding = new ValueBinding(implementation);
+			} else {
+				throw new IllegalArgumentException("Could not bind " + bind + " to " + implementation);
+			}
+
+			bindings.put(bind, binding);
+		}
+	}
+
+	private interface Binding {
+		Object create(Object... parameters);
+	}
+
+	private final class FunctionBinding implements Binding {
+		private final Function<Object[], ?> function;
+
+		FunctionBinding(Function<Object[], ?> function) {
+			this.function = function;
+		}
+
+		@Override
+		public Object create(Object... parameters) {
+			return function.apply(parameters);
+		}
+	}
+
+	private final class ClassBinding implements Binding {
+		private final Class<?> type;
+
+		ClassBinding(Class<?> type) {
+			this.type = type;
+		}
+
+		@Override
+		public Object create(Object... parameters) {
+			Class<?> transformedType = transformType(type);
+			return createValue(transformedType, parameters);
+		}
+	}
+
+	private final class ValueBinding implements Binding {
+		private final Object value;
+
+		ValueBinding(Object value) {
+			this.value = value;
+		}
+
+		@Override
+		public Object create(Object... parameters) {
+			return value;
 		}
 	}
 

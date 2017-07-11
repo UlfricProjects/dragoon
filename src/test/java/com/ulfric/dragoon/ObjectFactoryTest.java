@@ -10,6 +10,8 @@ import com.google.common.truth.Truth;
 
 import com.ulfric.dragoon.extension.Extension;
 
+import java.util.function.Function;
+
 @RunWith(JUnitPlatform.class)
 class ObjectFactoryTest {
 
@@ -17,64 +19,85 @@ class ObjectFactoryTest {
 
 	@BeforeEach
 	void setup() {
-		this.factory = new ObjectFactory();
+		factory = new ObjectFactory();
 	}
 
 	@Test
 	void testRequest() {
-		Truth.assertThat(this.factory.request(Example.class)).isInstanceOf(Example.class);
+		Truth.assertThat(factory.request(Example.class)).isInstanceOf(Example.class);
 	}
 
 	@Test
 	void testRequestReturnsNull() {
-		Truth.assertThat(this.factory.request(NoInstances.class)).isNull();
+		Truth.assertThat(factory.request(NoInstances.class)).isNull();
 	}
 
 	@Test
 	void testRequestIncompatible() {
-		this.factory.bind(NoInstances.class).to(Object.class);
-		Assertions.assertThrows(RequestFailedException.class, () -> this.factory.request(NoInstances.class));
+		factory.bind(NoInstances.class).to(Object.class);
+		Assertions.assertThrows(RequestFailedException.class, () -> factory.request(NoInstances.class));
 	}
 
 	@Test
 	void testRequestIncompatibleButUnspecific() {
-		this.factory.bind(NoInstances.class).to(Object.class);
-		Truth.assertThat(this.factory.requestUnspecific(NoInstances.class)).isNotNull();
+		factory.bind(NoInstances.class).to(Object.class);
+		Truth.assertThat(factory.requestUnspecific(NoInstances.class)).isNotNull();
 	}
 
 	@Test
 	void testBind() {
-		this.factory.bind(Object.class).to(Example.class);
-		Truth.assertThat(this.factory.request(Object.class)).isInstanceOf(Example.class);
+		factory.bind(Object.class).to(Example.class);
+		Truth.assertThat(factory.request(Object.class)).isInstanceOf(Example.class);
 	}
 
 	@Test
 	void testBindToSelf() {
-		this.factory.bind(Object.class).to(Object.class);
-		Truth.assertThat(this.factory.request(Object.class)).isInstanceOf(Object.class);
+		factory.bind(Object.class).to(Object.class);
+		Truth.assertThat(factory.request(Object.class)).isInstanceOf(Object.class);
+	}
+
+	@Test
+	void testBindToFunction() {
+		Object value = new Object();
+		Function<Object[], ?> function = ignore -> value;
+		factory.bind(Object.class).to(function);
+		Truth.assertThat(factory.request(Object.class)).isSameAs(value);
+	}
+
+	@Test
+	void testBindToValue() {
+		Object value = new Object();
+		factory.bind(Object.class).to(value);
+		Truth.assertThat(factory.request(Object.class)).isSameAs(value);
+	}
+
+	@Test
+	void testBindToIllegal() {
+		Assertions.assertThrows(IllegalArgumentException.class, () ->
+			factory.bind(Integer.class).to(new Object()));
 	}
 
 	@Test
 	void testBindRemoval() {
-		this.factory.bind(Object.class).to(Example.class);
-		this.factory.bind(Object.class).to(null);
-		Truth.assertThat(this.factory.request(Object.class)).isInstanceOf(Object.class);
+		factory.bind(Object.class).to(Example.class);
+		factory.bind(Object.class).to(null);
+		Truth.assertThat(factory.request(Object.class)).isInstanceOf(Object.class);
 	}
 
 	@Test
 	void testInstall() {
-		Truth.assertThat(this.factory.install(ExampleExtension.class).isSuccess()).isTrue();
+		Truth.assertThat(factory.install(ExampleExtension.class).isSuccess()).isTrue();
 	}
 
 	@Test
 	void testDoubleInstall() {
-		this.factory.install(ExampleExtension.class);
-		Truth.assertThat(this.factory.install(ExampleExtension.class).isSuccess()).isFalse();
+		factory.install(ExampleExtension.class);
+		Truth.assertThat(factory.install(ExampleExtension.class).isSuccess()).isFalse();
 	}
 
 	@Test
 	void testFailingInstallation() {
-		Truth.assertThat(this.factory.install(Extension.class).isSuccess()).isFalse();
+		Truth.assertThat(factory.install(Extension.class).isSuccess()).isFalse();
 	}
 
 	static class ExampleExtension extends Extension {
