@@ -16,7 +16,6 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 @Loader
@@ -26,7 +25,7 @@ public class Container extends Application implements Extensible<Class<? extends
 	private ObjectFactory factory;
 
 	@Inject(optional = true)
-	private Logger logger; // TODO AOP auditing
+	private Logger logger;
 
 	private final Set<Class<?>> applicationTypes = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Application> applications = new ArrayList<>();
@@ -34,25 +33,25 @@ public class Container extends Application implements Extensible<Class<? extends
 	private boolean hasSetup;
 
 	public Container() {
-		this.addStartHook(() -> this.log("Booting " + this.getName())); // TODO AOP auditing
-		this.addStartHook(this::startApplications);
-		this.addStartHook(this::runSetup);
+		addStartHook(() -> log("Booting " + getName())); // TODO AOP auditing
+		addStartHook(this::startApplications);
+		addStartHook(this::runSetup);
 
-		this.addShutdownHook(this::stopApplications);
-		this.addShutdownHook(() -> this.log("Shutting down " + this.getName())); // TODO AOP auditing
+		addShutdownHook(this::stopApplications);
+		addShutdownHook(() -> log("Shutting down " + getName())); // TODO AOP auditing
 	}
 
 	public String getName() {
-		if (this.name != null) {
-			return this.name;
+		if (name != null) {
+			return name;
 		}
 
-		this.name = this.resolveName();
-		return this.name;
+		name = resolveName();
+		return name;
 	}
 
 	private String resolveName() {
-		String name = Classes.getNonDynamic(this.getClass()).getSimpleName();
+		String name = Classes.getNonDynamic(getClass()).getSimpleName();
 		if (name.equals(Container.class.getSimpleName())) {
 			return name + '-' + UUID.randomUUID();
 		}
@@ -60,44 +59,44 @@ public class Container extends Application implements Extensible<Class<? extends
 	}
 
 	private void startApplications() {
-		this.applications.forEach(this::update);
+		applications.forEach(this::update);
 	}
 
 	protected void stopApplications() {
-		ListIterator<Application> reverse = this.applications.listIterator(this.applications.size());
+		ListIterator<Application> reverse = applications.listIterator(applications.size());
 		while (reverse.hasPrevious()) {
-			this.update(reverse.previous());
+			update(reverse.previous());
 		}
 	}
 
 	private void runSetup() {
-		if (this.hasSetup) {
+		if (hasSetup) {
 			return;
 		}
 
-		this.hasSetup = true;
-		this.setup();
+		hasSetup = true;
+		setup();
 	}
 
 	public void setup() {}
 
 	@Override
 	public Result install(Class<? extends Application> application) {
-		Result validation = this.validate(application);
+		Result validation = validate(application);
 		if (!validation.isSuccess()) {
 			return validation;
 		}
 
-		Class<? extends Application> implementation = this.getAsOwnedClass(application);
-		Application install = this.getFactory().request(implementation);
+		Class<? extends Application> implementation = getAsOwnedClass(application);
+		Application install = getFactory().request(implementation);
 
 		if (install == null) {
 			return Result.FAILURE;
 		}
 
-		this.applicationTypes.add(application);
-		this.applications.add(install);
-		this.update(install);
+		applicationTypes.add(application);
+		applications.add(install);
+		update(install);
 
 		return Result.SUCCESS;
 	}
@@ -106,17 +105,17 @@ public class Container extends Application implements Extensible<Class<? extends
 		if (type.isAnnotationPresent(Loader.class)) {
 			return type;
 		}
-		return Classes.translate(type, this.getClass().getClassLoader());
+		return Classes.translate(type, getClass().getClassLoader());
 	}
 
 	private Result validate(Class<?> application) {
 		Objects.requireNonNull(application, "application");
 
-		if (application == this.getClass()) {
+		if (application == getClass()) {
 			return Result.FAILURE;
 		}
 
-		if (this.applicationTypes.contains(application)) {
+		if (applicationTypes.contains(application)) {
 			return Result.FAILURE;
 		}
 
@@ -124,32 +123,23 @@ public class Container extends Application implements Extensible<Class<? extends
 	}
 
 	private ObjectFactory getFactory() {
-		if (this.factory != null) {
-			return this.factory;
+		if (factory != null) {
+			return factory;
 		}
 
-		return this.factory = new ObjectFactory();
+		return factory = new ObjectFactory();
 	}
 
 	private void log(String message) { // TODO AOP auditing
-		Logger logger = this.getLogger();
 		if (logger == null) {
-			System.out.println('[' + this.getName() + "] " + message);
 			return;
 		}
+
 		logger.info(message);
 	}
 
-	private Logger getLogger() { // TODO AOP auditing
-		if (this.logger != null) {
-			return this.logger;
-		}
-
-		return this.logger = LogManager.getLogManager().getLogger(this.getName());
-	}
-
 	private void update(Application application) {
-		if (this.isRunning()) {
+		if (isRunning()) {
 			application.start();
 			return;
 		}

@@ -16,7 +16,12 @@ public class Instances {
 
 		Constructor<T> constructor = Instances.findConstructor(type, parameters);
 		if (constructor == null) {
-			return null;
+			constructor = Instances.findConstructor(type);
+			if (constructor == null) {
+				return null;
+			}
+			constructor.setAccessible(true);
+			return Instances.newInstance(constructor);
 		}
 
 		constructor.setAccessible(true);

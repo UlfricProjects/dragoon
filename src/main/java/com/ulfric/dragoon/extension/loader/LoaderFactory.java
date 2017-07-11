@@ -16,4 +16,9 @@ public enum LoaderFactory implements Factory {
 		return null;
 	}
 
+	@Override
+	public <T> T request(Class<T> type, Object... parameters) {
+		return request(type);
+	}
+
 }

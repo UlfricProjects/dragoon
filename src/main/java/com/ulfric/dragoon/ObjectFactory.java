@@ -7,6 +7,7 @@ import com.ulfric.dragoon.extension.inject.InjectExtension;
 import com.ulfric.dragoon.extension.intercept.InterceptExtension;
 import com.ulfric.dragoon.extension.loader.LoaderExtension;
 import com.ulfric.dragoon.reflect.Instances;
+import com.ulfric.dragoon.reflect.NameHelper;
 import com.ulfric.dragoon.value.Result;
 
 import java.nio.file.FileSystem;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 public final class ObjectFactory implements Factory, Extensible<Class<? extends Extension>> {
 
@@ -42,7 +44,19 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	}
 
 	private void defaultBindings() {
-		bind(FileSystem.class).to(FileSystems.getDefault());
+		bind(FileSystem.class).toValue(FileSystems.getDefault());
+		bind(Logger.class).toFunction(arguments -> {
+			if (arguments.length == 0) {
+				return Logger.getGlobal();
+			}
+
+			String name = NameHelper.getName(arguments);
+			if (name == null) {
+				return Logger.getGlobal();
+			}
+
+			return Logger.getLogger(name);
+		});
 	}
 
 	@Override
@@ -73,6 +87,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		return request(type, ObjectFactory.EMPTY_OBJECT_ARRAY);
 	}
 
+	@Override
 	public <T> T request(Class<T> type, Object... parameters) {
 		Object value = requestUnspecific(type, parameters);
 
@@ -142,26 +157,29 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 			this.bind = bind;
 		}
 
-		public void to(Object implementation) {
-			if (implementation == null) {
-				bindings.remove(bind);
-				return;
-			}
+		public void toNothing() {
+			bindings.remove(bind);
+		}
 
-			Binding binding;
+		public void to(Class<?> type) {
+			Objects.requireNonNull(type, "type");
 
-			if (implementation instanceof Class) {
-				binding = new ClassBinding((Class<?>) implementation);
-			} else if (implementation instanceof Function) {
-				@SuppressWarnings("unchecked")
-				Function<Object[], ?> casted = (Function<Object[], ?>) implementation;
-				binding = new FunctionBinding(casted);
-			} else if (bind.isInstance(implementation)) {
-				binding = new ValueBinding(implementation);
-			} else {
-				throw new IllegalArgumentException("Could not bind " + bind + " to " + implementation);
-			}
+			register(new ClassBinding(type));
+		}
 
+		public void toFunction(Function<Object[], ?> function) {
+			Objects.requireNonNull(function, "function");
+
+			register(new FunctionBinding(function));
+		}
+
+		public void toValue(Object value) {
+			Objects.requireNonNull(value, "value");
+
+			register(new ValueBinding(value));
+		}
+
+		private void register(Binding binding) {
 			bindings.put(bind, binding);
 		}
 	}

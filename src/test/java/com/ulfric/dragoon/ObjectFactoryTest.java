@@ -60,27 +60,21 @@ class ObjectFactoryTest {
 	void testBindToFunction() {
 		Object value = new Object();
 		Function<Object[], ?> function = ignore -> value;
-		factory.bind(Object.class).to(function);
+		factory.bind(Object.class).toFunction(function);
 		Truth.assertThat(factory.request(Object.class)).isSameAs(value);
 	}
 
 	@Test
 	void testBindToValue() {
 		Object value = new Object();
-		factory.bind(Object.class).to(value);
+		factory.bind(Object.class).toValue(value);
 		Truth.assertThat(factory.request(Object.class)).isSameAs(value);
-	}
-
-	@Test
-	void testBindToIllegal() {
-		Assertions.assertThrows(IllegalArgumentException.class, () ->
-			factory.bind(Integer.class).to(new Object()));
 	}
 
 	@Test
 	void testBindRemoval() {
 		factory.bind(Object.class).to(Example.class);
-		factory.bind(Object.class).to(null);
+		factory.bind(Object.class).toNothing();
 		Truth.assertThat(factory.request(Object.class)).isInstanceOf(Object.class);
 	}
 

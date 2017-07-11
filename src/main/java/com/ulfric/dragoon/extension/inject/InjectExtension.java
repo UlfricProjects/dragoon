@@ -15,7 +15,9 @@ public class InjectExtension extends Extension {
 	private final Lazy<FieldProfile> fields = Lazy.of(this::createFieldProfile);
 
 	private FieldProfile createFieldProfile() {
-		return FieldProfile.builder().setFactory(this.factory).setFlagToSearchFor(Inject.class)
+		return FieldProfile.builder()
+				.setFactory(this.factory)
+				.setFlagToSearchFor(Inject.class)
 		        .setFailureStrategy((type, field) -> {
 			        Inject inject = Stereotypes.getFirst(field, Inject.class);
 

@@ -107,7 +107,7 @@ public final class FieldProfile implements Consumer<Object> {
 			}
 
 			Class<?> injectType = this.typeResolver.apply(setValues, handle.field);
-			Object value = this.factory.request(injectType);
+			Object value = this.factory.request(injectType, setValues);
 
 			if (value != null) {
 				Try.to(() -> {

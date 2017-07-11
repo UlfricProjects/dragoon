@@ -9,7 +9,9 @@ public class CreatorExtension extends Extension {
 	private final FieldProfile fields;
 
 	public CreatorExtension(Factory holder) {
-		this.fields = FieldProfile.builder().setFactory(new IdentityFactory(holder)).setFlagToSearchFor(Creator.class)
+		this.fields = FieldProfile.builder()
+				.setFactory(new IdentityFactory(holder))
+				.setFlagToSearchFor(Creator.class)
 		        .setFilterForIgnoringFieldsEachInvocation(handle -> {
 			        Class<?> type = handle.getField().getType();
 			        return type == Object.class || Factory.class.isAssignableFrom(type);
@@ -33,6 +35,11 @@ public class CreatorExtension extends Extension {
 		@Override
 		public <T> T request(Class<T> type) {
 			return (T) this.delegate;
+		}
+
+		@Override
+		public <T> T request(Class<T> type, Object... parameters) {
+			return request(type);
 		}
 	}
 

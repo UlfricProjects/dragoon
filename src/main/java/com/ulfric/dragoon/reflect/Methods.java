@@ -15,6 +15,14 @@ public class Methods {
 
 	private static final Map<Method, Class<?>[]> PARAMETERS = new HashMap<>();
 
+	public static Method getPublicMethod(Class<?> type, String methodName, Class<?>... parameterTypes) {
+		try {
+			return type.getMethod(methodName, parameterTypes);
+		} catch (NoSuchMethodException | SecurityException e) {
+			return null;
+		}
+	}
+
 	public static List<Method> getOverridableMethods(Class<?> type) {
 		Map<String, List<Method>> result = new LinkedHashMap<>();
 
