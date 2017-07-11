@@ -131,8 +131,7 @@ public class Container extends Application implements Extensible<Class<? extends
 		return this.factory = new ObjectFactory();
 	}
 
-	private void log(String message) // TODO AOP auditing
-	{
+	private void log(String message) { // TODO AOP auditing
 		Logger logger = this.getLogger();
 		if (logger == null) {
 			System.out.println('[' + this.getName() + "] " + message);
@@ -141,8 +140,7 @@ public class Container extends Application implements Extensible<Class<? extends
 		logger.info(message);
 	}
 
-	private Logger getLogger() // TODO AOP auditing
-	{
+	private Logger getLogger() { // TODO AOP auditing
 		if (this.logger != null) {
 			return this.logger;
 		}
