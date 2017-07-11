@@ -19,43 +19,36 @@ import java.util.stream.Collectors;
 
 public final class FieldProfile implements Consumer<Object> {
 
-	public static Builder builder()
-	{
+	public static Builder builder() {
 		return new Builder();
 	}
 
-	public static final class Builder
-	{
+	public static final class Builder {
 		private Factory factory;
 		private Class<? extends Annotation> flag;
 		private Predicate<GetterAndSetter> filter;
 		private BiFunction<Object, Field, Class<?>> typeResolver;
 		private BiConsumer<Class<?>, Field> failureStrategy;
 
-		Builder() { }
+		Builder() {}
 
-		public FieldProfile build()
-		{
+		public FieldProfile build() {
 			Objects.requireNonNull(this.factory, "factory");
 			Objects.requireNonNull(this.flag, "flag");
 
 			Predicate<GetterAndSetter> filter = this.filter;
-			if (filter == null)
-			{
+			if (filter == null) {
 				filter = ignore -> true;
 			}
 
 			BiFunction<Object, Field, Class<?>> typeResolver = this.typeResolver;
-			if (typeResolver == null)
-			{
+			if (typeResolver == null) {
 				typeResolver = (ignore, field) -> field.getType();
 			}
 
 			BiConsumer<Class<?>, Field> failureStrategy = this.failureStrategy;
-			if (failureStrategy == null)
-			{
-				failureStrategy = (type, field) ->
-				{
+			if (failureStrategy == null) {
+				failureStrategy = (type, field) -> {
 					throw new IllegalArgumentException("Failed to inject " + type + " into field " + field.getName());
 				};
 			}
@@ -63,32 +56,27 @@ public final class FieldProfile implements Consumer<Object> {
 			return new FieldProfile(this.factory, this.flag, filter, typeResolver, failureStrategy);
 		}
 
-		public Builder setFactory(Factory factory)
-		{
+		public Builder setFactory(Factory factory) {
 			this.factory = factory;
 			return this;
 		}
 
-		public Builder setFlagToSearchFor(Class<? extends Annotation> flag)
-		{
+		public Builder setFlagToSearchFor(Class<? extends Annotation> flag) {
 			this.flag = flag;
 			return this;
 		}
 
-		public Builder setFilterForIgnoringFieldsEachInvocation(Predicate<GetterAndSetter> filter)
-		{
+		public Builder setFilterForIgnoringFieldsEachInvocation(Predicate<GetterAndSetter> filter) {
 			this.filter = filter;
 			return this;
 		}
 
-		public Builder setTypeResolverForMappingBindingsOfFieldTypes(BiFunction<Object, Field, Class<?>> typeResolver)
-		{
+		public Builder setTypeResolverForMappingBindingsOfFieldTypes(BiFunction<Object, Field, Class<?>> typeResolver) {
 			this.typeResolver = typeResolver;
 			return this;
 		}
 
-		public Builder setFailureStrategy(BiConsumer<Class<?>, Field> failureStrategy)
-		{
+		public Builder setFailureStrategy(BiConsumer<Class<?>, Field> failureStrategy) {
 			this.failureStrategy = failureStrategy;
 			return this;
 		}
@@ -101,12 +89,8 @@ public final class FieldProfile implements Consumer<Object> {
 	private final BiConsumer<Class<?>, Field> failureStrategy;
 	private final Map<Class<?>, List<GetterAndSetter>> requests = new IdentityHashMap<>();
 
-	private FieldProfile(Factory factory,
-			Class<? extends Annotation> flag,
-			Predicate<GetterAndSetter> filter,
-			BiFunction<Object, Field, Class<?>> typeResolver,
-			BiConsumer<Class<?>, Field> failureStrategy)
-	{
+	private FieldProfile(Factory factory, Class<? extends Annotation> flag, Predicate<GetterAndSetter> filter,
+	        BiFunction<Object, Field, Class<?>> typeResolver, BiConsumer<Class<?>, Field> failureStrategy) {
 		this.factory = factory;
 		this.flag = flag;
 		this.filter = filter;
@@ -115,54 +99,43 @@ public final class FieldProfile implements Consumer<Object> {
 	}
 
 	@Override
-	public void accept(Object setValues)
-	{
-		for (GetterAndSetter handle : this.requests.computeIfAbsent(setValues.getClass(), this::createGettersAndSetters))
-		{
-			if (!this.filter.test(handle))
-			{
+	public void accept(Object setValues) {
+		for (GetterAndSetter handle : this.requests.computeIfAbsent(setValues.getClass(),
+		        this::createGettersAndSetters)) {
+			if (!this.filter.test(handle)) {
 				continue;
 			}
 
 			Class<?> injectType = this.typeResolver.apply(setValues, handle.field);
 			Object value = this.factory.request(injectType);
 
-			if (value != null)
-			{
-				Try.to(() -> { handle.setter.invokeExact(setValues, value); });
-			}
-			else
-			{
+			if (value != null) {
+				Try.to(() -> {
+					handle.setter.invokeExact(setValues, value);
+				});
+			} else {
 				this.failureStrategy.accept(injectType, handle.field);
 			}
 		}
 	}
 
-	private List<GetterAndSetter> createGettersAndSetters(Class<?> type)
-	{
-		return Stereotypes.getAnnotatedInstanceFields(type, this.flag)
-				.stream()
-				.map(field ->
-				{
-					MethodHandle setter = Handles.setter(field);
-					return new GetterAndSetter(field, setter);
-				})
-				.collect(Collectors.toList());
+	private List<GetterAndSetter> createGettersAndSetters(Class<?> type) {
+		return Stereotypes.getAnnotatedInstanceFields(type, this.flag).stream().map(field -> {
+			MethodHandle setter = Handles.setter(field);
+			return new GetterAndSetter(field, setter);
+		}).collect(Collectors.toList());
 	}
 
-	public static final class GetterAndSetter
-	{
+	public static final class GetterAndSetter {
 		final Field field;
 		final MethodHandle setter;
 
-		GetterAndSetter(Field field, MethodHandle setter)
-		{
+		GetterAndSetter(Field field, MethodHandle setter) {
 			this.field = field;
 			this.setter = setter;
 		}
 
-		public Field getField()
-		{
+		public Field getField() {
 			// TODO clone?
 			return this.field;
 		}

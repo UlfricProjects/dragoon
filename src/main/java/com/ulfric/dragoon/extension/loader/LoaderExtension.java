@@ -12,27 +12,21 @@ public class LoaderExtension extends Extension {
 
 	private static final Map<Class<?>, Boolean> INJECTIONS = new IdentityHashMap<>();
 
-	static boolean isInjectionTarget(Class<?> type)
-	{
+	static boolean isInjectionTarget(Class<?> type) {
 		return LoaderExtension.INJECTIONS.computeIfAbsent(type, LoaderExtension::computeInjectionTarget);
 	}
 
-	private static boolean computeInjectionTarget(Class<?> type)
-	{
-		if (Classes.isRoot(type))
-		{
+	private static boolean computeInjectionTarget(Class<?> type) {
+		if (Classes.isRoot(type)) {
 			return false;
 		}
 
-		if (type.isAnnotationPresent(Loader.class))
-		{
+		if (type.isAnnotationPresent(Loader.class)) {
 			return true;
 		}
 
-		for (Field field : type.getDeclaredFields())
-		{
-			if (field.isAnnotationPresent(Loader.class))
-			{
+		for (Field field : type.getDeclaredFields()) {
+			if (field.isAnnotationPresent(Loader.class)) {
 				return true;
 			}
 		}
@@ -40,25 +34,19 @@ public class LoaderExtension extends Extension {
 		return LoaderExtension.computeInjectionTarget(type.getSuperclass());
 	}
 
-	private final FieldProfile fields = FieldProfile.builder()
-			.setFactory(LoaderFactory.INSTANCE)
-			.setFlagToSearchFor(Loader.class)
-			.setTypeResolverForMappingBindingsOfFieldTypes((object, field) -> object.getClass())
-			.build();
+	private final FieldProfile fields =
+	        FieldProfile.builder().setFactory(LoaderFactory.INSTANCE).setFlagToSearchFor(Loader.class)
+	                .setTypeResolverForMappingBindingsOfFieldTypes((object, field) -> object.getClass()).build();
 
 	@Override
-	public <T> Class<? extends T> transform(Class<T> type)
-	{
-		if (!LoaderExtension.isInjectionTarget(type))
-		{
+	public <T> Class<? extends T> transform(Class<T> type) {
+		if (!LoaderExtension.isInjectionTarget(type)) {
 			return type;
 		}
 
 		ClassLoader loader = type.getClassLoader();
-		if (loader instanceof OwnedClassLoader)
-		{
-			if (!type.isAnnotationPresent(Loader.class))
-			{
+		if (loader instanceof OwnedClassLoader) {
+			if (!type.isAnnotationPresent(Loader.class)) {
 				return type;
 			}
 		}
@@ -68,13 +56,11 @@ public class LoaderExtension extends Extension {
 	}
 
 	@Override
-	public <T> T transform(T value)
-	{
+	public <T> T transform(T value) {
 		Class<?> type = value.getClass();
 		if (LoaderExtension.isInjectionTarget(type)) // TODO it might not inject
 		{
-			if (type.isAnnotationPresent(Loader.class))
-			{
+			if (type.isAnnotationPresent(Loader.class)) {
 				this.injectLoader(value);
 			}
 
@@ -84,14 +70,11 @@ public class LoaderExtension extends Extension {
 		return value;
 	}
 
-	private void injectLoader(Object value)
-	{
+	private void injectLoader(Object value) {
 		ClassLoader loader = value.getClass().getClassLoader();
-		if (loader instanceof OwnedClassLoader)
-		{
+		if (loader instanceof OwnedClassLoader) {
 			OwnedClassLoader owner = (OwnedClassLoader) loader;
-			if (owner.getOwner() == null)
-			{
+			if (owner.getOwner() == null) {
 				owner.setOwner(value);
 			}
 		}

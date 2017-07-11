@@ -11,38 +11,31 @@ import java.lang.reflect.Field;
 
 public class Handles {
 
-	public static MethodHandle setter(Field field)
-	{
+	public static MethodHandle setter(Field field) {
 		return Handles.accessibly(field, () -> Handles.generic(MethodHandles.lookup().unreflectSetter(field)));
 	}
 
-	private static <R> R accessibly(AccessibleObject accessible, CheckedSupplier<R> run)
-	{
+	private static <R> R accessibly(AccessibleObject accessible, CheckedSupplier<R> run) {
 		boolean defaultAccessible = accessible.isAccessible();
-		try
-		{
+		try {
 			accessible.setAccessible(true);
 			return Try.to(run);
-		}
-		finally
-		{
+		} finally {
 			accessible.setAccessible(defaultAccessible);
 		}
 	}
 
-	public static MethodHandle generic(MethodHandle handle)
-	{
+	public static MethodHandle generic(MethodHandle handle) {
 		MethodType original = handle.type();
 		MethodType generic = original.generic();
 
-		if (original.returnType() == void.class)
-		{
+		if (original.returnType() == void.class) {
 			generic = generic.changeReturnType(void.class);
 		}
 
 		return handle.asType(generic);
 	}
 
-	private Handles() { }
+	private Handles() {}
 
 }

@@ -10,8 +10,7 @@ public class InterceptExtension extends Extension {
 	private ObjectFactory factory;
 
 	@Override
-	public <T> Class<? extends T> transform(Class<T> type)
-	{
+	public <T> Class<? extends T> transform(Class<T> type) {
 		return new InterceptedClassBuilder<>(this.factory, type).build();
 	}
 

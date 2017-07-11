@@ -1,8 +1,8 @@
 package com.ulfric.dragoon.stereotype;
 
-import com.google.common.truth.Truth;
-
 import org.junit.jupiter.api.Test;
+
+import com.google.common.truth.Truth;
 
 import com.ulfric.dragoon.UtilityTest;
 
@@ -11,47 +11,48 @@ import java.lang.annotation.RetentionPolicy;
 
 public class StereotypesTest extends UtilityTest {
 
-	public StereotypesTest()
-	{
+	public StereotypesTest() {
 		super(Stereotypes.class);
 	}
 
 	@Test
-	void testGetStereotypesWithoutExtraDirectlyPresent()
-	{
+	void testGetStereotypesWithoutExtraDirectlyPresent() {
 		Truth.assertThat(Stereotypes.getStereotypes(UseThis.class, Good.class)).hasSize(1);
 	}
 
 	@Test
-	void testIsAnnotatedWithoutExtraDirectlyPresent()
-	{
+	void testIsAnnotatedWithoutExtraDirectlyPresent() {
 		Truth.assertThat(Stereotypes.isAnnotated(UseThis.class, Good.class)).isTrue();
 	}
 
 	@Test
-	void testIsAnnotatedWithoutExtraPresent()
-	{
+	void testIsAnnotatedWithoutExtraPresent() {
 		Truth.assertThat(Stereotypes.isAnnotated(OrThis.class, Good.class)).isFalse();
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@interface Good { }
+	@interface Good {
+	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Stereotype
 	@Good
-	@interface One { }
+	@interface One {
+	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@One
-	@interface UseThis { }
+	@interface UseThis {
+	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Stereotype
-	@interface Two { }
+	@interface Two {
+	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Two
-	@interface OrThis { }
+	@interface OrThis {
+	}
 
 }

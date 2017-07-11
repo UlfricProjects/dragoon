@@ -10,15 +10,12 @@ public class Application {
 	private final List<Runnable> shutdown = new ArrayList<>();
 	private boolean running;
 
-	public final boolean isRunning()
-	{
+	public final boolean isRunning() {
 		return this.running;
 	}
 
-	public final void start()
-	{
-		if (this.isRunning())
-		{
+	public final void start() {
+		if (this.isRunning()) {
 			return;
 		}
 
@@ -26,10 +23,8 @@ public class Application {
 		this.start.forEach(Runnable::run);
 	}
 
-	public final void shutdown()
-	{
-		if (!this.isRunning())
-		{
+	public final void shutdown() {
+		if (!this.isRunning()) {
 			return;
 		}
 
@@ -37,14 +32,12 @@ public class Application {
 		this.shutdown.forEach(Runnable::run);
 	}
 
-	public final void addStartHook(Runnable hook)
-	{
+	public final void addStartHook(Runnable hook) {
 		Objects.requireNonNull(hook, "hook");
 		this.start.add(hook);
 	}
 
-	public final void addShutdownHook(Runnable hook)
-	{
+	public final void addShutdownHook(Runnable hook) {
 		Objects.requireNonNull(hook, "hook");
 		this.shutdown.add(hook);
 	}

@@ -8,11 +8,9 @@ public enum LoaderFactory implements Factory {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T request(Class<T> type)
-	{
+	public <T> T request(Class<T> type) {
 		ClassLoader loader = type.getClassLoader();
-		if (loader instanceof OwnedClassLoader)
-		{
+		if (loader instanceof OwnedClassLoader) {
 			return (T) ((OwnedClassLoader) loader).getOwner();
 		}
 		return null;

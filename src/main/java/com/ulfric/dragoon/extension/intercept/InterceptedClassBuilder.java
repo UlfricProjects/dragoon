@@ -22,54 +22,41 @@ public class InterceptedClassBuilder<T> {
 	private DynamicType.Builder<T> builder;
 	private boolean changed;
 
-	public InterceptedClassBuilder(ObjectFactory factory, Class<T> parent)
-	{
+	public InterceptedClassBuilder(ObjectFactory factory, Class<T> parent) {
 		this.factory = factory;
 		this.parent = parent;
 		this.builder = Classes.extend(parent);
 	}
 
-	public Class<? extends T> build()
-	{
+	public Class<? extends T> build() {
 		this.run();
 
-		if (!this.changed)
-		{
+		if (!this.changed) {
 			return this.parent;
 		}
 
-		return this.builder.make()
-				.load(this.parent.getClassLoader())
-				.getLoaded();
+		return this.builder.make().load(this.parent.getClassLoader()).getLoaded();
 	}
 
-	private void run()
-	{
-		for (Method method : Methods.getOverridableMethods(this.parent))
-		{
-			List<Interceptor<?>> interceptors = Stereotypes.getStereotypes(method, Intercept.class)
-					.stream()
-					.map(this::createInterceptor)
-					.filter(Objects::nonNull)
-					.collect(Collectors.toList());
+	private void run() {
+		for (Method method : Methods.getOverridableMethods(this.parent)) {
+			List<Interceptor<?>> interceptors = Stereotypes.getStereotypes(method, Intercept.class).stream()
+			        .map(this::createInterceptor).filter(Objects::nonNull).collect(Collectors.toList());
 
-			if (interceptors.isEmpty())
-			{
+			if (interceptors.isEmpty()) {
 				continue;
 			}
 
 			InterceptorPipeline pipeline = new InterceptorPipeline(interceptors);
 
-			this.builder = this.builder.method(ElementMatchers.is(method))
-					.intercept(MethodDelegation.to(pipeline))
-					.annotateMethod(method.getDeclaredAnnotations());
+			this.builder = this.builder.method(ElementMatchers.is(method)).intercept(MethodDelegation.to(pipeline))
+			        .annotateMethod(method.getDeclaredAnnotations());
 
 			this.changed = true;
 		}
 	}
 
-	private Interceptor<?> createInterceptor(Annotation annotation)
-	{
+	private Interceptor<?> createInterceptor(Annotation annotation) {
 		return (Interceptor<?>) this.factory.requestUnspecific(annotation.annotationType(), annotation);
 	}
 

@@ -8,10 +8,8 @@ public class App extends Application {
 	@Loader
 	Container container;
 
-	public App()
-	{
-		this.addStartHook(() ->
-		{
+	public App() {
+		this.addStartHook(() -> {
 			Apps.last = this.container;
 		});
 	}

@@ -1,12 +1,12 @@
 package com.ulfric.dragoon.extension.loader;
 
-import com.google.common.truth.Truth;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
+
+import com.google.common.truth.Truth;
 
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.application.Container;
@@ -17,20 +17,17 @@ class LoaderExtensionTest {
 	private ObjectFactory factory;
 
 	@BeforeEach
-	void setup()
-	{
+	void setup() {
 		this.factory = new ObjectFactory();
 	}
 
 	@AfterEach
-	void teardown()
-	{
+	void teardown() {
 		Apps.last = null;
 	}
 
 	@Test
-	void test()
-	{
+	void test() {
 		Apps.last = null;
 		Container container = this.factory.request(AppContainer.class);
 		container.start();
@@ -39,9 +36,8 @@ class LoaderExtensionTest {
 		Truth.assertThat(Apps.last).isSameAs(container);
 	}
 
-	static class InContainer
-	{
-		
+	static class InContainer {
+
 	}
 
 }

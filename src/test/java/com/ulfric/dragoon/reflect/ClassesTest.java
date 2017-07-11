@@ -8,8 +8,7 @@ import com.ulfric.dragoon.UtilityTest;
 @RunWith(JUnitPlatform.class)
 class ClassesTest extends UtilityTest {
 
-	public ClassesTest()
-	{
+	public ClassesTest() {
 		super(Classes.class);
 	}
 

@@ -33,8 +33,7 @@ public class Container extends Application implements Extensible<Class<? extends
 	private String name;
 	private boolean hasSetup;
 
-	public Container()
-	{
+	public Container() {
 		this.addStartHook(() -> this.log("Booting " + this.getName())); // TODO AOP auditing
 		this.addStartHook(this::startApplications);
 		this.addStartHook(this::runSetup);
@@ -43,10 +42,8 @@ public class Container extends Application implements Extensible<Class<? extends
 		this.addShutdownHook(() -> this.log("Shutting down " + this.getName())); // TODO AOP auditing
 	}
 
-	public String getName()
-	{
-		if (this.name != null)
-		{
+	public String getName() {
+		if (this.name != null) {
 			return this.name;
 		}
 
@@ -54,34 +51,27 @@ public class Container extends Application implements Extensible<Class<? extends
 		return this.name;
 	}
 
-	private String resolveName()
-	{
+	private String resolveName() {
 		String name = Classes.getNonDynamic(this.getClass()).getSimpleName();
-		if (name.equals(Container.class.getSimpleName()))
-		{
+		if (name.equals(Container.class.getSimpleName())) {
 			return name + '-' + UUID.randomUUID();
 		}
 		return name;
 	}
 
-	private void startApplications()
-	{
+	private void startApplications() {
 		this.applications.forEach(this::update);
 	}
 
-	protected void stopApplications()
-	{
+	protected void stopApplications() {
 		ListIterator<Application> reverse = this.applications.listIterator(this.applications.size());
-		while (reverse.hasPrevious())
-		{
+		while (reverse.hasPrevious()) {
 			this.update(reverse.previous());
 		}
 	}
 
-	private void runSetup()
-	{
-		if (this.hasSetup)
-		{
+	private void runSetup() {
+		if (this.hasSetup) {
 			return;
 		}
 
@@ -89,22 +79,19 @@ public class Container extends Application implements Extensible<Class<? extends
 		this.setup();
 	}
 
-	public void setup() { }
+	public void setup() {}
 
 	@Override
-	public Result install(Class<? extends Application> application)
-	{
+	public Result install(Class<? extends Application> application) {
 		Result validation = this.validate(application);
-		if (!validation.isSuccess())
-		{
+		if (!validation.isSuccess()) {
 			return validation;
 		}
 
 		Class<? extends Application> implementation = this.getAsOwnedClass(application);
 		Application install = this.getFactory().request(implementation);
 
-		if (install == null)
-		{
+		if (install == null) {
 			return Result.FAILURE;
 		}
 
@@ -115,36 +102,29 @@ public class Container extends Application implements Extensible<Class<? extends
 		return Result.SUCCESS;
 	}
 
-	private <T> Class<? extends T> getAsOwnedClass(Class<T> type)
-	{
-		if (type.isAnnotationPresent(Loader.class))
-		{
+	private <T> Class<? extends T> getAsOwnedClass(Class<T> type) {
+		if (type.isAnnotationPresent(Loader.class)) {
 			return type;
 		}
 		return Classes.translate(type, this.getClass().getClassLoader());
 	}
 
-	private Result validate(Class<?> application)
-	{
+	private Result validate(Class<?> application) {
 		Objects.requireNonNull(application, "application");
 
-		if (application == this.getClass())
-		{
+		if (application == this.getClass()) {
 			return Result.FAILURE;
 		}
 
-		if (this.applicationTypes.contains(application))
-		{
+		if (this.applicationTypes.contains(application)) {
 			return Result.FAILURE;
 		}
 
 		return Result.SUCCESS;
 	}
 
-	private ObjectFactory getFactory()
-	{
-		if (this.factory != null)
-		{
+	private ObjectFactory getFactory() {
+		if (this.factory != null) {
 			return this.factory;
 		}
 
@@ -154,8 +134,7 @@ public class Container extends Application implements Extensible<Class<? extends
 	private void log(String message) // TODO AOP auditing
 	{
 		Logger logger = this.getLogger();
-		if (logger == null)
-		{
+		if (logger == null) {
 			System.out.println('[' + this.getName() + "] " + message);
 			return;
 		}
@@ -164,18 +143,15 @@ public class Container extends Application implements Extensible<Class<? extends
 
 	private Logger getLogger() // TODO AOP auditing
 	{
-		if (this.logger != null)
-		{
+		if (this.logger != null) {
 			return this.logger;
 		}
 
 		return this.logger = LogManager.getLogManager().getLogger(this.getName());
 	}
 
-	private void update(Application application)
-	{
-		if (this.isRunning())
-		{
+	private void update(Application application) {
+		if (this.isRunning()) {
 			application.start();
 			return;
 		}

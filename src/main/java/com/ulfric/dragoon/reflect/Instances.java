@@ -5,12 +5,9 @@ import java.lang.reflect.InvocationTargetException;
 
 public class Instances {
 
-	public static <T> T newInstance(Class<T> type, Object... parameters)
-	{
-		if (type.isEnum())
-		{
-			for (T enumValue : type.getEnumConstants())
-			{
+	public static <T> T newInstance(Class<T> type, Object... parameters) {
+		if (type.isEnum()) {
+			for (T enumValue : type.getEnumConstants()) {
 				return enumValue;
 			}
 
@@ -18,8 +15,7 @@ public class Instances {
 		}
 
 		Constructor<T> constructor = Instances.findConstructor(type, parameters);
-		if (constructor == null)
-		{
+		if (constructor == null) {
 			return null;
 		}
 
@@ -27,21 +23,16 @@ public class Instances {
 		return Instances.newInstance(constructor, parameters);
 	}
 
-	private static <T> Constructor<T> findConstructor(Class<T> type, Object... parameters)
-	{
+	private static <T> Constructor<T> findConstructor(Class<T> type, Object... parameters) {
 		int length = parameters.length;
-		constructors: for (Constructor<?> constructor : type.getDeclaredConstructors())
-		{
-			if (length != constructor.getParameterCount())
-			{
+		constructors: for (Constructor<?> constructor : type.getDeclaredConstructors()) {
+			if (length != constructor.getParameterCount()) {
 				continue;
 			}
 
 			Class<?>[] constructorParameterTypes = constructor.getParameterTypes();
-			for (int x = 0; x < length; x++)
-			{
-				if (!constructorParameterTypes[x].isInstance(parameters[x]))
-				{
+			for (int x = 0; x < length; x++) {
+				if (!constructorParameterTypes[x].isInstance(parameters[x])) {
 					continue constructors;
 				}
 			}
@@ -54,19 +45,15 @@ public class Instances {
 		return null;
 	}
 
-	private static <T> T newInstance(Constructor<T> constructor, Object... parameters)
-	{
-		try
-		{
+	private static <T> T newInstance(Constructor<T> constructor, Object... parameters) {
+		try {
 			return constructor.newInstance(parameters);
-		}
-		catch (InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException ignore)
-		{
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+		        | InvocationTargetException ignore) {
 			return null;
 		}
 	}
 
-	private Instances() { }
+	private Instances() {}
 
 }

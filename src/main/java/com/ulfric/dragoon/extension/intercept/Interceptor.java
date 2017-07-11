@@ -7,8 +7,7 @@ public abstract class Interceptor<T extends Annotation> {
 
 	protected final T declaration;
 
-	public Interceptor(T declaration)
-	{
+	public Interceptor(T declaration) {
 		this.declaration = declaration;
 	}
 
