@@ -1,4 +1,4 @@
-package com.ulfric.dragoon.extension;
+package com.ulfric.dragoon.value;
 
 public interface Result {
 

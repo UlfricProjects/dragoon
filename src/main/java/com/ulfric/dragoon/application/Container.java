@@ -2,11 +2,11 @@ package com.ulfric.dragoon.application;
 
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.extension.Extensible;
-import com.ulfric.dragoon.extension.Result;
 import com.ulfric.dragoon.extension.creator.Creator;
 import com.ulfric.dragoon.extension.inject.Inject;
 import com.ulfric.dragoon.extension.loader.Loader;
 import com.ulfric.dragoon.reflect.Classes;
+import com.ulfric.dragoon.value.Result;
 
 import java.util.ArrayList;
 import java.util.Collections;

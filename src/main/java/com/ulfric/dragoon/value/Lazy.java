@@ -3,7 +3,7 @@ package com.ulfric.dragoon.value;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class Lazy<T> implements Supplier<T> {
+public final class Lazy<T> implements Supplier<T> {
 
 	public static <T> Lazy<T> of(Supplier<T> supplier) {
 		Objects.requireNonNull(supplier, "supplier");
