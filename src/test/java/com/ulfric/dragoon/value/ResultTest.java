@@ -6,8 +6,6 @@ import org.junit.runner.RunWith;
 
 import com.google.common.truth.Truth;
 
-import com.ulfric.dragoon.value.Result;
-
 @RunWith(JUnitPlatform.class)
 class ResultTest {
 

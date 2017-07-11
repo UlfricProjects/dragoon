@@ -2,7 +2,6 @@ package com.ulfric.dragoon;
 
 import com.ulfric.dragoon.extension.Extensible;
 import com.ulfric.dragoon.extension.Extension;
-import com.ulfric.dragoon.extension.creator.CreatorExtension;
 import com.ulfric.dragoon.extension.inject.InjectExtension;
 import com.ulfric.dragoon.extension.intercept.InterceptExtension;
 import com.ulfric.dragoon.extension.loader.LoaderExtension;
@@ -26,7 +25,7 @@ import java.util.logging.Logger;
 public final class ObjectFactory implements Factory, Extensible<Class<? extends Extension>> {
 
 	private static final List<Class<? extends Extension>> DEFAULT_EXTENSIONS =
-	        Arrays.asList(InjectExtension.class, InterceptExtension.class, LoaderExtension.class);
+	        Arrays.asList(InterceptExtension.class, LoaderExtension.class);
 	private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
 	private final Set<Class<? extends Extension>> extensionTypes = Collections.newSetFromMap(new IdentityHashMap<>());
@@ -34,12 +33,18 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	private final Map<Class<?>, Binding> bindings = new IdentityHashMap<>();
 
 	public ObjectFactory() {
+		bindSelf();
 		defaultExtensions();
 		defaultBindings();
 	}
 
+	private void bindSelf() {
+		bind(ObjectFactory.class).toValue(this);
+		bind(Factory.class).toValue(this);
+	}
+
 	private void defaultExtensions() {
-		install(CreatorExtension.class, this);
+		install(InjectExtension.class, this);
 		DEFAULT_EXTENSIONS.forEach(this::install);
 	}
 

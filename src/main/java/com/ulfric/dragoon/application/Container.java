@@ -2,7 +2,6 @@ package com.ulfric.dragoon.application;
 
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.extension.Extensible;
-import com.ulfric.dragoon.extension.creator.Creator;
 import com.ulfric.dragoon.extension.inject.Inject;
 import com.ulfric.dragoon.extension.loader.Loader;
 import com.ulfric.dragoon.reflect.Classes;
@@ -21,7 +20,7 @@ import java.util.logging.Logger;
 @Loader
 public class Container extends Application implements Extensible<Class<? extends Application>> {
 
-	@Creator
+	@Inject
 	private ObjectFactory factory;
 
 	@Inject(optional = true)

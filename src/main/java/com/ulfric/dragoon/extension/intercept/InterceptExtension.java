@@ -2,11 +2,11 @@ package com.ulfric.dragoon.extension.intercept;
 
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.extension.Extension;
-import com.ulfric.dragoon.extension.creator.Creator;
+import com.ulfric.dragoon.extension.inject.Inject;
 
 public class InterceptExtension extends Extension {
 
-	@Creator
+	@Inject
 	private ObjectFactory factory;
 
 	@Override
