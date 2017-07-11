@@ -76,7 +76,6 @@ class ContainerTest {
 
 	@Test
 	void testInstallSelf() {
-
 		Truth.assertThat(this.container.install(this.container.getClass()).isSuccess()).isFalse();
 	}
 
