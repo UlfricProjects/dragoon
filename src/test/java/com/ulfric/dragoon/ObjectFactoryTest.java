@@ -1,137 +1,108 @@
 package com.ulfric.dragoon;
 
+import com.google.common.truth.Truth;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
-import com.ulfric.dragoon.initialize.Initialize;
-import com.ulfric.dragoon.inject.Inject;
-import com.ulfric.dragoon.scope.Default;
-import com.ulfric.verify.Verify;
+import com.ulfric.dragoon.extension.Extension;
 
 @RunWith(JUnitPlatform.class)
-public class ObjectFactoryTest {
+class ObjectFactoryTest {
 
 	private ObjectFactory factory;
 
 	@BeforeEach
-	void init()
+	void setup()
 	{
-		this.factory = TestObjectFactory.newInstance();
+		this.factory = new ObjectFactory();
 	}
 
 	@Test
-	void testNewInstance()
+	void testRequest()
 	{
-		Verify.that(ObjectFactory::newInstance).suppliesUniqueValues();
+		Truth.assertThat(this.factory.request(Example.class)).isInstanceOf(Example.class);
 	}
 
 	@Test
-	void testHasParent_root_isFalse()
+	void testRequestReturnsNull()
 	{
-		Verify.that(this.factory.hasParent()).isFalse();
+		Truth.assertThat(this.factory.request(NoInstances.class)).isNull();
 	}
 
 	@Test
-	void testBind_null_throwsNPE()
+	void testRequestIncompatible()
 	{
-		Verify.that(() -> this.factory.bind(null)).doesThrow(NullPointerException.class);
+		this.factory.bind(NoInstances.class).to(Object.class);
+		Assertions.assertThrows(RequestFailedException.class, () -> this.factory.request(NoInstances.class));
 	}
 
 	@Test
-	void testBind_nonnull_isNotNull()
+	void testRequestIncompatibleButUnspecific()
 	{
-		Verify.that(this.factory.bind(Hello.class)).isNotNull();
+		this.factory.bind(NoInstances.class).to(Object.class);
+		Truth.assertThat(this.factory.requestUnspecific(NoInstances.class)).isNotNull();
 	}
 
 	@Test
-	void testBind_scope_isNotNull()
+	void testBind()
 	{
-		Verify.that(this.factory.bind(Default.class)).isNotNull();
+		this.factory.bind(Object.class).to(Example.class);
+		Truth.assertThat(this.factory.request(Object.class)).isInstanceOf(Example.class);
 	}
 
 	@Test
-	void testRequest_null_throwsNPE()
+	void testBindToSelf()
 	{
-		Verify.that(() -> this.factory.request(null)).doesThrow(NullPointerException.class);
+		this.factory.bind(Object.class).to(Object.class);
+		Truth.assertThat(this.factory.request(Object.class)).isInstanceOf(Object.class);
 	}
 
 	@Test
-	void testRequest_nonnullButEmpty_null()
+	void testBindRemoval()
 	{
-		Verify.that(this.factory.request(Hello.class)).isNull();
+		this.factory.bind(Object.class).to(Example.class);
+		this.factory.bind(Object.class).to(null);
+		Truth.assertThat(this.factory.request(Object.class)).isInstanceOf(Object.class);
 	}
 
 	@Test
-	void testRequest_nonnull_nonnull()
+	void testInstall()
 	{
-		this.factory.bind(Hello.class).to(HelloImpl.class);
-		Verify.that(this.factory.request(Hello.class)).isNotNull();
+		Truth.assertThat(this.factory.install(ExampleExtension.class).isSuccess()).isTrue();
 	}
 
 	@Test
-	void testRequest_instantiableNonnullButEmpty_nonnull()
+	void testDoubleInstall()
 	{
-		Verify.that(this.factory.request(HelloImpl.class)).isNotNull();
+		this.factory.install(ExampleExtension.class);
+		Truth.assertThat(this.factory.install(ExampleExtension.class).isSuccess()).isFalse();
 	}
 
 	@Test
-	void testRequest_child()
+	void testFailingInstallation()
 	{
-		this.factory.bind(Hello.class).to(HelloImpl.class);
-		Verify.that(this.factory.createChild().request(Hello.class)).isNotNull();
+		Truth.assertThat(this.factory.install(Extension.class).isSuccess()).isFalse();
 	}
 
-	@Test
-	void testRequest_doesInjection()
-	{
-		this.factory.bind(Hello.class).to(HelloImpl.class);
-		HelloInject hello = (HelloInject) this.factory.request(HelloInject.class);
-		Verify.that(hello.inject).isNotNull();
-	}
-
-	@Test
-	void testRequestExact_correctInstance()
-	{
-		Verify.that(this.factory.requestExact(HelloImpl.class)).isInstanceOf(HelloImpl.class);
-	}
-
-	@Test
-	void testRequestExact_incorrectInstance()
-	{
-		this.factory.bind(Hello.class).to(HelloSibling.class);
-		Verify.that(() -> this.factory.requestExact(Hello.class)).doesThrow(IllegalArgumentException.class);
-	}
-
-	interface Hello
+	static class ExampleExtension extends Extension
 	{
 		
 	}
 
-	static class HelloImpl implements Hello
+	static class Example
 	{
 		
 	}
 
-	static class HelloSibling
+	static class NoInstances
 	{
-
-	}
-
-	static class HelloInject
-	{
-		@Inject
-		Hello inject;
-	}
-
-	static class HelloInitializer
-	{
-		boolean ran = false;
-		@Initialize
-		public void init()
+		NoInstances()
 		{
-			this.ran = true;
+			throw new RuntimeException();
 		}
 	}
 
