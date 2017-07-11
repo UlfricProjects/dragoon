@@ -132,7 +132,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	}
 
 	private Object createValue(Class<?> type, Object... parameters) {
-		return Instances.newInstance(type, parameters);
+		return Instances.instance(type, parameters);
 	}
 
 	public final class CreateBinding {

@@ -16,7 +16,7 @@ public abstract class UtilityTest {
 
 	@Test
 	void testConstructor() {
-		Truth.assertThat(Instances.newInstance(this.utility)).isNotNull();
+		Truth.assertThat(Instances.instance(this.utility)).isNotNull();
 	}
 
 }

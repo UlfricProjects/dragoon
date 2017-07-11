@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class Instances {
 
-	public static <T> T newInstance(Class<T> type, Object... parameters) {
+	public static <T> T instance(Class<T> type, Object... parameters) {
 		if (type.isEnum()) {
 			for (T enumValue : type.getEnumConstants()) {
 				return enumValue;

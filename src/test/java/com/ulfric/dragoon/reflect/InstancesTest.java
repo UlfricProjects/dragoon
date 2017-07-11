@@ -16,8 +16,13 @@ class InstancesTest extends UtilityTest {
 	}
 
 	@Test
-	void testNewInstanceWhenPassedInvalidParameter() {
-		Truth.assertThat(Instances.newInstance(NewInstance.class, new Object())).isNull();
+	void testInstanceWithInvalidParameter() {
+		Truth.assertThat(Instances.instance(NewInstance.class, new Object())).isNull();
+	}
+
+	@Test
+	void testInstanceWithEnum() {
+		Truth.assertThat(Instances.instance(Numeric.class)).isSameAs(Numeric.ONE);
 	}
 
 	static class NewInstance {
@@ -30,6 +35,11 @@ class InstancesTest extends UtilityTest {
 		NewInstance(Integer object, @SuppressWarnings("unused") Object two) {
 			this.object = object;
 		}
+	}
+
+	enum Numeric {
+		ONE,
+		TWO;
 	}
 
 }
