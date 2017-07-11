@@ -9,6 +9,8 @@ import com.ulfric.dragoon.extension.loader.LoaderExtension;
 import com.ulfric.dragoon.reflect.Instances;
 import com.ulfric.dragoon.value.Result;
 
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,12 +32,17 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	private final Map<Class<?>, Binding> bindings = new IdentityHashMap<>();
 
 	public ObjectFactory() {
-		this(ObjectFactory.DEFAULT_EXTENSIONS);
+		defaultExtensions();
+		defaultBindings();
 	}
 
-	private ObjectFactory(List<Class<? extends Extension>> extensions) {
-		install(CreatorExtension.class, this).isSuccess();
-		extensions.forEach(this::install);
+	private void defaultExtensions() {
+		install(CreatorExtension.class, this);
+		DEFAULT_EXTENSIONS.forEach(this::install);
+	}
+
+	private void defaultBindings() {
+		bind(FileSystem.class).to(FileSystems.getDefault());
 	}
 
 	@Override
