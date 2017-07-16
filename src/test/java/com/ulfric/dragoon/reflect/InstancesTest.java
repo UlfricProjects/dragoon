@@ -38,8 +38,7 @@ class InstancesTest extends UtilityTest {
 	}
 
 	enum Numeric {
-		ONE,
-		TWO;
+		ONE, TWO;
 	}
 
 }

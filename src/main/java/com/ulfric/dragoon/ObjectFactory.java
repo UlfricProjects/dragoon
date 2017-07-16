@@ -117,6 +117,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		if (value == null) {
 			return null;
 		}
+
 		return transformValue(value);
 	}
 
@@ -149,10 +150,6 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 			transformed = extension.transform(transformed);
 		}
 		return transformed;
-	}
-
-	private Object createValue(Class<?> type, Object... parameters) {
-		return Instances.instance(type, parameters);
 	}
 
 	public final class CreateBinding {
@@ -216,7 +213,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		@Override
 		public Object create(Object... parameters) {
 			Class<?> transformedType = transformType(type);
-			return createValue(transformedType, parameters);
+			return Instances.instance(transformedType, parameters);
 		}
 	}
 

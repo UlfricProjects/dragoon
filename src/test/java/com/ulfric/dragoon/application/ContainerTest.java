@@ -8,10 +8,12 @@ import org.junit.runner.RunWith;
 
 import com.google.common.truth.Truth;
 
-import com.ulfric.dragoon.ObjectFactory;
+import com.ulfric.dragoon.DragoonTestSuite;
+
+import java.lang.reflect.Field;
 
 @RunWith(JUnitPlatform.class)
-class ContainerTest {
+class ContainerTest extends DragoonTestSuite {
 
 	private Container container;
 
@@ -23,6 +25,10 @@ class ContainerTest {
 	@AfterEach
 	void teardown() {
 		ApplicationExample.last = null;
+
+		if (container.isRunning()) {
+			container.shutdown();
+		}
 	}
 
 	@Test
@@ -49,7 +55,7 @@ class ContainerTest {
 
 	@Test
 	void testStartOnRequested() {
-		this.container = new ObjectFactory().request(Container.class);
+		this.container = factory.request(Container.class);
 		Truth.assertThat(this.container.isRunning()).isFalse();
 		this.container.boot();
 		Truth.assertThat(this.container.isRunning()).isTrue();
@@ -57,7 +63,7 @@ class ContainerTest {
 
 	@Test
 	void testShutdownOnRequested() {
-		this.container = new ObjectFactory().request(Container.class);
+		this.container = factory.request(Container.class);
 		this.container.boot();
 		this.container.shutdown();
 		Truth.assertThat(this.container.isRunning()).isFalse();
@@ -65,18 +71,29 @@ class ContainerTest {
 
 	@Test
 	void testInstallTwice() {
+		this.container.boot();
 		Truth.assertThat(this.container.install(ApplicationExample.class).isSuccess()).isTrue();
 		Truth.assertThat(this.container.install(ApplicationExample.class).isSuccess()).isFalse();
 	}
 
 	@Test
 	void testInstallBadApplication() {
+		this.container.boot();
 		Truth.assertThat(this.container.install(BadApplication.class).isSuccess()).isFalse();
 	}
 
 	@Test
 	void testInstallSelf() {
+		this.container.boot();
 		Truth.assertThat(this.container.install(this.container.getClass()).isSuccess()).isFalse();
+	}
+
+	@Test
+	void testGetName() throws Exception {
+		Field idCounter = Container.class.getDeclaredField("ID_COUNTER");
+		idCounter.setAccessible(true);
+		String id = String.valueOf(idCounter.get(null));
+		Truth.assertThat(this.container.getName()).isEqualTo("Container#" + id);
 	}
 
 	static class ApplicationExample extends Application {

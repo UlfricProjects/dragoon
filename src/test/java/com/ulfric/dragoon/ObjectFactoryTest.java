@@ -1,7 +1,6 @@
 package com.ulfric.dragoon;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
@@ -13,14 +12,7 @@ import com.ulfric.dragoon.extension.Extension;
 import java.util.function.Function;
 
 @RunWith(JUnitPlatform.class)
-class ObjectFactoryTest {
-
-	private ObjectFactory factory;
-
-	@BeforeEach
-	void setup() {
-		factory = new ObjectFactory();
-	}
+class ObjectFactoryTest extends DragoonTestSuite {
 
 	@Test
 	void testRequest() {

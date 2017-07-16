@@ -14,11 +14,13 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 @Loader
 public class Container extends Application implements Extensible<Class<? extends Application>> {
+
+	private static final AtomicInteger ID_COUNTER = new AtomicInteger();
 
 	@Inject
 	private ObjectFactory factory;
@@ -29,12 +31,10 @@ public class Container extends Application implements Extensible<Class<? extends
 	private final Set<Class<?>> applicationTypes = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Application> applications = new ArrayList<>();
 	private String name;
-	private boolean hasSetup;
 
 	public Container() {
 		addBootHook(() -> log("Booting " + getName()));
 		addBootHook(this::bootApplications);
-		addBootHook(this::runSetup);
 
 		addShutdownHook(this::shutdownApplications);
 		addShutdownHook(() -> log("Shutting down " + getName()));
@@ -52,7 +52,7 @@ public class Container extends Application implements Extensible<Class<? extends
 	private String resolveName() {
 		String name = Classes.getNonDynamic(getClass()).getSimpleName();
 		if (name.equals(Container.class.getSimpleName())) {
-			return name + '-' + UUID.randomUUID();
+			return name + '#' + ID_COUNTER.getAndIncrement();
 		}
 		return name;
 	}
@@ -68,22 +68,16 @@ public class Container extends Application implements Extensible<Class<? extends
 		}
 	}
 
-	private void runSetup() {
-		if (hasSetup) {
-			return;
-		}
-
-		hasSetup = true;
-		setup();
-	}
-
-	public void setup() {}
-
 	@Override
 	public Result install(Class<? extends Application> application) {
 		Result validation = validate(application);
 		if (!validation.isSuccess()) {
 			return validation;
+		}
+
+		if (!isRunning()) {
+			addBootHook(() -> install(application));
+			return Result.DELAYED;
 		}
 
 		Class<? extends Application> implementation = getAsOwnedClass(application);

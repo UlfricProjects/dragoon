@@ -49,7 +49,6 @@ public class NameHelper {
 		return returnType != void.class && returnType != Void.class;
 	}
 
-	private NameHelper() {
-	}
+	private NameHelper() {}
 
 }

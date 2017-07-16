@@ -11,35 +11,35 @@ public class Application {
 	private boolean running;
 
 	public final boolean isRunning() {
-		return this.running;
+		return running;
 	}
 
 	public final void boot() {
-		if (this.isRunning()) {
+		if (isRunning()) {
 			return;
 		}
 
-		this.running = true;
-		this.boot.forEach(Runnable::run);
+		running = true;
+		boot.forEach(Runnable::run);
 	}
 
 	public final void shutdown() {
-		if (!this.isRunning()) {
+		if (!isRunning()) {
 			return;
 		}
 
-		this.running = false;
-		this.shutdown.forEach(Runnable::run);
+		running = false;
+		shutdown.forEach(Runnable::run);
 	}
 
 	public final void addBootHook(Runnable hook) {
 		Objects.requireNonNull(hook, "hook");
-		this.boot.add(hook);
+		boot.add(hook);
 	}
 
 	public final void addShutdownHook(Runnable hook) {
 		Objects.requireNonNull(hook, "hook");
-		this.shutdown.add(hook);
+		shutdown.add(hook);
 	}
 
 }

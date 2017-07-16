@@ -5,8 +5,7 @@ import com.ulfric.dragoon.application.Container;
 @Loader
 public class AppContainer extends Container {
 
-	@Override
-	public void setup() {
+	public AppContainer() {
 		this.install(App.class);
 	}
 

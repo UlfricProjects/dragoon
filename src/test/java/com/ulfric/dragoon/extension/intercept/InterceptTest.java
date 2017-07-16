@@ -1,32 +1,24 @@
 package com.ulfric.dragoon.extension.intercept;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
 import com.google.common.truth.Truth;
 
-import com.ulfric.dragoon.ObjectFactory;
+import com.ulfric.dragoon.DragoonTestSuite;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.Callable;
 
 @RunWith(JUnitPlatform.class)
-class InterceptTest {
-
-	private ObjectFactory factory;
-
-	@BeforeEach
-	void setup() {
-		this.factory = new ObjectFactory();
-	}
+class InterceptTest extends DragoonTestSuite {
 
 	@Test
 	void testInterceptorWithoutRegistration() {
 		boolean[] hello = new boolean[2];
-		this.factory.request(Intercepted.class).hello(hello);
+		factory.request(Intercepted.class).hello(hello);
 		Truth.assertThat(hello).asList().containsExactly(true, false);
 	}
 
@@ -35,7 +27,7 @@ class InterceptTest {
 		this.factory.bind(InterceptMe.class).to(InterceptMeInterceptor.class);
 
 		boolean[] hello = new boolean[2];
-		this.factory.request(Intercepted.class).hello(hello);
+		factory.request(Intercepted.class).hello(hello);
 		Truth.assertThat(hello).asList().containsExactly(true, true);
 	}
 
