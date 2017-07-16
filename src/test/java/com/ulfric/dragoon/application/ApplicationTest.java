@@ -20,13 +20,13 @@ class ApplicationTest {
 	@Test
 	void testStart() {
 		Truth.assertThat(this.application.isRunning()).isFalse();
-		this.application.start();
+		this.application.boot();
 		Truth.assertThat(this.application.isRunning()).isTrue();
 	}
 
 	@Test
 	void testShutdown() {
-		this.application.start();
+		this.application.boot();
 		Truth.assertThat(this.application.isRunning()).isTrue();
 		this.application.shutdown();
 		Truth.assertThat(this.application.isRunning()).isFalse();
@@ -34,8 +34,8 @@ class ApplicationTest {
 
 	@Test
 	void testStartIfRunning() {
-		this.application.start();
-		this.application.start();
+		this.application.boot();
+		this.application.boot();
 		Truth.assertThat(this.application.isRunning()).isTrue();
 	}
 
@@ -49,8 +49,8 @@ class ApplicationTest {
 	@Test
 	void testStartHook() {
 		boolean[] ran = new boolean[1];
-		this.application.addStartHook(() -> ran[0] = true);
-		this.application.start();
+		this.application.addBootHook(() -> ran[0] = true);
+		this.application.boot();
 		Truth.assertThat(ran[0]).isTrue();
 	}
 
@@ -58,7 +58,7 @@ class ApplicationTest {
 	void testShutdownHook() {
 		boolean[] ran = new boolean[1];
 		this.application.addShutdownHook(() -> ran[0] = true);
-		this.application.start();
+		this.application.boot();
 		this.application.shutdown();
 		Truth.assertThat(ran[0]).isTrue();
 	}

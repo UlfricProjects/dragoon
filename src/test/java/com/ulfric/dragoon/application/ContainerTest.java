@@ -28,20 +28,20 @@ class ContainerTest {
 	@Test
 	void testStart() {
 		Truth.assertThat(this.container.isRunning()).isFalse();
-		this.container.start();
+		this.container.boot();
 		Truth.assertThat(this.container.isRunning()).isTrue();
 	}
 
 	@Test
 	void testShutdown() {
-		this.container.start();
+		this.container.boot();
 		this.container.shutdown();
 		Truth.assertThat(this.container.isRunning()).isFalse();
 	}
 
 	@Test
 	void testInstall() {
-		this.container.start();
+		this.container.boot();
 		this.container.install(ApplicationExample.class);
 		this.container.shutdown();
 		Truth.assertThat(ApplicationExample.last).isNotNull();
@@ -51,14 +51,14 @@ class ContainerTest {
 	void testStartOnRequested() {
 		this.container = new ObjectFactory().request(Container.class);
 		Truth.assertThat(this.container.isRunning()).isFalse();
-		this.container.start();
+		this.container.boot();
 		Truth.assertThat(this.container.isRunning()).isTrue();
 	}
 
 	@Test
 	void testShutdownOnRequested() {
 		this.container = new ObjectFactory().request(Container.class);
-		this.container.start();
+		this.container.boot();
 		this.container.shutdown();
 		Truth.assertThat(this.container.isRunning()).isFalse();
 	}

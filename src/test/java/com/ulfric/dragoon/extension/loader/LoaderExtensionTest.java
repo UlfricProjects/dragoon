@@ -30,7 +30,7 @@ class LoaderExtensionTest {
 	void test() {
 		Apps.last = null;
 		Container container = this.factory.request(AppContainer.class);
-		container.start();
+		container.boot();
 		container.shutdown();
 
 		Truth.assertThat(Apps.last).isSameAs(container);

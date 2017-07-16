@@ -9,7 +9,7 @@ public class App extends Application {
 	Container container;
 
 	public App() {
-		this.addStartHook(() -> {
+		this.addBootHook(() -> {
 			Apps.last = this.container;
 		});
 	}

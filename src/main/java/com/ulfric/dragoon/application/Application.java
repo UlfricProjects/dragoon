@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class Application {
 
-	private final List<Runnable> start = new ArrayList<>();
+	private final List<Runnable> boot = new ArrayList<>();
 	private final List<Runnable> shutdown = new ArrayList<>();
 	private boolean running;
 
@@ -14,13 +14,13 @@ public class Application {
 		return this.running;
 	}
 
-	public final void start() {
+	public final void boot() {
 		if (this.isRunning()) {
 			return;
 		}
 
 		this.running = true;
-		this.start.forEach(Runnable::run);
+		this.boot.forEach(Runnable::run);
 	}
 
 	public final void shutdown() {
@@ -32,9 +32,9 @@ public class Application {
 		this.shutdown.forEach(Runnable::run);
 	}
 
-	public final void addStartHook(Runnable hook) {
+	public final void addBootHook(Runnable hook) {
 		Objects.requireNonNull(hook, "hook");
-		this.start.add(hook);
+		this.boot.add(hook);
 	}
 
 	public final void addShutdownHook(Runnable hook) {

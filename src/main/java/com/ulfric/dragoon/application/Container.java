@@ -32,12 +32,12 @@ public class Container extends Application implements Extensible<Class<? extends
 	private boolean hasSetup;
 
 	public Container() {
-		addStartHook(() -> log("Booting " + getName())); // TODO AOP auditing
-		addStartHook(this::startApplications);
-		addStartHook(this::runSetup);
+		addBootHook(() -> log("Booting " + getName()));
+		addBootHook(this::bootApplications);
+		addBootHook(this::runSetup);
 
-		addShutdownHook(this::stopApplications);
-		addShutdownHook(() -> log("Shutting down " + getName())); // TODO AOP auditing
+		addShutdownHook(this::shutdownApplications);
+		addShutdownHook(() -> log("Shutting down " + getName()));
 	}
 
 	public String getName() {
@@ -57,11 +57,11 @@ public class Container extends Application implements Extensible<Class<? extends
 		return name;
 	}
 
-	private void startApplications() {
+	private void bootApplications() {
 		applications.forEach(this::update);
 	}
 
-	protected void stopApplications() {
+	private void shutdownApplications() {
 		ListIterator<Application> reverse = applications.listIterator(applications.size());
 		while (reverse.hasPrevious()) {
 			update(reverse.previous());
@@ -129,7 +129,7 @@ public class Container extends Application implements Extensible<Class<? extends
 		return factory = new ObjectFactory();
 	}
 
-	private void log(String message) { // TODO AOP auditing
+	protected final void log(String message) {
 		if (logger == null) {
 			return;
 		}
@@ -139,7 +139,7 @@ public class Container extends Application implements Extensible<Class<? extends
 
 	private void update(Application application) {
 		if (isRunning()) {
-			application.start();
+			application.boot();
 			return;
 		}
 
