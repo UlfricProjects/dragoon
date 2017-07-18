@@ -28,8 +28,4 @@ class LoaderExtensionTest extends DragoonTestSuite {
 		Truth.assertThat(Apps.last).isSameAs(container);
 	}
 
-	static class InContainer {
-
-	}
-
 }

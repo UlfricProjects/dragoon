@@ -116,11 +116,11 @@ public class Container extends Application implements Extensible<Class<? extends
 	}
 
 	private ObjectFactory getFactory() {
-		if (factory != null) {
-			return factory;
+		if (factory == null) {
+			factory = new ObjectFactory();
 		}
 
-		return factory = new ObjectFactory();
+		return factory;
 	}
 
 	protected final void log(String message) {
