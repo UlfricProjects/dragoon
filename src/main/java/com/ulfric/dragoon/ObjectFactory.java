@@ -130,8 +130,11 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		return binding;
 	}
 
-	public CreateBinding bind(Class<?> bind) {
+	public CreateBinding bind(Class<?>... bind) {
 		Objects.requireNonNull(bind, "bind");
+		if (bind.length == 0) {
+			throw new IllegalArgumentException("Empty bindings");
+		}
 
 		return new CreateBinding(bind);
 	}
@@ -153,14 +156,16 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	}
 
 	public final class CreateBinding {
-		private final Class<?> bind;
+		private final Class<?>[] bind;
 
-		CreateBinding(Class<?> bind) {
+		CreateBinding(Class<?>[] bind) {
 			this.bind = bind;
 		}
 
 		public void toNothing() {
-			bindings.remove(bind);
+			for (Class<?> bind : bind) {
+				bindings.remove(bind);
+			}
 		}
 
 		public void to(Class<?> type) {
@@ -182,7 +187,9 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		}
 
 		private void register(Binding binding) {
-			bindings.put(bind, binding);
+			for (Class<?> bind : bind) {
+				bindings.put(bind, binding);
+			}
 		}
 	}
 

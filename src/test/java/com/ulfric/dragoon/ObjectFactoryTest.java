@@ -71,6 +71,11 @@ class ObjectFactoryTest extends DragoonTestSuite {
 	}
 
 	@Test
+	void testBindNone() {
+		Assertions.assertThrows(IllegalArgumentException.class, () -> factory.bind());
+	}
+
+	@Test
 	void testInstall() {
 		Truth.assertThat(factory.install(ExampleExtension.class).isSuccess()).isTrue();
 	}
