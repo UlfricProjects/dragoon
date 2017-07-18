@@ -9,9 +9,7 @@ public class App extends Application {
 	Container container;
 
 	public App() {
-		this.addBootHook(() -> {
-			Apps.last = this.container;
-		});
+		this.addBootHook(() -> Apps.last = this.container);
 	}
 
 }
