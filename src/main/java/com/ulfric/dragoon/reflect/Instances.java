@@ -5,6 +5,12 @@ import java.lang.reflect.InvocationTargetException;
 
 public class Instances {
 
+	private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+
+	public static <T> T instance(Class<T> type) {
+		return instance(type, EMPTY_OBJECT_ARRAY);
+	}
+
 	public static <T> T instance(Class<T> type, Object... parameters) {
 		if (type.isEnum()) {
 			for (T enumValue : type.getEnumConstants()) {
