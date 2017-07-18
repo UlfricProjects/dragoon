@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 @Loader
-public class Container extends Application implements Extensible<Class<? extends Application>> {
+public class Container extends Application implements Extensible<Class<?>> {
 
 	private static final AtomicInteger ID_COUNTER = new AtomicInteger();
 
@@ -69,7 +69,7 @@ public class Container extends Application implements Extensible<Class<? extends
 	}
 
 	@Override
-	public Result install(Class<? extends Application> application) {
+	public Result install(Class<?> application) {
 		Result validation = validate(application);
 		if (!validation.isSuccess()) {
 			return validation;
@@ -80,9 +80,14 @@ public class Container extends Application implements Extensible<Class<? extends
 			return Result.DELAYED;
 		}
 
-		Class<? extends Application> implementation = getAsOwnedClass(application);
-		Application install = getFactory().request(implementation);
+		Class<?> implementation = getAsOwnedClass(application);
+		Object rawInstall = getFactory().request(implementation);
 
+		if (rawInstall == null) {
+			return Result.FAILURE;
+		}
+
+		Application install = Feature.wrap(rawInstall);
 		if (install == null) {
 			return Result.FAILURE;
 		}
