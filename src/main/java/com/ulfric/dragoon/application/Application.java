@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Application {
+public class Application implements Hookable {
 
 	private final List<Runnable> boot = new ArrayList<>();
 	private final List<Runnable> shutdown = new ArrayList<>();
@@ -32,11 +32,13 @@ public class Application {
 		shutdown.forEach(Runnable::run);
 	}
 
+	@Override
 	public final void addBootHook(Runnable hook) {
 		Objects.requireNonNull(hook, "hook");
 		boot.add(hook);
 	}
 
+	@Override
 	public final void addShutdownHook(Runnable hook) {
 		Objects.requireNonNull(hook, "hook");
 		shutdown.add(hook);
