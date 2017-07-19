@@ -4,6 +4,7 @@ import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.extension.Extensible;
 import com.ulfric.dragoon.extension.inject.Inject;
 import com.ulfric.dragoon.extension.loader.Loader;
+import com.ulfric.dragoon.extension.loader.OwnedClassLoader;
 import com.ulfric.dragoon.reflect.Classes;
 import com.ulfric.dragoon.value.Result;
 
@@ -16,11 +17,28 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 @Loader
 public class Container extends Application implements Extensible<Class<?>> {
 
+	private static final Pattern CAMEL_TO_DASH = Pattern.compile("([a-z])([A-Z]+)");
 	private static final AtomicInteger ID_COUNTER = new AtomicInteger();
+
+	public static Container getOwningContainer(Object object) {
+		ClassLoader loader = object.getClass().getClassLoader();
+
+		if (loader instanceof OwnedClassLoader) {
+			OwnedClassLoader owned = (OwnedClassLoader) loader;
+
+			Object owner = owned.getOwner();
+			if (owner instanceof Container) {
+				return (Container) owner;
+			}
+		}
+
+		return object instanceof Container ? (Container) object : null;
+	}
 
 	@Inject
 	private ObjectFactory factory;
@@ -53,6 +71,12 @@ public class Container extends Application implements Extensible<Class<?>> {
 		String name = Classes.getNonDynamic(getClass()).getSimpleName();
 		if (name.equals(Container.class.getSimpleName())) {
 			return name + '#' + ID_COUNTER.getAndIncrement();
+		}
+		if (name.endsWith("Container")) {
+			return CAMEL_TO_DASH.matcher(name)
+					.replaceAll("$1-$2")
+					.substring(0, "Container".length() - 1)
+					.toLowerCase();
 		}
 		return name;
 	}
