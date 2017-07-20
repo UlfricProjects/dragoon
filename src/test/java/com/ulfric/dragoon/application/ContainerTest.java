@@ -96,6 +96,11 @@ class ContainerTest extends DragoonTestSuite {
 		Truth.assertThat(this.container.getName()).isEqualTo("Container#" + id);
 	}
 
+	@Test
+	void testGetNameContainerExtended() {
+		Truth.assertThat(new ExtendedContainer().getName()).isEqualTo("extended");
+	}
+
 	static class ApplicationExample extends Application {
 		static ApplicationExample last;
 
@@ -108,6 +113,9 @@ class ContainerTest extends DragoonTestSuite {
 		BadApplication() {
 			throw new RuntimeException();
 		}
+	}
+
+	static class ExtendedContainer extends Container {
 	}
 
 }

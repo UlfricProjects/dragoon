@@ -73,9 +73,9 @@ public class Container extends Application implements Extensible<Class<?>> {
 			return name + '#' + ID_COUNTER.getAndIncrement();
 		}
 		if (name.endsWith("Container")) {
+			name = name.substring(0, "Container".length() - 1);
 			return CAMEL_TO_DASH.matcher(name)
 					.replaceAll("$1-$2")
-					.substring(0, "Container".length() - 2)
 					.toLowerCase();
 		}
 		return name;
