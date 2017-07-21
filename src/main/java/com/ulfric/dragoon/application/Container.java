@@ -74,7 +74,6 @@ public class Container extends Application implements Extensible<Class<?>> {
 		}
 		if (name.endsWith("Container")) {
 			name = name.substring(0, name.length() - "Container".length());
-			System.out.println(name);
 			return CAMEL_TO_DASH.matcher(name)
 					.replaceAll("$1-$2")
 					.toLowerCase();
