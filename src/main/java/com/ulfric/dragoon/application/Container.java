@@ -152,7 +152,7 @@ public class Container extends Application implements Extensible<Class<?>> {
 		return factory;
 	}
 
-	protected final void log(String message) {
+	protected void log(String message) {
 		if (logger == null) {
 			return;
 		}
