@@ -35,13 +35,23 @@ public class Application implements Hookable {
 	@Override
 	public final void addBootHook(Runnable hook) {
 		Objects.requireNonNull(hook, "hook");
-		boot.add(hook);
+
+		if (boot.isEmpty()) {
+			boot.add(hook);
+			return;
+		}
+		boot.add(0, hook);
 	}
 
 	@Override
 	public final void addShutdownHook(Runnable hook) {
 		Objects.requireNonNull(hook, "hook");
-		shutdown.add(hook);
+
+		if (shutdown.isEmpty()) {
+			shutdown.add(hook);
+			return;
+		}
+		shutdown.add(0, hook);
 	}
 
 }
