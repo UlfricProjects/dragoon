@@ -23,7 +23,7 @@ class FeatureTest {
 
 	@AfterEach
 	void teardown() {
-		Feature.disable(feature);
+		Feature.unregister(feature);
 	}
 
 	@Test

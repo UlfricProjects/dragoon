@@ -15,7 +15,7 @@ public abstract class Feature implements Function<Object, Application> {
 		WRAPPERS.add(feature);
 	}
 
-	public static void disable(Feature feature) {
+	public static void unregister(Feature feature) {
 		Objects.requireNonNull(feature, "feature");
 
 		WRAPPERS.remove(feature);
