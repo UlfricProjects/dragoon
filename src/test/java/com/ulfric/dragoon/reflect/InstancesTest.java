@@ -32,7 +32,7 @@ class InstancesTest extends UtilityTest {
 			this.object = object;
 		}
 
-		NewInstance(Integer object, @SuppressWarnings("unused") Object two) {
+		NewInstance(Integer object, Object two) {
 			this.object = object;
 		}
 	}
