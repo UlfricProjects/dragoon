@@ -1,14 +1,11 @@
 package com.ulfric.dragoon.reflect;
 
 import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
 
 import com.google.common.truth.Truth;
 
 import com.ulfric.dragoon.UtilityTest;
 
-@RunWith(JUnitPlatform.class)
 class InstancesTest extends UtilityTest {
 
 	public InstancesTest() {

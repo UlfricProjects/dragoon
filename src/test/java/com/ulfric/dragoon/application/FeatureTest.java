@@ -3,14 +3,11 @@ package com.ulfric.dragoon.application;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import com.google.common.truth.Truth;
 
-@RunWith(JUnitPlatform.class)
 class FeatureTest {
 
 	private Feature feature;

@@ -47,7 +47,6 @@
 				</executions>
 			</plugin>
 
-			<!-- Temporarily disabled, broke with latest JUnit 5
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -72,7 +71,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			-->
 
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -106,13 +104,6 @@
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
 			<version>5.0.0-RC2</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.junit.platform</groupId>
-			<artifactId>junit-platform-runner</artifactId>
-			<version>1.0.0-RC2</version>
 			<scope>test</scope>
 		</dependency>
 

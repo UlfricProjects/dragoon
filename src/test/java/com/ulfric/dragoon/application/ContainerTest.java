@@ -3,8 +3,6 @@ package com.ulfric.dragoon.application;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
 
 import com.google.common.truth.Truth;
 
@@ -12,7 +10,6 @@ import com.ulfric.dragoon.DragoonTestSuite;
 
 import java.lang.reflect.Field;
 
-@RunWith(JUnitPlatform.class)
 class ContainerTest extends DragoonTestSuite {
 
 	private Container container;

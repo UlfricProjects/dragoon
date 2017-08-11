@@ -1,8 +1,6 @@
 package com.ulfric.dragoon.reflect;
 
 import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
 
 import com.google.common.truth.Truth;
 
@@ -12,7 +10,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
-@RunWith(JUnitPlatform.class)
 class HandlesTest extends UtilityTest {
 
 	public HandlesTest() {

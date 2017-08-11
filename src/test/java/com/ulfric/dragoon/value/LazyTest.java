@@ -2,15 +2,12 @@ package com.ulfric.dragoon.value;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
 
 import com.google.common.truth.Truth;
 
 import java.util.UUID;
 import java.util.function.Supplier;
 
-@RunWith(JUnitPlatform.class)
 class LazyTest {
 
 	private Object value;

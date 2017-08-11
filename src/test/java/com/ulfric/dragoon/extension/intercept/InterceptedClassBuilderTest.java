@@ -1,8 +1,6 @@
 package com.ulfric.dragoon.extension.intercept;
 
 import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
 
 import com.google.common.truth.Truth;
 
@@ -12,7 +10,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.Callable;
 
-@RunWith(JUnitPlatform.class)
 class InterceptedClassBuilderTest extends DragoonTestSuite {
 
 	@Test

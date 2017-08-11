@@ -2,15 +2,12 @@ package com.ulfric.dragoon.exception;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
 
 import com.google.common.truth.Truth;
 
 import com.ulfric.dragoon.UtilityTest;
 import com.ulfric.dragoon.exception.Try.CheckedRunnable;
 
-@RunWith(JUnitPlatform.class)
 class TryTest extends UtilityTest {
 
 	public TryTest() {

@@ -2,15 +2,12 @@ package com.ulfric.dragoon.extension.loader;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
 
 import com.google.common.truth.Truth;
 
 import com.ulfric.dragoon.DragoonTestSuite;
 import com.ulfric.dragoon.application.Container;
 
-@RunWith(JUnitPlatform.class)
 class LoaderExtensionTest extends DragoonTestSuite {
 
 	@AfterEach

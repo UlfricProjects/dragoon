@@ -3,15 +3,12 @@ package com.ulfric.dragoon.reflect;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
 
 import com.google.common.truth.Truth;
 
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.extension.inject.Inject;
 
-@RunWith(JUnitPlatform.class)
 class FieldProfileTest {
 
 	private ObjectFactory factory;
