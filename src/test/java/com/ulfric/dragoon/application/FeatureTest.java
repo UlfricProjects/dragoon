@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import com.google.common.truth.Truth;
@@ -34,14 +34,14 @@ class FeatureTest {
 
 	@Test
 	void testDoNothingWrapper() {
-		Mockito.when(feature.apply(Matchers.any())).thenReturn(null);
+		Mockito.when(feature.apply(ArgumentMatchers.any())).thenReturn(null);
 		Truth.assertThat(Feature.wrap(new Object())).isNull();
 	}
 
 	@Test
 	void testNewApplicationWrapper() {
 		Application expected = new Application();
-		Mockito.when(feature.apply(Matchers.any())).thenReturn(expected);
+		Mockito.when(feature.apply(ArgumentMatchers.any())).thenReturn(expected);
 		Truth.assertThat(Feature.wrap(new Object())).isSameAs(expected);
 	}
 
