@@ -40,6 +40,13 @@ public class Container extends Application implements Extensible<Class<?>> {
 		return object instanceof Container ? (Container) object : null;
 	}
 
+	public static ManagedContainer launch() {
+		ObjectFactory factory = new ObjectFactory();
+		ManagedContainer managed = factory.request(ManagedContainer.class);
+		managed.boot();
+		return managed;
+	}
+
 	@Inject
 	private ObjectFactory factory;
 
@@ -49,6 +56,8 @@ public class Container extends Application implements Extensible<Class<?>> {
 	private final Set<Class<?>> applicationTypes = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Application> applications = new ArrayList<>();
 	private String name;
+
+	final ThreadClassLoaderState state = new ThreadClassLoaderState(getClass().getClassLoader());
 
 	public Container() {
 		addBootHook(this::bootApplications);
@@ -82,18 +91,20 @@ public class Container extends Application implements Extensible<Class<?>> {
 	}
 
 	private void bootApplications() {
-		applications.forEach(this::update);
+		state.doContextual(() -> applications.forEach(this::update));
 	}
 
 	private void shutdownApplications() {
-		ListIterator<Application> reverse = applications.listIterator(applications.size());
-		while (reverse.hasPrevious()) {
-			update(reverse.previous());
-		}
+		state.doContextual(() -> {
+			ListIterator<Application> reverse = applications.listIterator(applications.size());
+			while (reverse.hasPrevious()) {
+				update(reverse.previous());
+			}
+		});
 	}
 
 	@Override
-	public Result install(Class<?> application) {
+	public final Result install(Class<?> application) {
 		Result validation = validate(application);
 		if (!validation.isSuccess()) {
 			return validation;
