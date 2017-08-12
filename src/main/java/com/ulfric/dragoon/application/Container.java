@@ -51,8 +51,8 @@ public class Container extends Application implements Extensible<Class<?>> {
 	private String name;
 
 	public Container() {
-		addBootHook(() -> log("Booting " + getName()));
 		addBootHook(this::bootApplications);
+		addBootHook(() -> log("Booting " + getName()));
 
 		addShutdownHook(this::shutdownApplications);
 		addShutdownHook(() -> log("Shutting down " + getName()));
