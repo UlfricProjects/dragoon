@@ -5,8 +5,8 @@ import com.ulfric.dragoon.extension.Extension;
 import com.ulfric.dragoon.extension.inject.InjectExtension;
 import com.ulfric.dragoon.extension.intercept.InterceptExtension;
 import com.ulfric.dragoon.extension.loader.LoaderExtension;
+import com.ulfric.dragoon.logging.DefaultLoggerBinding;
 import com.ulfric.dragoon.reflect.Instances;
-import com.ulfric.dragoon.reflect.NameHelper;
 import com.ulfric.dragoon.value.Result;
 
 import java.nio.file.FileSystem;
@@ -50,18 +50,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 
 	private void defaultBindings() {
 		bind(FileSystem.class).toValue(FileSystems.getDefault());
-		bind(Logger.class).toFunction(arguments -> {
-			if (arguments.length == 0) {
-				return Logger.getGlobal();
-			}
-
-			String name = NameHelper.getName(arguments);
-			if (name == null) {
-				return Logger.getGlobal();
-			}
-
-			return Logger.getLogger(name);
-		});
+		bind(Logger.class).toFunction(DefaultLoggerBinding.INSTANCE);
 	}
 
 	@Override

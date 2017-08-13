@@ -2,6 +2,7 @@ package com.ulfric.dragoon.extension.inject;
 
 import com.ulfric.dragoon.Factory;
 import com.ulfric.dragoon.extension.Extension;
+import com.ulfric.dragoon.reflect.Classes;
 import com.ulfric.dragoon.reflect.FieldProfile;
 import com.ulfric.dragoon.stereotype.Stereotypes;
 import com.ulfric.dragoon.value.Lazy;
@@ -25,7 +26,8 @@ public class InjectExtension extends Extension {
 
 			        if (inject == null || !inject.optional()) {
 				        throw new IllegalArgumentException(
-				                "Failed to inject non-optional " + type + " into field " + field.getName());
+				                "Failed to inject non-optional " + type + " into field " +
+				                		Classes.getNonDynamic(field.getDeclaringClass()) + ':' + field.getName());
 			        }
 		        }).build();
 	}
