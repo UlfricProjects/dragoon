@@ -2,6 +2,7 @@ package com.ulfric.dragoon.application;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Objects;
 
 public class Application implements Hookable {
@@ -20,6 +21,10 @@ public class Application implements Hookable {
 		}
 
 		running = true;
+		callBootHooks();
+	}
+
+	private void callBootHooks() {
 		boot.forEach(Runnable::run);
 	}
 
@@ -29,29 +34,32 @@ public class Application implements Hookable {
 		}
 
 		running = false;
-		shutdown.forEach(Runnable::run);
+		callShutdownHooks();
+	}
+
+	private void callShutdownHooks() {
+		if (shutdown.isEmpty()) {
+			return;
+		}
+
+		ListIterator<Runnable> reverseIterator = shutdown.listIterator(shutdown.size());
+		while (reverseIterator.hasPrevious()) {
+			reverseIterator.previous().run();
+		}
 	}
 
 	@Override
 	public final void addBootHook(Runnable hook) {
 		Objects.requireNonNull(hook, "hook");
 
-		if (boot.isEmpty()) {
-			boot.add(hook);
-			return;
-		}
-		boot.add(0, hook);
+		boot.add(hook);
 	}
 
 	@Override
 	public final void addShutdownHook(Runnable hook) {
 		Objects.requireNonNull(hook, "hook");
 
-		if (shutdown.isEmpty()) {
-			shutdown.add(hook);
-			return;
-		}
-		shutdown.add(0, hook);
+		shutdown.add(hook);
 	}
 
 }
