@@ -89,6 +89,30 @@ public class Stereotypes { // TODO refactor method names
 		return null;
 	}
 
+	public static <T extends Annotation> List<T> getAll(AnnotatedElement holder, Class<T> stereotype) {
+		List<T> stereotypes = new ArrayList<>();
+
+		for (Annotation held : holder.getAnnotations()) {
+			Class<?> heldType = held.annotationType();
+
+			if (heldType == stereotype) {
+				stereotypes.add(stereotype.cast(held));
+			}
+
+			if (heldType.isAnnotationPresent(Stereotype.class)) {
+				T inheritedSingle = heldType.getAnnotation(stereotype);
+				if (inheritedSingle != null) {
+					stereotypes.add(inheritedSingle);
+					continue;
+				}
+
+				stereotypes.addAll(getAll(heldType, stereotype));
+			}
+		}
+
+		return stereotypes;
+	}
+
 	private Stereotypes() {}
 
 }
