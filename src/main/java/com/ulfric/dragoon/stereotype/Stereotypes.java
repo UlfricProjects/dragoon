@@ -66,6 +66,10 @@ public class Stereotypes { // TODO refactor method names
 		return annotations;
 	}
 
+	public static boolean isPresent(AnnotatedElement holder, Class<? extends Annotation> stereotype) {
+		return getFirst(holder, stereotype) != null;
+	}
+
 	public static <T extends Annotation> T getFirst(AnnotatedElement holder, Class<T> stereotype) {
 		for (Annotation held : holder.getAnnotations()) {
 			Class<?> heldType = held.annotationType();
