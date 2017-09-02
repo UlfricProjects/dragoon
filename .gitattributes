@@ -1,18 +1,21 @@
-# Upstream: https://github.com/ulfricprojects/gitfiles/blob/master/java/.gitattributes
-
-# Copied from google/guava
-
-# Auto detect text files and perform LF normalization
 * text=auto
 
-# Known text files
 *.java text
 *.xml text
 *.yml text
+*.json text
+*.html text
+*.js text
+*.rb text
 *.md text
 *.sh text
+*.bat text
 *.css text
+*.scss text
 *.txt text
+*.php text
 
-# Known binary files
 *.jar binary
+*.exe binary
+*.zip binary
+*.rar binary
