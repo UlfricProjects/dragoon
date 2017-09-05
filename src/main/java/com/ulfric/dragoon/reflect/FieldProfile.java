@@ -2,6 +2,7 @@ package com.ulfric.dragoon.reflect;
 
 import com.ulfric.dragoon.Factory;
 import com.ulfric.dragoon.exception.Try;
+import com.ulfric.dragoon.function.TriFunction;
 import com.ulfric.dragoon.stereotype.Stereotypes;
 
 import java.lang.annotation.Annotation;
@@ -19,6 +20,10 @@ import java.util.stream.Collectors;
 
 public final class FieldProfile implements Consumer<Object> {
 
+	public static String getFieldName(Field field) {
+		return Classes.getNonDynamic(field.getDeclaringClass()).getName() + ':' + field.getName();
+	}
+
 	public static Builder builder() {
 		return new Builder();
 	}
@@ -29,12 +34,13 @@ public final class FieldProfile implements Consumer<Object> {
 		private Predicate<GetterAndSetter> filter;
 		private BiFunction<Object, Field, Class<?>> typeResolver;
 		private BiConsumer<Class<?>, Field> failureStrategy;
+		private boolean sendFieldToFactory;
 
 		Builder() {}
 
 		public FieldProfile build() {
-			Objects.requireNonNull(this.factory, "factory");
-			Objects.requireNonNull(this.flag, "flag");
+			Objects.requireNonNull(factory, "factory");
+			Objects.requireNonNull(flag, "flag");
 
 			Predicate<GetterAndSetter> filter = this.filter;
 			if (filter == null) {
@@ -53,7 +59,7 @@ public final class FieldProfile implements Consumer<Object> {
 				};
 			}
 
-			return new FieldProfile(this.factory, this.flag, filter, typeResolver, failureStrategy);
+			return new FieldProfile(factory, flag, filter, typeResolver, failureStrategy, sendFieldToFactory);
 		}
 
 		public Builder setFactory(Factory factory) {
@@ -80,22 +86,30 @@ public final class FieldProfile implements Consumer<Object> {
 			this.failureStrategy = failureStrategy;
 			return this;
 		}
+
+		public Builder setSendFieldToFactory(boolean sendFieldToFactory) {
+			this.sendFieldToFactory = sendFieldToFactory;
+			return this;
+		}
 	}
 
-	private final Factory factory;
 	private final Class<? extends Annotation> flag;
 	private final Predicate<GetterAndSetter> filter;
 	private final BiFunction<Object, Field, Class<?>> typeResolver;
+	private final TriFunction<Class<?>, Object, Field, Object> instanceCreator;
 	private final BiConsumer<Class<?>, Field> failureStrategy;
 	private final Map<Class<?>, List<GetterAndSetter>> requests = new IdentityHashMap<>();
 
 	private FieldProfile(Factory factory, Class<? extends Annotation> flag, Predicate<GetterAndSetter> filter,
-	        BiFunction<Object, Field, Class<?>> typeResolver, BiConsumer<Class<?>, Field> failureStrategy) {
-		this.factory = factory;
+	        BiFunction<Object, Field, Class<?>> typeResolver, BiConsumer<Class<?>, Field> failureStrategy,
+	        boolean sendFieldToFactory) {
 		this.flag = flag;
 		this.filter = filter;
 		this.typeResolver = typeResolver;
 		this.failureStrategy = failureStrategy;
+
+		this.instanceCreator = sendFieldToFactory ? (type, owner, field) -> factory.request(type, owner, field) :
+			(type, owner, field) -> factory.request(type, owner);
 	}
 
 	@Override
@@ -107,7 +121,7 @@ public final class FieldProfile implements Consumer<Object> {
 			}
 
 			Class<?> injectType = this.typeResolver.apply(setValues, handle.field);
-			Object value = this.factory.request(injectType, setValues);
+			Object value = instanceCreator.apply(injectType, setValues, handle.field);
 
 			if (value != null) {
 				Try.to(() -> {

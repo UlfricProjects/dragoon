@@ -7,7 +7,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Stereotypes { // TODO refactor method names
+public class Stereotypes { // TODO refactor method names, support field/method inheritance from class
 
 	public static List<Field> getAnnotatedInstanceFields(Class<?> type, Class<? extends Annotation> annotation) {
 		List<Field> fields = new ArrayList<>();
