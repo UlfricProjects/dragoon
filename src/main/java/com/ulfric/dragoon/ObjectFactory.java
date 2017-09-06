@@ -6,6 +6,7 @@ import com.ulfric.dragoon.extension.inject.InjectExtension;
 import com.ulfric.dragoon.extension.intercept.InterceptExtension;
 import com.ulfric.dragoon.extension.loader.LoaderExtension;
 import com.ulfric.dragoon.logging.DefaultLoggerBinding;
+import com.ulfric.dragoon.reflect.Classes;
 import com.ulfric.dragoon.reflect.Instances;
 import com.ulfric.dragoon.value.Result;
 
@@ -13,12 +14,10 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
@@ -28,7 +27,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	        Arrays.asList(InterceptExtension.class, LoaderExtension.class);
 	private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
-	private final Set<Class<? extends Extension>> extensionTypes = Collections.newSetFromMap(new IdentityHashMap<>());
+	private final Map<Class<? extends Extension>, Extension> extensionTypes = new IdentityHashMap<>();
 	private final List<Extension> extensions = new ArrayList<>();
 	private final Map<Class<?>, Binding> bindings = new IdentityHashMap<>();
 
@@ -61,17 +60,40 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	public Result install(Class<? extends Extension> extension, Object... parameters) {
 		Objects.requireNonNull(extension, "extension type");
 
-		if (!this.extensionTypes.add(extension)) {
+		ResultWrapper result = new ResultWrapper();
+		result.setResult(Result.FAILURE);
+		Extension value = extensionTypes.computeIfAbsent(extension, type -> {
+			Extension request = request(extension, parameters);
+			if (request != null) {
+				result.setResult(Result.SUCCESS);
+			}
+			return request;
+		});
+
+		if (result.getResult() == Result.FAILURE) {
 			return Result.FAILURE;
 		}
 
-		Extension value = request(extension, parameters);
-
-		if (value == null) {
-			return Result.FAILURE;
-		}
-
+		bind(extension).toValue(value);
 		this.extensions.add(value);
+
+		return Result.SUCCESS;
+	}
+
+	public Result uninstall(Class<? extends Extension> type) {
+		Class<?> realType = type;
+		Extension instance = extensionTypes.remove(realType);
+		if (instance == null) {
+			realType = Classes.getNonDynamic(realType);
+			instance = extensionTypes.remove(realType);
+
+			if (instance == null) {
+				return Result.FAILURE;
+			}
+		}
+
+		bind(realType).toNothing();
+		extensions.remove(instance);
 
 		return Result.SUCCESS;
 	}

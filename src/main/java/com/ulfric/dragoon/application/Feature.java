@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-public abstract class Feature implements Function<Object, Application> {
+public abstract class Feature implements Function<Object, Application> { // TODO make this state tied to ObjectFactory?
 
 	private static final List<Feature> WRAPPERS = new ArrayList<>();
 
