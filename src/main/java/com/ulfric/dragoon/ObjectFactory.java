@@ -1,15 +1,5 @@
 package com.ulfric.dragoon;
 
-import com.ulfric.dragoon.extension.Extensible;
-import com.ulfric.dragoon.extension.Extension;
-import com.ulfric.dragoon.extension.inject.InjectExtension;
-import com.ulfric.dragoon.extension.intercept.InterceptExtension;
-import com.ulfric.dragoon.extension.loader.LoaderExtension;
-import com.ulfric.dragoon.logging.DefaultLoggerBinding;
-import com.ulfric.dragoon.reflect.Classes;
-import com.ulfric.dragoon.reflect.Instances;
-import com.ulfric.dragoon.value.Result;
-
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
@@ -19,7 +9,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
+
+import com.ulfric.dragoon.extension.Extensible;
+import com.ulfric.dragoon.extension.Extension;
+import com.ulfric.dragoon.extension.inject.InjectExtension;
+import com.ulfric.dragoon.extension.intercept.InterceptExtension;
+import com.ulfric.dragoon.extension.intercept.asynchronous.Asynchronous;
+import com.ulfric.dragoon.extension.intercept.asynchronous.AsynchronousInterceptor;
+import com.ulfric.dragoon.extension.loader.LoaderExtension;
+import com.ulfric.dragoon.logging.DefaultLoggerBinding;
+import com.ulfric.dragoon.reflect.Classes;
+import com.ulfric.dragoon.reflect.Instances;
+import com.ulfric.dragoon.value.Result;
 
 public final class ObjectFactory implements Factory, Extensible<Class<? extends Extension>> {
 
@@ -50,6 +53,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	private void defaultBindings() {
 		bind(FileSystem.class).toValue(FileSystems.getDefault());
 		bind(Logger.class).toFunction(DefaultLoggerBinding.INSTANCE);
+		bind(Asynchronous.class).to(AsynchronousInterceptor.class);
 	}
 
 	@Override
@@ -185,10 +189,31 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 			register(new ClassBinding(type));
 		}
 
+		public void toSupplier(Supplier<?> supplier) {
+			Objects.requireNonNull(supplier, "supplier");
+
+			toFunction(ignore -> supplier.get());
+		}
+
 		public void toFunction(Function<Object[], ?> function) {
 			Objects.requireNonNull(function, "function");
 
 			register(new FunctionBinding(function));
+		}
+
+		public void toSingleton() {
+			for (Class<?> binding : bind) {
+				Object value = request(binding);
+
+				if (value == null) {
+					continue;
+				}
+
+				toValue(value);
+				return;
+			}
+
+			throw new IllegalArgumentException("Could not create singleton from any of " + Arrays.toString(bind));
 		}
 
 		public void toValue(Object value) {

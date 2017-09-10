@@ -41,7 +41,7 @@ public class InterceptedClassBuilder<T> {
 	private void run() {
 		for (Method method : Methods.getOverridableMethods(this.parent)) {
 			List<Interceptor<?>> interceptors = Stereotypes.getStereotypes(method, Intercept.class).stream()
-			        .map(this::createInterceptor).filter(Objects::nonNull).collect(Collectors.toList());
+					.map(this::createInterceptor).filter(Objects::nonNull).collect(Collectors.toList());
 
 			if (interceptors.isEmpty()) {
 				continue;
@@ -50,7 +50,7 @@ public class InterceptedClassBuilder<T> {
 			InterceptorPipeline pipeline = new InterceptorPipeline(interceptors);
 
 			this.builder = this.builder.method(ElementMatchers.is(method)).intercept(MethodDelegation.to(pipeline))
-			        .annotateMethod(method.getDeclaredAnnotations());
+					.annotateMethod(method.getDeclaredAnnotations());
 
 			this.changed = true;
 		}
