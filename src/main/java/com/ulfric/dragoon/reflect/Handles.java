@@ -19,7 +19,7 @@ public class Handles {
 		boolean defaultAccessible = accessible.isAccessible();
 		try {
 			accessible.setAccessible(true);
-			return Try.to(run);
+			return Try.toGet(run);
 		} finally {
 			accessible.setAccessible(defaultAccessible);
 		}

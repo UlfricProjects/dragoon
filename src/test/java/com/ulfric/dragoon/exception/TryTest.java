@@ -17,25 +17,25 @@ class TryTest extends UtilityTest {
 	@Test
 	void testToRunnableRuns() {
 		boolean[] ran = new boolean[1];
-		Try.to(() -> ran[0] = true);
+		Try.toGet(() -> ran[0] = true);
 		Truth.assertThat(ran[0]).isTrue();
 	}
 
 	@Test
 	void testToRunnableRethrows() {
-		Assertions.assertThrows(RuntimeException.class, () -> Try.to((CheckedRunnable) () -> {
+		Assertions.assertThrows(RuntimeException.class, () -> Try.toRun((CheckedRunnable) () -> {
 			throw new Exception();
 		}));
 	}
 
 	@Test
 	void testToSupplierRuns() {
-		Truth.assertThat(Try.to(() -> true)).isTrue();
+		Truth.assertThat(Try.toGet(() -> true)).isTrue();
 	}
 
 	@Test
 	void testToSupplierRethrows() {
-		Assertions.assertThrows(RuntimeException.class, () -> Try.to(() -> {
+		Assertions.assertThrows(RuntimeException.class, () -> Try.toGet(() -> {
 			throw new Exception();
 		}));
 	}

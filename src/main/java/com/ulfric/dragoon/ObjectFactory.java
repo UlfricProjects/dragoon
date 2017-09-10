@@ -201,6 +201,12 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 			register(new FunctionBinding(function));
 		}
 
+		public void toLazy(Function<Object[], ?> function) {
+			Objects.requireNonNull(function, "function");
+
+			register(new LazyBinding(function));
+		}
+
 		public void toSingleton() {
 			for (Class<?> binding : bind) {
 				Object value = request(binding);
@@ -233,7 +239,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		Object create(Object... parameters);
 	}
 
-	private final class FunctionBinding implements Binding {
+	private class FunctionBinding implements Binding {
 		private final Function<Object[], ?> function;
 
 		FunctionBinding(Function<Object[], ?> function) {
@@ -243,6 +249,31 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		@Override
 		public Object create(Object... parameters) {
 			return function.apply(parameters);
+		}
+	}
+
+	private final class LazyBinding extends FunctionBinding { // TODO cleanup after called?
+		private Object value;
+
+		LazyBinding(Function<Object[], ?> function) {
+			super(function);
+		}
+
+		@Override
+		public Object create(Object... parameters) {
+			if (value != null) {
+				return value;
+			}
+
+			synchronized (this) {
+				if (value != null) {
+					return value;
+				}
+
+				value = super.create(parameters);
+			}
+
+			return value;
 		}
 	}
 

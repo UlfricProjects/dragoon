@@ -22,6 +22,7 @@ public class InjectExtension extends Extension {
 		return FieldProfile.builder()
 				.setFactory(this.factory)
 				.setFlagToSearchFor(Inject.class)
+				.setSendFieldToFactory(true)
 		        .setFailureStrategy((type, field) -> {
 			        Inject inject = Stereotypes.getFirst(field, Inject.class);
 

@@ -1,9 +1,9 @@
 package com.ulfric.dragoon.logging;
 
-import com.ulfric.dragoon.reflect.NameHelper;
-
 import java.util.function.Function;
 import java.util.logging.Logger;
+
+import com.ulfric.dragoon.naming.NameHelper;
 
 public enum DefaultLoggerBinding implements Function<Object[], Logger> {
 

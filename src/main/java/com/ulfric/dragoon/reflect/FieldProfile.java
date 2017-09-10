@@ -124,7 +124,7 @@ public final class FieldProfile implements Consumer<Object> {
 			Object value = instanceCreator.apply(injectType, setValues, handle.field);
 
 			if (value != null) {
-				Try.to(() -> {
+				Try.toRun(() -> {
 					handle.setter.invokeExact(setValues, value);
 				});
 			} else {

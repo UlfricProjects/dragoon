@@ -2,7 +2,7 @@ package com.ulfric.dragoon.exception;
 
 public class Try {
 
-	public static void to(CheckedRunnable runnable) {
+	public static void toRun(CheckedRunnable runnable) {
 		try {
 			runnable.run();
 		} catch (Throwable rethrow) {
@@ -10,7 +10,7 @@ public class Try {
 		}
 	}
 
-	public static <T> T to(CheckedSupplier<T> supplier) {
+	public static <T> T toGet(CheckedSupplier<T> supplier) {
 		try {
 			return supplier.get();
 		} catch (Throwable rethrow) {

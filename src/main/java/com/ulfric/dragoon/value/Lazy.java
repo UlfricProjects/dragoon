@@ -17,7 +17,7 @@ public final class Lazy<T> implements Supplier<T> {
 		return new Lazy<>(supplier, true);
 	}
 
-	private final Supplier<T> supplier;
+	private final Supplier<T> supplier; // TODO cleanup after called?
 	private final boolean retry;
 	private T value;
 	private boolean called;
