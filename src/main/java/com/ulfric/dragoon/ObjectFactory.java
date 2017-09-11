@@ -252,7 +252,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		}
 	}
 
-	private final class LazyBinding extends FunctionBinding { // TODO cleanup after called?
+	private final class LazyBinding extends FunctionBinding {
 		private Object value;
 
 		LazyBinding(Function<Object[], ?> function) {
