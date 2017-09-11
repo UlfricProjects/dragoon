@@ -110,6 +110,10 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		return request(type, Parameters.EMPTY);
 	}
 
+	public <T> T request(Class<T> type, Object... arguments) {
+		return request(type, Parameters.unqualified(arguments));
+	}
+
 	@Override
 	public <T> T request(Class<T> type, Parameters parameters) {
 		Object value = requestUnspecific(type, parameters);
