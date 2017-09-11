@@ -33,6 +33,14 @@ public class Classes {
 		return type == Object.class || type == null;
 	}
 
+	public static Class<?> getClass(Object object) {
+		if (object == null) {
+			return Object.class;
+		}
+
+		return object.getClass();
+	}
+
 	private Classes() {}
 
 }

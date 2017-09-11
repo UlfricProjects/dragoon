@@ -1,6 +1,7 @@
 package com.ulfric.dragoon.extension.inject;
 
 import com.ulfric.dragoon.Factory;
+import com.ulfric.dragoon.Parameters;
 import com.ulfric.dragoon.extension.Extension;
 import com.ulfric.dragoon.reflect.FieldProfile;
 import com.ulfric.dragoon.stereotype.Stereotypes;
@@ -22,14 +23,13 @@ public class InjectExtension extends Extension {
 		return FieldProfile.builder()
 				.setFactory(this.factory)
 				.setFlagToSearchFor(Inject.class)
-				.setSendFieldToFactory(true)
-		        .setFailureStrategy((type, field) -> {
-			        Inject inject = Stereotypes.getFirst(field, Inject.class);
+		        .setFailureStrategy((type, parameters) -> {
+			        Inject inject = Stereotypes.getFirst(parameters.getQualifier(), Inject.class);
 
 			        if (inject == null || !inject.optional()) {
 				        throw new IllegalStateException(
-				                "Failed to inject non-optional " + type + " into field " +
-				                		FieldProfile.getFieldName(field));
+				                "Failed to inject non-optional " + type + " into " +
+				                		Parameters.getQualifiedName(parameters));
 			        }
 		        }).build();
 	}

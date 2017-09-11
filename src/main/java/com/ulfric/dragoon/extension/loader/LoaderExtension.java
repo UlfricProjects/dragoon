@@ -34,9 +34,10 @@ public class LoaderExtension extends Extension {
 		return LoaderExtension.computeInjectionTarget(type.getSuperclass());
 	}
 
-	private final FieldProfile fields =
-	        FieldProfile.builder().setFactory(LoaderFactory.INSTANCE).setFlagToSearchFor(Loader.class)
-	                .setTypeResolverForMappingBindingsOfFieldTypes((object, field) -> object.getClass()).build();
+	private final FieldProfile fields = FieldProfile.builder().setFactory(LoaderFactory.INSTANCE)
+			.setFlagToSearchFor(Loader.class)
+			.setTypeResolverForMappingBindingsOfFieldTypes((parameters) -> Classes.getClass(parameters.getHolder()))
+			.build();
 
 	@Override
 	public <T> Class<? extends T> transform(Class<T> type) {

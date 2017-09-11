@@ -1,13 +1,12 @@
 package com.ulfric.dragoon;
 
+import java.util.function.Function;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.truth.Truth;
-
 import com.ulfric.dragoon.extension.Extension;
-
-import java.util.function.Function;
 
 class ObjectFactoryTest extends DragoonTestSuite {
 
@@ -48,7 +47,7 @@ class ObjectFactoryTest extends DragoonTestSuite {
 	@Test
 	void testBindToFunction() {
 		Object value = new Object();
-		Function<Object[], ?> function = ignore -> value;
+		Function<Parameters, ?> function = ignore -> value;
 		factory.bind(Object.class).toFunction(function);
 		Truth.assertThat(factory.request(Object.class)).isSameAs(value);
 	}

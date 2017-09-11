@@ -3,19 +3,22 @@ package com.ulfric.dragoon.logging;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
-import com.ulfric.dragoon.naming.NameHelper;
+import com.ulfric.dragoon.Parameters;
+import com.ulfric.dragoon.qualifier.EmptyQualifier;
+import com.ulfric.dragoon.qualifier.Qualifier;
 
-public enum DefaultLoggerBinding implements Function<Object[], Logger> {
+public enum DefaultLoggerBinding implements Function<Parameters, Logger> {
 
 	INSTANCE;
 
 	@Override
-	public Logger apply(Object[] arguments) {
-		if (arguments.length == 0) {
+	public Logger apply(Parameters parameters) {
+		Qualifier qualifier = parameters.getQualifier();
+		if (qualifier == EmptyQualifier.INSTANCE) {
 			return Logger.getGlobal();
 		}
 
-		String name = NameHelper.getName(arguments);
+		String name = qualifier.getName();
 		if (name == null) {
 			return Logger.getGlobal();
 		}

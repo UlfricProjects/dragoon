@@ -1,6 +1,7 @@
 package com.ulfric.dragoon.extension.loader;
 
 import com.ulfric.dragoon.Factory;
+import com.ulfric.dragoon.Parameters;
 
 public enum LoaderFactory implements Factory {
 
@@ -17,7 +18,7 @@ public enum LoaderFactory implements Factory {
 	}
 
 	@Override
-	public <T> T request(Class<T> type, Object... parameters) {
+	public <T> T request(Class<T> type, Parameters parameters) {
 		return request(type);
 	}
 

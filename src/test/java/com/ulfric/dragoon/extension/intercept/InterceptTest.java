@@ -1,14 +1,13 @@
 package com.ulfric.dragoon.extension.intercept;
 
-import org.junit.jupiter.api.Test;
-
-import com.google.common.truth.Truth;
-
-import com.ulfric.dragoon.DragoonTestSuite;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.Callable;
+
+import org.junit.jupiter.api.Test;
+
+import com.google.common.truth.Truth;
+import com.ulfric.dragoon.DragoonTestSuite;
 
 class InterceptTest extends DragoonTestSuite {
 

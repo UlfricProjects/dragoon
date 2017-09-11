@@ -5,6 +5,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 
 import com.ulfric.dragoon.ObjectFactory;
+import com.ulfric.dragoon.Parameters;
 import com.ulfric.dragoon.reflect.Classes;
 import com.ulfric.dragoon.reflect.Methods;
 import com.ulfric.dragoon.stereotype.Stereotypes;
@@ -57,7 +58,8 @@ public class InterceptedClassBuilder<T> {
 	}
 
 	private Interceptor<?> createInterceptor(Annotation annotation) {
-		return (Interceptor<?>) this.factory.requestUnspecific(annotation.annotationType(), annotation);
+		Parameters parameters = Parameters.unqualified(annotation);
+		return (Interceptor<?>) this.factory.requestUnspecific(annotation.annotationType(), parameters);
 	}
 
 }

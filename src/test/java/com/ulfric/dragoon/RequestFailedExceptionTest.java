@@ -11,15 +11,9 @@ class RequestFailedExceptionTest {
 	@Test
 	void testWithArguments() {
 		Object[] array = new Object[] {1, "Hello", 2, 3};
-		Truth.assertThat(new RequestFailedException(Object.class, array, null).getMessage())
+		Parameters parameters = Parameters.unqualified(array);
+		Truth.assertThat(new RequestFailedException(Object.class, parameters, null).getMessage())
 		        .contains(Arrays.toString(array));
-	}
-
-	@Test
-	void testWithoutArguments() {
-		Object[] array = new Object[0];
-		Truth.assertThat(new RequestFailedException(Object.class, array, null).getMessage())
-		        .doesNotContain(Arrays.toString(array));
 	}
 
 }

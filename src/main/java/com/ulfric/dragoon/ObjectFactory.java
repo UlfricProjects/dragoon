@@ -28,7 +28,6 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 
 	private static final List<Class<? extends Extension>> DEFAULT_EXTENSIONS =
 	        Arrays.asList(InterceptExtension.class, LoaderExtension.class);
-	private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
 	private final Map<Class<? extends Extension>, Extension> extensionTypes = new IdentityHashMap<>();
 	private final List<Extension> extensions = new ArrayList<>();
@@ -58,10 +57,14 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 
 	@Override
 	public Result install(Class<? extends Extension> extension) {
-		return install(extension, ObjectFactory.EMPTY_OBJECT_ARRAY);
+		return install(extension, Parameters.EMPTY);
 	}
 
-	public Result install(Class<? extends Extension> extension, Object... parameters) {
+	public Result install(Class<? extends Extension> extension, Object... arguments) {
+		return install(extension, Parameters.unqualified(arguments));
+	}
+
+	public Result install(Class<? extends Extension> extension, Parameters parameters) {
 		Objects.requireNonNull(extension, "extension type");
 
 		ResultWrapper result = new ResultWrapper();
@@ -104,11 +107,11 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 
 	@Override
 	public <T> T request(Class<T> type) {
-		return request(type, ObjectFactory.EMPTY_OBJECT_ARRAY);
+		return request(type, Parameters.EMPTY);
 	}
 
 	@Override
-	public <T> T request(Class<T> type, Object... parameters) {
+	public <T> T request(Class<T> type, Parameters parameters) {
 		Object value = requestUnspecific(type, parameters);
 
 		try {
@@ -119,10 +122,10 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	}
 
 	public Object requestUnspecific(Class<?> type) {
-		return requestUnspecific(type, ObjectFactory.EMPTY_OBJECT_ARRAY);
+		return requestUnspecific(type, Parameters.EMPTY);
 	}
 
-	public Object requestUnspecific(Class<?> type, Object... parameters) {
+	public Object requestUnspecific(Class<?> type, Parameters parameters) {
 		Binding binding = getBinding(type);
 		if (binding == null) {
 			return null;
@@ -195,13 +198,13 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 			toFunction(ignore -> supplier.get());
 		}
 
-		public void toFunction(Function<Object[], ?> function) {
+		public void toFunction(Function<Parameters, ?> function) {
 			Objects.requireNonNull(function, "function");
 
 			register(new FunctionBinding(function));
 		}
 
-		public void toLazy(Function<Object[], ?> function) {
+		public void toLazy(Function<Parameters, ?> function) {
 			Objects.requireNonNull(function, "function");
 
 			register(new LazyBinding(function));
@@ -236,18 +239,18 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	}
 
 	private interface Binding {
-		Object create(Object... parameters);
+		Object create(Parameters parameters);
 	}
 
 	private class FunctionBinding implements Binding {
-		private final Function<Object[], ?> function;
+		private final Function<Parameters, ?> function;
 
-		FunctionBinding(Function<Object[], ?> function) {
+		FunctionBinding(Function<Parameters, ?> function) {
 			this.function = function;
 		}
 
 		@Override
-		public Object create(Object... parameters) {
+		public Object create(Parameters parameters) {
 			return function.apply(parameters);
 		}
 	}
@@ -255,12 +258,12 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 	private final class LazyBinding extends FunctionBinding {
 		private Object value;
 
-		LazyBinding(Function<Object[], ?> function) {
+		LazyBinding(Function<Parameters, ?> function) {
 			super(function);
 		}
 
 		@Override
-		public Object create(Object... parameters) {
+		public Object create(Parameters parameters) {
 			if (value != null) {
 				return value;
 			}
@@ -285,9 +288,9 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		}
 
 		@Override
-		public Object create(Object... parameters) {
+		public Object create(Parameters parameters) {
 			Class<?> transformedType = transformType(type);
-			return Instances.instance(transformedType, parameters);
+			return Instances.instance(transformedType, parameters.getArguments());
 		}
 	}
 
@@ -299,7 +302,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		}
 
 		@Override
-		public Object create(Object... parameters) {
+		public Object create(Parameters parameters) {
 			return value;
 		}
 	}
