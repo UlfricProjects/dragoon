@@ -2,7 +2,6 @@ package com.ulfric.dragoon.application;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
 
 public class Application implements Hookable {
@@ -42,10 +41,7 @@ public class Application implements Hookable {
 			return;
 		}
 
-		ListIterator<Runnable> reverseIterator = shutdown.listIterator(shutdown.size());
-		while (reverseIterator.hasPrevious()) {
-			reverseIterator.previous().run();
-		}
+		shutdown.forEach(Runnable::run);
 	}
 
 	@Override

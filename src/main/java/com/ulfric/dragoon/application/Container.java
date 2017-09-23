@@ -1,13 +1,5 @@
 package com.ulfric.dragoon.application;
 
-import com.ulfric.dragoon.ObjectFactory;
-import com.ulfric.dragoon.extension.Extensible;
-import com.ulfric.dragoon.extension.inject.Inject;
-import com.ulfric.dragoon.extension.loader.Loader;
-import com.ulfric.dragoon.extension.loader.OwnedClassLoader;
-import com.ulfric.dragoon.reflect.Classes;
-import com.ulfric.dragoon.value.Result;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -18,6 +10,14 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
+import com.ulfric.dragoon.ObjectFactory;
+import com.ulfric.dragoon.extension.Extensible;
+import com.ulfric.dragoon.extension.inject.Inject;
+import com.ulfric.dragoon.extension.loader.Loader;
+import com.ulfric.dragoon.extension.loader.OwnedClassLoader;
+import com.ulfric.dragoon.reflect.Classes;
+import com.ulfric.dragoon.value.Result;
 
 @Loader
 public class Container extends Application implements Extensible<Class<?>> {
@@ -43,8 +43,14 @@ public class Container extends Application implements Extensible<Class<?>> {
 	public static ManagedContainer launch() {
 		ObjectFactory factory = new ObjectFactory();
 		ManagedContainer managed = factory.request(ManagedContainer.class);
+		addShutdownHook(managed);
 		managed.boot();
 		return managed;
+	}
+
+	private static void addShutdownHook(Container container) {
+		Runtime.getRuntime().addShutdownHook(
+				new Thread(container::shutdown, "container-" + container.getName() + "-shutdown-hook"));
 	}
 
 	@Inject
@@ -83,9 +89,7 @@ public class Container extends Application implements Extensible<Class<?>> {
 		}
 		if (name.endsWith("Container")) {
 			name = name.substring(0, name.length() - "Container".length());
-			return CAMEL_TO_DASH.matcher(name)
-					.replaceAll("$1-$2")
-					.toLowerCase();
+			return CAMEL_TO_DASH.matcher(name).replaceAll("$1-$2").toLowerCase();
 		}
 		return name;
 	}
