@@ -1,11 +1,12 @@
 package com.ulfric.dragoon.extension.intercept.asynchronous;
 
-import java.util.concurrent.Future;
-
 import org.junit.jupiter.api.Test;
 
 import com.google.common.truth.Truth;
+
 import com.ulfric.dragoon.ObjectFactory;
+
+import java.util.concurrent.Future;
 
 class AsynchronousTest {
 
@@ -13,7 +14,11 @@ class AsynchronousTest {
 	void testRunsAsynchronously() throws Exception {
 		ObjectFactory factory = new ObjectFactory();
 		GetThreadAsynchronous get = factory.request(GetThreadAsynchronous.class);
-		Truth.assertThat(get.get().get()).isNotEqualTo(Thread.currentThread());
+		Future<Thread> future = get.get();
+		while (!future.isDone()) {
+			Thread.sleep(1L);
+		}
+		Truth.assertThat(future.get()).isNotEqualTo(Thread.currentThread());
 	}
 
 	public static class GetThreadAsynchronous {

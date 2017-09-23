@@ -1,19 +1,19 @@
 package com.ulfric.dragoon.extension.intercept.asynchronous;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
-
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.extension.inject.Inject;
 import com.ulfric.dragoon.extension.intercept.Interceptor;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public class AsynchronousInterceptor extends Interceptor<Asynchronous> {
 
 	@Inject
 	private ObjectFactory factory;
 
-	private ForkJoinPool pool;
+	private ExecutorService executor;
 
 	public AsynchronousInterceptor(Asynchronous declaration) {
 		super(declaration);
@@ -21,7 +21,7 @@ public class AsynchronousInterceptor extends Interceptor<Asynchronous> {
 
 	@Override
 	public Future<?> invoke(Object[] arguments, Callable<?> proceed) throws Exception {
-		return pool().submit(unwrapAsynchronousResult(proceed));
+		return executor().submit(unwrapAsynchronousResult(proceed));
 	}
 
 	private Callable<?> unwrapAsynchronousResult(Callable<?> callable) {
@@ -36,20 +36,20 @@ public class AsynchronousInterceptor extends Interceptor<Asynchronous> {
 		};
 	}
 
-	private ForkJoinPool pool() {
-		if (pool != null) {
-			return pool;
+	private ExecutorService executor() {
+		if (executor != null) {
+			return executor;
 		}
 
 		synchronized (this) {
-			if (pool != null) {
-				return pool;
+			if (executor != null) {
+				return executor;
 			}
 
-			pool = factory.request(declaration.forkJoinPool()).get();
+			executor = factory.request(declaration.executor()).get();
 		}
 
-		return pool;
+		return executor;
 	}
 
 }
