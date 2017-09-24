@@ -4,6 +4,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +83,10 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		}
 
 		bind(extension).toValue(value);
-		this.extensions.add(value);
+		extensions.add(value);
+
+		Collections.sort(extensions,
+				(extension1, extension2) -> Integer.compare(extension2.getPriority(), extension1.getPriority()));
 
 		return Result.SUCCESS;
 	}

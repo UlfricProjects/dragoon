@@ -6,6 +6,10 @@ import com.ulfric.dragoon.extension.inject.Inject;
 
 public abstract class Extension extends Application {
 
+	public static final int HIGH_PRIORITY = 10;
+	public static final int NORMAL_PRIORITY = 5;
+	public static final int LOW_PRIORITY = 1;
+
 	@Inject
 	private ObjectFactory factory;
 
@@ -29,6 +33,10 @@ public abstract class Extension extends Application {
 
 	public <T> T transform(T value) {
 		return value;
+	}
+
+	public int getPriority() {
+		return NORMAL_PRIORITY;
 	}
 
 }
