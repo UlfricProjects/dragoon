@@ -6,6 +6,7 @@ import com.google.common.truth.Truth;
 
 import com.ulfric.dragoon.ObjectFactory;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 class AsynchronousTest {
@@ -24,7 +25,7 @@ class AsynchronousTest {
 	public static class GetThreadAsynchronous {
 		@Asynchronous
 		public Future<Thread> get() {
-			return AsynchronousResult.of(Thread.currentThread());
+			return CompletableFuture.completedFuture(Thread.currentThread());
 		}
 	}
 

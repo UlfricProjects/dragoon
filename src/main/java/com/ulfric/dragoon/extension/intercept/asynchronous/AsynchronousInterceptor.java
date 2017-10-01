@@ -5,8 +5,11 @@ import com.ulfric.dragoon.extension.inject.Inject;
 import com.ulfric.dragoon.extension.intercept.Interceptor;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 public class AsynchronousInterceptor extends Interceptor<Asynchronous> {
 
@@ -20,16 +23,25 @@ public class AsynchronousInterceptor extends Interceptor<Asynchronous> {
 	}
 
 	@Override
-	public Future<?> invoke(Object[] arguments, Callable<?> proceed) throws Exception {
-		return executor().submit(unwrapAsynchronousResult(proceed));
+	public CompletableFuture<?> invoke(Object[] arguments, Callable<?> proceed) throws Exception {
+		return CompletableFuture.supplyAsync(unwrapAsynchronousResult(proceed), executor());
 	}
 
-	private Callable<?> unwrapAsynchronousResult(Callable<?> callable) {
+	private Supplier<?> unwrapAsynchronousResult(Callable<?> callable) {
 		return () -> {
-			Object value = callable.call();
+			Object value;
+			try {
+				value = callable.call();
+			} catch (Exception exception) {
+				return null;
+			}
 
-			if (value instanceof AsynchronousResult) {
-				return ((AsynchronousResult<?>) value).get();
+			if (value instanceof Future) {
+				try {
+					return ((Future<?>) value).get();
+				} catch (InterruptedException | ExecutionException exception) {
+					return null;
+				}
 			}
 
 			return value;

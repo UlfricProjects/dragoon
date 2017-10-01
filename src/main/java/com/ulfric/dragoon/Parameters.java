@@ -1,17 +1,29 @@
 package com.ulfric.dragoon;
 
+import com.ulfric.dragoon.qualifier.EmptyQualifier;
+import com.ulfric.dragoon.qualifier.Qualifier;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.StringJoiner;
-
-import com.ulfric.dragoon.qualifier.EmptyQualifier;
-import com.ulfric.dragoon.qualifier.Qualifier;
 
 public final class Parameters {
 
 	private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 	public static final Parameters EMPTY =
 			new Parameters(EmptyQualifier.INSTANCE, null, EMPTY_OBJECT_ARRAY);
+
+	public static String getPassedOrQualifiedName(Parameters parameters) {
+		Object[] arguments = parameters.getArguments();
+
+		for (Object argument : arguments) {
+			if (argument instanceof String) {
+				return (String) argument;
+			}
+		}
+
+		return parameters.getQualifier().getName();
+	}
 
 	public static String getQualifiedName(Parameters parameters) {
 		StringJoiner string = new StringJoiner(".");
