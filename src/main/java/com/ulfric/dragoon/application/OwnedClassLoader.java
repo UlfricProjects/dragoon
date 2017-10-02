@@ -1,4 +1,4 @@
-package com.ulfric.dragoon.extension.loader;
+package com.ulfric.dragoon.application;
 
 import java.util.Objects;
 

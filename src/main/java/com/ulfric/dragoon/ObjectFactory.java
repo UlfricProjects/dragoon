@@ -1,5 +1,19 @@
 package com.ulfric.dragoon;
 
+import com.ulfric.dragoon.application.Container;
+import com.ulfric.dragoon.application.OwnedClassLoader;
+import com.ulfric.dragoon.extension.Extensible;
+import com.ulfric.dragoon.extension.Extension;
+import com.ulfric.dragoon.extension.inject.InjectExtension;
+import com.ulfric.dragoon.extension.intercept.InterceptExtension;
+import com.ulfric.dragoon.extension.intercept.asynchronous.Asynchronous;
+import com.ulfric.dragoon.extension.intercept.asynchronous.AsynchronousInterceptor;
+import com.ulfric.dragoon.extension.loader.LoaderExtension;
+import com.ulfric.dragoon.logging.DefaultLoggerBinding;
+import com.ulfric.dragoon.reflect.Classes;
+import com.ulfric.dragoon.reflect.Instances;
+import com.ulfric.dragoon.value.Result;
+
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
@@ -13,22 +27,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
-import com.ulfric.dragoon.extension.Extensible;
-import com.ulfric.dragoon.extension.Extension;
-import com.ulfric.dragoon.extension.inject.InjectExtension;
-import com.ulfric.dragoon.extension.intercept.InterceptExtension;
-import com.ulfric.dragoon.extension.intercept.asynchronous.Asynchronous;
-import com.ulfric.dragoon.extension.intercept.asynchronous.AsynchronousInterceptor;
-import com.ulfric.dragoon.extension.loader.LoaderExtension;
-import com.ulfric.dragoon.logging.DefaultLoggerBinding;
-import com.ulfric.dragoon.reflect.Classes;
-import com.ulfric.dragoon.reflect.Instances;
-import com.ulfric.dragoon.value.Result;
-
 public final class ObjectFactory implements Factory, Extensible<Class<? extends Extension>> {
 
 	private static final List<Class<? extends Extension>> DEFAULT_EXTENSIONS =
-	        Arrays.asList(InterceptExtension.class, LoaderExtension.class);
+	        Arrays.asList(LoaderExtension.class, InterceptExtension.class);
 
 	private final Map<Class<? extends Extension>, Extension> extensionTypes = new IdentityHashMap<>();
 	private final List<Extension> extensions = new ArrayList<>();
@@ -54,6 +56,31 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		bind(FileSystem.class).toValue(FileSystems.getDefault());
 		bind(Logger.class).toFunction(DefaultLoggerBinding.INSTANCE);
 		bind(Asynchronous.class).to(AsynchronousInterceptor.class);
+
+		bindContainerToParentLookup();
+	}
+
+	private void bindContainerToParentLookup() {
+		bind(Container.class).toFunction(parameters -> {
+			if (parameters.getHolder() == null) {
+				return new Container();
+			}
+
+			Class<?> type = parameters.getHolder().getClass();
+			ClassLoader loader = type.getClassLoader();
+
+			if (loader instanceof OwnedClassLoader) {
+				Object container = ((OwnedClassLoader) loader).getOwner();
+
+				if (container instanceof Container) {
+					return container;
+				}
+
+				throw new IllegalArgumentException(type + " uses an OwnedClassLoader, but the owner is not a Container");
+			}
+
+			throw new IllegalArgumentException(type + " does not use an OwnedClassLoader");
+		});
 	}
 
 	@Override

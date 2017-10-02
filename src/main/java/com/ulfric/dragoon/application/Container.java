@@ -14,12 +14,9 @@ import java.util.regex.Pattern;
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.extension.Extensible;
 import com.ulfric.dragoon.extension.inject.Inject;
-import com.ulfric.dragoon.extension.loader.Loader;
-import com.ulfric.dragoon.extension.loader.OwnedClassLoader;
 import com.ulfric.dragoon.reflect.Classes;
 import com.ulfric.dragoon.value.Result;
 
-@Loader
 public class Container extends Application implements Extensible<Class<?>> {
 
 	private static final Pattern CAMEL_TO_DASH = Pattern.compile("([a-z])([A-Z]+)");
@@ -139,9 +136,6 @@ public class Container extends Application implements Extensible<Class<?>> {
 	}
 
 	private <T> Class<? extends T> getAsOwnedClass(Class<T> type) {
-		if (type.isAnnotationPresent(Loader.class)) {
-			return type;
-		}
 		return Classes.translate(type, getClass().getClassLoader());
 	}
 
