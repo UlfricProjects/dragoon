@@ -1,5 +1,11 @@
 package com.ulfric.dragoon.application;
 
+import com.ulfric.dragoon.ObjectFactory;
+import com.ulfric.dragoon.extension.Extensible;
+import com.ulfric.dragoon.extension.inject.Inject;
+import com.ulfric.dragoon.reflect.Classes;
+import com.ulfric.dragoon.value.Result;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -10,12 +16,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import com.ulfric.dragoon.ObjectFactory;
-import com.ulfric.dragoon.extension.Extensible;
-import com.ulfric.dragoon.extension.inject.Inject;
-import com.ulfric.dragoon.reflect.Classes;
-import com.ulfric.dragoon.value.Result;
 
 public class Container extends Application implements Extensible<Class<?>> {
 
@@ -136,7 +136,11 @@ public class Container extends Application implements Extensible<Class<?>> {
 	}
 
 	private <T> Class<? extends T> getAsOwnedClass(Class<T> type) {
-		return Classes.translate(type, getClass().getClassLoader());
+		ClassLoader thisLoader = getClass().getClassLoader();
+		if (type.getClassLoader().equals(thisLoader)) {
+			return type;
+		}
+		return Classes.translate(type, thisLoader);
 	}
 
 	private Result validate(Class<?> application) {

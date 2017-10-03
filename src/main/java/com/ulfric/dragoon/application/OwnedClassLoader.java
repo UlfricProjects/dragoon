@@ -4,17 +4,17 @@ import java.util.Objects;
 
 public class OwnedClassLoader extends ClassLoader {
 
-	private Object owner;
+	private Container owner;
 
 	public OwnedClassLoader(ClassLoader parent) {
 		super(parent);
 	}
 
-	public Object getOwner() {
+	public Container getOwner() {
 		return this.owner;
 	}
 
-	public void setOwner(Object owner) {
+	public void setOwner(Container owner) {
 		Objects.requireNonNull(owner, "owner");
 
 		if (this.owner != null) {
