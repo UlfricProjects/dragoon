@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import com.ulfric.dragoon.extension.inject.Inject;
 import com.ulfric.dragoon.reflect.Classes;
 
-public class Application implements Hookable {
+public class Application implements Hookable { // TODO unit tests for crash hooks
 
 	private final List<Supplier<Throwable>> boot = new ArrayList<>();
 	private final List<Supplier<Throwable>> shutdown = new ArrayList<>();
