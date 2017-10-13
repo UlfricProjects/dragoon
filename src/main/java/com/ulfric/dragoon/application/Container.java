@@ -111,7 +111,7 @@ public class Container extends Application implements Extensible<Class<?>> {
 			return validation;
 		}
 
-		if (getState() != ApplicationState.RUNTIME) {
+		if (!canBootApplications()) {
 			addBootHook(() -> install(application));
 			return Result.DELAYED;
 		}
@@ -174,12 +174,17 @@ public class Container extends Application implements Extensible<Class<?>> {
 	}
 
 	private void update(Application application) {
-		if (getState() == ApplicationState.RUNTIME) {
+		if (canBootApplications()) {
 			application.boot();
 			return;
 		}
 
 		application.shutdown();
+	}
+
+	private boolean canBootApplications() {
+		ApplicationState state = getState();
+		return state == ApplicationState.BOOT || state == ApplicationState.RUNTIME;
 	}
 
 }
