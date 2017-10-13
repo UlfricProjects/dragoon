@@ -5,7 +5,6 @@ public enum ApplicationState {
 	STATELESS,
 	BOOT,
 	RUNTIME,
-	SHUTDOWN,
-	CRASH
+	SHUTDOWN;
 
 }

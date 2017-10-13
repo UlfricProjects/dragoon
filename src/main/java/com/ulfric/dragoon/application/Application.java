@@ -46,16 +46,15 @@ public class Application implements Hookable { // TODO unit tests for crash hook
 	}
 
 	public final void shutdown() {
-		if (state != ApplicationState.RUNTIME && state != ApplicationState.CRASH) {
+		if (state != ApplicationState.RUNTIME) {
 			return;
 		}
 
 		state = ApplicationState.SHUTDOWN;
 		Optional<Crash> crash = callShutdownHooks();
+		state = ApplicationState.STATELESS;
 		if (crash.isPresent()) {
 			crash(crash.get());
-		} else {
-			state = ApplicationState.STATELESS;
 		}
 	}
 
@@ -82,7 +81,6 @@ public class Application implements Hookable { // TODO unit tests for crash hook
 
 	private final void crash(Crash crash) {
 		logCrash(crash);
-		state = ApplicationState.CRASH;
 		callCrashHooks(crash);
 		shutdown();
 	}
@@ -90,7 +88,7 @@ public class Application implements Hookable { // TODO unit tests for crash hook
 	private void logCrash(Crash crash) {
 		if (logger != null) {
 			for (Throwable thrown : crash.getCauses()) {
-				logger.log(Level.SEVERE, getName() + " crashed in " + state, thrown);
+				logger.log(Level.SEVERE, getName() + " crashed in " + crash.getState(), thrown);
 			}
 		}
 	}
