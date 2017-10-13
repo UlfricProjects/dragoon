@@ -16,31 +16,29 @@ class ApplicationTest {
 
 	@Test
 	void testStart() {
-		Truth.assertThat(this.application.isRunning()).isFalse();
+		Truth.assertThat(this.application.getState()).isSameAs(ApplicationState.STATELESS);
 		this.application.boot();
-		Truth.assertThat(this.application.isRunning()).isTrue();
+		Truth.assertThat(this.application.getState()).isSameAs(ApplicationState.RUNTIME);
 	}
 
 	@Test
 	void testShutdown() {
 		this.application.boot();
-		Truth.assertThat(this.application.isRunning()).isTrue();
 		this.application.shutdown();
-		Truth.assertThat(this.application.isRunning()).isFalse();
+		Truth.assertThat(this.application.getState()).isSameAs(ApplicationState.STATELESS);
 	}
 
 	@Test
 	void testStartIfRunning() {
 		this.application.boot();
 		this.application.boot();
-		Truth.assertThat(this.application.isRunning()).isTrue();
+		Truth.assertThat(this.application.getState()).isSameAs(ApplicationState.RUNTIME);
 	}
 
 	@Test
 	void testShutdownIfNotRunning() {
-		Truth.assertThat(this.application.isRunning()).isFalse();
 		this.application.shutdown();
-		Truth.assertThat(this.application.isRunning()).isFalse();
+		Truth.assertThat(this.application.getState()).isSameAs(ApplicationState.STATELESS);
 	}
 
 	@Test

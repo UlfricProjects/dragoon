@@ -23,23 +23,21 @@ class ContainerTest extends DragoonTestSuite {
 	void teardown() {
 		ApplicationExample.last = null;
 
-		if (container.isRunning()) {
-			container.shutdown();
-		}
+		container.shutdown();
 	}
 
 	@Test
 	void testStart() {
-		Truth.assertThat(this.container.isRunning()).isFalse();
+		Truth.assertThat(this.container.getState()).isSameAs(ApplicationState.STATELESS);
 		this.container.boot();
-		Truth.assertThat(this.container.isRunning()).isTrue();
+		Truth.assertThat(this.container.getState()).isSameAs(ApplicationState.RUNTIME);
 	}
 
 	@Test
 	void testShutdown() {
 		this.container.boot();
 		this.container.shutdown();
-		Truth.assertThat(this.container.isRunning()).isFalse();
+		Truth.assertThat(this.container.getState()).isSameAs(ApplicationState.STATELESS);
 	}
 
 	@Test
@@ -53,9 +51,9 @@ class ContainerTest extends DragoonTestSuite {
 	@Test
 	void testStartOnRequested() {
 		this.container = factory.request(Container.class);
-		Truth.assertThat(this.container.isRunning()).isFalse();
+		Truth.assertThat(this.container.getState()).isSameAs(ApplicationState.STATELESS);
 		this.container.boot();
-		Truth.assertThat(this.container.isRunning()).isTrue();
+		Truth.assertThat(this.container.getState()).isSameAs(ApplicationState.RUNTIME);
 	}
 
 	@Test
@@ -63,7 +61,7 @@ class ContainerTest extends DragoonTestSuite {
 		this.container = factory.request(Container.class);
 		this.container.boot();
 		this.container.shutdown();
-		Truth.assertThat(this.container.isRunning()).isFalse();
+		Truth.assertThat(this.container.getState()).isSameAs(ApplicationState.STATELESS);
 	}
 
 	@Test
