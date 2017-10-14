@@ -17,7 +17,15 @@ public class Stereotypes { // TODO refactor method names, support field/method i
 				continue;
 			}
 
-			if (!Stereotypes.isAnnotated(field, annotation)) {
+			if (field.isSynthetic()) {
+				continue;
+			}
+
+			if (field.isEnumConstant()) {
+				continue;
+			}
+
+			if (!isAnnotated(field, annotation)) {
 				continue;
 			}
 
@@ -25,10 +33,14 @@ public class Stereotypes { // TODO refactor method names, support field/method i
 		}
 
 		Class<?> superType = type.getSuperclass();
-		if (superType != null) {
-			fields.addAll(Stereotypes.getAnnotatedInstanceFields(superType, annotation));
+		if (containsFields(type)) {
+			fields.addAll(getAnnotatedInstanceFields(superType, annotation));
 		}
 		return fields;
+	}
+
+	private static boolean containsFields(Class<?> type) {
+		return type != null && type != Object.class;
 	}
 
 	public static boolean isAnnotated(AnnotatedElement holder, Class<? extends Annotation> annotation) {
@@ -39,7 +51,7 @@ public class Stereotypes { // TODO refactor method names, support field/method i
 			}
 
 			if (heldType.isAnnotationPresent(Stereotype.class)) {
-				if (Stereotypes.isAnnotated(heldType, annotation)) {
+				if (isAnnotated(heldType, annotation)) {
 					return true;
 				}
 			}
@@ -59,7 +71,7 @@ public class Stereotypes { // TODO refactor method names, support field/method i
 			}
 
 			if (heldType.isAnnotationPresent(Stereotype.class)) {
-				annotations.addAll(Stereotypes.getStereotypes(heldType, stereotype));
+				annotations.addAll(getStereotypes(heldType, stereotype));
 			}
 		}
 
@@ -81,7 +93,7 @@ public class Stereotypes { // TODO refactor method names, support field/method i
 			T inherited = heldType.getAnnotation(stereotype);
 			if (inherited == null) {
 				if (heldType.isAnnotationPresent(Stereotype.class)) {
-					inherited = Stereotypes.getFirst(heldType, stereotype);
+					inherited = getFirst(heldType, stereotype);
 				}
 			}
 

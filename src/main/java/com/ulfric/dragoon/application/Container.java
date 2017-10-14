@@ -112,7 +112,7 @@ public class Container extends Application implements Extensible<Class<?>> {
 		}
 
 		if (!canBootApplications()) {
-			addBootHook(() -> install(application));
+			addBootHook(() -> auditedInstall(application));
 			return Result.DELAYED;
 		}
 
@@ -133,6 +133,13 @@ public class Container extends Application implements Extensible<Class<?>> {
 		update(install);
 
 		return Result.SUCCESS;
+	}
+
+	private void auditedInstall(Class<?> application) {
+		Result install = install(application);
+		if (!install.isSuccess()) {
+			severe("Failed to install " + Classes.getNonDynamic(application));
+		}
 	}
 
 	private <T> Class<? extends T> getAsOwnedClass(Class<T> type) {
@@ -171,6 +178,14 @@ public class Container extends Application implements Extensible<Class<?>> {
 		}
 
 		logger.info(message);
+	}
+
+	protected void severe(String message) {
+		if (logger == null) {
+			return;
+		}
+
+		logger.severe(message);
 	}
 
 	private void update(Application application) {

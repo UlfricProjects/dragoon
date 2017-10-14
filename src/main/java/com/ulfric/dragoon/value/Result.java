@@ -1,11 +1,13 @@
 package com.ulfric.dragoon.value;
 
-public interface Result {
+public enum Result {
 
-	Result DELAYED = () -> true;
-	Result SUCCESS = () -> true;
-	Result FAILURE = () -> false;
+	DELAYED,
+	SUCCESS,
+	FAILURE;
 
-	boolean isSuccess();
+	public final boolean isSuccess() {
+		return this != FAILURE;
+	}
 
 }
