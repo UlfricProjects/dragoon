@@ -2,6 +2,7 @@ package com.ulfric.dragoon.extension.intercept;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Executable;
 import java.util.concurrent.Callable;
 
 import org.junit.jupiter.api.Test;
@@ -33,8 +34,8 @@ class InterceptTest extends DragoonTestSuite {
 	}
 
 	static class InterceptMeInterceptor extends Interceptor<InterceptMe> {
-		public InterceptMeInterceptor(InterceptMe declaration) {
-			super(declaration);
+		public InterceptMeInterceptor(Executable call, InterceptMe declaration) {
+			super(call, declaration);
 		}
 
 		@Override

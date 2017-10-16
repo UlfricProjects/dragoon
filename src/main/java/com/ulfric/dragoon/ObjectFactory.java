@@ -1,19 +1,5 @@
 package com.ulfric.dragoon;
 
-import com.ulfric.dragoon.application.Container;
-import com.ulfric.dragoon.application.OwnedClassLoader;
-import com.ulfric.dragoon.extension.Extensible;
-import com.ulfric.dragoon.extension.Extension;
-import com.ulfric.dragoon.extension.inject.InjectExtension;
-import com.ulfric.dragoon.extension.intercept.InterceptExtension;
-import com.ulfric.dragoon.extension.intercept.asynchronous.Asynchronous;
-import com.ulfric.dragoon.extension.intercept.asynchronous.AsynchronousInterceptor;
-import com.ulfric.dragoon.extension.loader.LoaderExtension;
-import com.ulfric.dragoon.logging.DefaultLoggerBinding;
-import com.ulfric.dragoon.reflect.Classes;
-import com.ulfric.dragoon.reflect.Instances;
-import com.ulfric.dragoon.value.Result;
-
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
@@ -25,6 +11,22 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
+
+import com.ulfric.dragoon.application.Container;
+import com.ulfric.dragoon.application.OwnedClassLoader;
+import com.ulfric.dragoon.extension.Extensible;
+import com.ulfric.dragoon.extension.Extension;
+import com.ulfric.dragoon.extension.inject.InjectExtension;
+import com.ulfric.dragoon.extension.intercept.InterceptExtension;
+import com.ulfric.dragoon.extension.intercept.asynchronous.Asynchronous;
+import com.ulfric.dragoon.extension.intercept.asynchronous.AsynchronousInterceptor;
+import com.ulfric.dragoon.extension.intercept.sla.SLA;
+import com.ulfric.dragoon.extension.intercept.sla.SLAInterceptor;
+import com.ulfric.dragoon.extension.loader.LoaderExtension;
+import com.ulfric.dragoon.logging.DefaultLoggerBinding;
+import com.ulfric.dragoon.reflect.Classes;
+import com.ulfric.dragoon.reflect.Instances;
+import com.ulfric.dragoon.value.Result;
 
 public final class ObjectFactory implements Factory, Extensible<Class<? extends Extension>> {
 
@@ -55,6 +57,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		bind(FileSystem.class).toValue(FileSystems.getDefault());
 		bind(Logger.class).toFunction(DefaultLoggerBinding.INSTANCE);
 		bind(Asynchronous.class).to(AsynchronousInterceptor.class);
+		bind(SLA.class).to(SLAInterceptor.class);
 
 		bindContainerToParentLookup();
 	}

@@ -63,11 +63,11 @@ public class Container extends Application implements Extensible<Class<?>> {
 	final ThreadClassLoaderState state = new ThreadClassLoaderState(getClass().getClassLoader());
 
 	public Container() {
-		addBootHook(this::bootApplications);
 		addBootHook(() -> log("Booting " + getName()));
+		addBootHook(this::bootApplications);
 
-		addShutdownHook(this::shutdownApplications);
 		addShutdownHook(() -> log("Shutting down " + getName()));
+		addShutdownHook(this::shutdownApplications);
 	}
 
 	public String getName() {

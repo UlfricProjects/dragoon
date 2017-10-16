@@ -1,14 +1,14 @@
 package com.ulfric.dragoon.extension.intercept;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Executable;
+import java.util.concurrent.Callable;
+
 import org.junit.jupiter.api.Test;
 
 import com.google.common.truth.Truth;
-
 import com.ulfric.dragoon.DragoonTestSuite;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.Callable;
 
 class InterceptedClassBuilderTest extends DragoonTestSuite {
 
@@ -38,8 +38,8 @@ class InterceptedClassBuilderTest extends DragoonTestSuite {
 	}
 
 	static class ExampleInterceptor extends Interceptor<Example> {
-		public ExampleInterceptor(Example declaration) {
-			super(declaration);
+		public ExampleInterceptor(Executable call, Example declaration) {
+			super(call, declaration);
 		}
 
 		@Override

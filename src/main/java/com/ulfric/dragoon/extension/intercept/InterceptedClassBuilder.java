@@ -1,8 +1,11 @@
 package com.ulfric.dragoon.extension.intercept;
 
-import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.implementation.MethodDelegation;
-import net.bytebuddy.matcher.ElementMatchers;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.Parameters;
@@ -10,11 +13,9 @@ import com.ulfric.dragoon.reflect.Classes;
 import com.ulfric.dragoon.reflect.Methods;
 import com.ulfric.dragoon.stereotype.Stereotypes;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.matcher.ElementMatchers;
 
 public class InterceptedClassBuilder<T> {
 
@@ -41,8 +42,11 @@ public class InterceptedClassBuilder<T> {
 
 	private void run() {
 		for (Method method : Methods.getOverridableMethods(this.parent)) {
-			List<Interceptor<?>> interceptors = Stereotypes.getStereotypes(method, Intercept.class).stream()
-					.map(this::createInterceptor).filter(Objects::nonNull).collect(Collectors.toList());
+			List<Interceptor<?>> interceptors = Stereotypes.getStereotypes(method, Intercept.class)
+					.stream()
+					.map(intercept -> this.createInterceptor(method, intercept))
+					.filter(Objects::nonNull)
+					.collect(Collectors.toList());
 
 			if (interceptors.isEmpty()) {
 				continue;
@@ -57,8 +61,8 @@ public class InterceptedClassBuilder<T> {
 		}
 	}
 
-	private Interceptor<?> createInterceptor(Annotation annotation) {
-		Parameters parameters = Parameters.unqualified(annotation);
+	private Interceptor<?> createInterceptor(Executable call, Annotation annotation) {
+		Parameters parameters = Parameters.unqualified(call, annotation);
 		return (Interceptor<?>) this.factory.requestUnspecific(annotation.annotationType(), parameters);
 	}
 

@@ -1,15 +1,16 @@
 package com.ulfric.dragoon.extension.intercept.asynchronous;
 
-import com.ulfric.dragoon.ObjectFactory;
-import com.ulfric.dragoon.extension.inject.Inject;
-import com.ulfric.dragoon.extension.intercept.Interceptor;
-
+import java.lang.reflect.Executable;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
+
+import com.ulfric.dragoon.ObjectFactory;
+import com.ulfric.dragoon.extension.inject.Inject;
+import com.ulfric.dragoon.extension.intercept.Interceptor;
 
 public class AsynchronousInterceptor extends Interceptor<Asynchronous> {
 
@@ -18,8 +19,8 @@ public class AsynchronousInterceptor extends Interceptor<Asynchronous> {
 
 	private ExecutorService executor;
 
-	public AsynchronousInterceptor(Asynchronous declaration) {
-		super(declaration);
+	public AsynchronousInterceptor(Executable call, Asynchronous declaration) {
+		super(call, declaration);
 	}
 
 	@Override
