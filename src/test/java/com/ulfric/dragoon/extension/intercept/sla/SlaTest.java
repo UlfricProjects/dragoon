@@ -39,7 +39,7 @@ class SlaTest {
 		factory.bind(Work.class).to(LongWork.class);
 		factory.request(Example.class).work();
 		Mockito.verify(logger, Mockito.times(1)).warning(ArgumentMatchers.startsWith(
-				"public void com.ulfric.dragoon.extension.intercept.sla.SlaTest$Example.work() violated it's SLA of 3ms by taking "));
+				"public void com.ulfric.dragoon.extension.intercept.sla.SlaTest$Example.work() violated it's SLA of 3 milliseconds by taking "));
 	}
 
 	public static class Example {
