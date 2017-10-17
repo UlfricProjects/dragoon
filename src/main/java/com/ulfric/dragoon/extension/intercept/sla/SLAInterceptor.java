@@ -2,7 +2,6 @@ package com.ulfric.dragoon.extension.intercept.sla;
 
 import java.lang.reflect.Executable;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import com.ulfric.dragoon.extension.inject.Inject;
@@ -42,8 +41,8 @@ public class SLAInterceptor extends Interceptor<SLA> {
 	}
 
 	private String formatNanos(long nanos) {
-		long millis = TimeUnit.NANOSECONDS.toMillis(nanos);
-		if (millis == 0) {
+		double millis = nanos / 1.0E6D;
+		if (millis < 1) {
 			return nanos + " nanoseconds";
 		}
 
