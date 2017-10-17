@@ -21,7 +21,8 @@ public class PostConstructExtension extends Extension {
 				continue;
 			}
 
-			Object owner = Modifier.isStatic(method.getModifiers()) ? value : null;
+			method.setAccessible(true);
+			Object owner = Modifier.isStatic(method.getModifiers()) ? null : value;
 			Try.toRun(() -> method.invoke(owner, EMPTY_OBJECT_ARRAY));
 		}
 

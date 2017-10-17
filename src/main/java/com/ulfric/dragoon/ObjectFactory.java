@@ -23,6 +23,7 @@ import com.ulfric.dragoon.extension.intercept.asynchronous.AsynchronousIntercept
 import com.ulfric.dragoon.extension.intercept.sla.SLA;
 import com.ulfric.dragoon.extension.intercept.sla.SLAInterceptor;
 import com.ulfric.dragoon.extension.loader.LoaderExtension;
+import com.ulfric.dragoon.extension.postconstruct.PostConstructExtension;
 import com.ulfric.dragoon.logging.DefaultLoggerBinding;
 import com.ulfric.dragoon.reflect.Classes;
 import com.ulfric.dragoon.reflect.Instances;
@@ -31,7 +32,7 @@ import com.ulfric.dragoon.value.Result;
 public final class ObjectFactory implements Factory, Extensible<Class<? extends Extension>> {
 
 	private static final List<Class<? extends Extension>> DEFAULT_EXTENSIONS =
-	        Arrays.asList(LoaderExtension.class, InterceptExtension.class);
+	        Arrays.asList(LoaderExtension.class, InterceptExtension.class, PostConstructExtension.class);
 
 	private final Map<Class<? extends Extension>, Extension> extensionTypes = new IdentityHashMap<>();
 	private final List<Extension> extensions = new ArrayList<>();
