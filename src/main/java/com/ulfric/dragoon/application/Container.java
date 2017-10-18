@@ -123,7 +123,7 @@ public class Container extends Application implements Extensible<Class<?>> {
 			return Result.FAILURE;
 		}
 
-		Application install = Feature.wrap(rawInstall);
+		Application install = rawInstall instanceof Application ? (Application) rawInstall : Feature.wrap(rawInstall);
 		if (install == null) {
 			return Result.FAILURE;
 		}
