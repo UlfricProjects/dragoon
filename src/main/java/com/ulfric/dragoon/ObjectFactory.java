@@ -263,6 +263,12 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 			throw new IllegalArgumentException("Could not create singleton from any of " + Arrays.toString(bind));
 		}
 
+		public void toSingleton(Class<?> type) {
+			Objects.requireNonNull(type, "type");
+
+			register(new SingletonClassBilding(type));
+		}
+
 		public void toValue(Object value) {
 			Objects.requireNonNull(value, "value");
 
@@ -318,7 +324,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		}
 	}
 
-	private final class ClassBinding implements Binding {
+	private class ClassBinding implements Binding {
 		private final Class<?> type;
 
 		ClassBinding(Class<?> type) {
@@ -329,6 +335,23 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		public Object create(Parameters parameters) {
 			Class<?> transformedType = transformType(type);
 			return Instances.instance(transformedType, parameters.getArguments());
+		}
+	}
+
+	private final class SingletonClassBilding extends ClassBinding {
+		private Object value;
+
+		SingletonClassBilding(Class<?> type) {
+			super(type);
+		}
+
+		@Override
+		public Object create(Parameters parameters) {
+			if (value == null) {
+				value = super.create(parameters);
+			}
+
+			return value;
 		}
 	}
 

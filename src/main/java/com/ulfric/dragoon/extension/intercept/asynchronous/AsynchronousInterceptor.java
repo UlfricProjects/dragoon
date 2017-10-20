@@ -8,11 +8,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
+import com.ulfric.dragoon.Factory;
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.extension.inject.Inject;
 import com.ulfric.dragoon.extension.intercept.Interceptor;
 
 public class AsynchronousInterceptor extends Interceptor<Asynchronous> {
+
+	public static ExecutorService executor(Factory factory, Asynchronous asynchronous) {
+		return factory.request(asynchronous.executor()).get();
+	}
 
 	@Inject
 	private ObjectFactory factory;
@@ -59,7 +64,7 @@ public class AsynchronousInterceptor extends Interceptor<Asynchronous> {
 				return executor;
 			}
 
-			executor = factory.request(declaration.executor()).get();
+			executor = executor(factory, declaration);
 		}
 
 		return executor;
