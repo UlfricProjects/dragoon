@@ -20,6 +20,7 @@ import com.ulfric.dragoon.extension.inject.InjectExtension;
 import com.ulfric.dragoon.extension.intercept.InterceptExtension;
 import com.ulfric.dragoon.extension.intercept.asynchronous.Asynchronous;
 import com.ulfric.dragoon.extension.intercept.asynchronous.AsynchronousInterceptor;
+import com.ulfric.dragoon.extension.intercept.exceptionally.Exceptionally;
 import com.ulfric.dragoon.extension.intercept.sla.SLA;
 import com.ulfric.dragoon.extension.intercept.sla.SLAInterceptor;
 import com.ulfric.dragoon.extension.loader.LoaderExtension;
@@ -59,6 +60,7 @@ public final class ObjectFactory implements Factory, Extensible<Class<? extends 
 		bind(Logger.class).toFunction(DefaultLoggerBinding.INSTANCE);
 		bind(Asynchronous.class).to(AsynchronousInterceptor.class);
 		bind(SLA.class).to(SLAInterceptor.class);
+		bind(Exceptionally.class).to(SLAInterceptor.class);
 
 		bindContainerToParentLookup();
 	}

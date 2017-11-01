@@ -54,7 +54,8 @@ public class InterceptedClassBuilder<T> {
 
 			InterceptorPipeline pipeline = new InterceptorPipeline(interceptors);
 
-			this.builder = this.builder.method(ElementMatchers.is(method)).intercept(MethodDelegation.to(pipeline))
+			this.builder = this.builder.method(ElementMatchers.is(method))
+					.intercept(MethodDelegation.to(pipeline))
 					.annotateMethod(method.getDeclaredAnnotations());
 
 			this.changed = true;
