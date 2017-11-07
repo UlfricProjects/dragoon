@@ -38,8 +38,12 @@ public class Container extends Application implements Extensible<Class<?>> {
 	}
 
 	public static ManagedContainer launch() {
+		return launch(ManagedContainer.class);
+	}
+
+	public static <T extends Container> T launch(Class<T> container) {
 		ObjectFactory factory = new ObjectFactory();
-		ManagedContainer managed = factory.request(ManagedContainer.class);
+		T managed = factory.request(container);
 		addShutdownHook(managed);
 		managed.boot();
 		return managed;
