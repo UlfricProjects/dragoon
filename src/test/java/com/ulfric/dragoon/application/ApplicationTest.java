@@ -58,4 +58,32 @@ class ApplicationTest {
 		Truth.assertThat(ran[0]).isTrue();
 	}
 
+	@Test
+	void testCheckedBootAllowed() {
+		Application application = new CheckedBootApplication(true);
+		application.boot();
+		Truth.assertThat(application.getState()).isSameAs(ApplicationState.RUNTIME);
+	}
+
+	@Test
+	void testCheckedBootDenied() {
+		Application application = new CheckedBootApplication(false);
+		application.boot();
+		Truth.assertThat(application.getState()).isSameAs(ApplicationState.STATELESS);
+	}
+
+	static class CheckedBootApplication extends Application implements CheckedBoot {
+
+		private final boolean canBoot;
+
+		public CheckedBootApplication(boolean canBoot) {
+			this.canBoot = canBoot;
+		}
+
+		@Override
+		public boolean canBoot() {
+			return canBoot;
+		}
+	}
+
 }

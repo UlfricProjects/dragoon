@@ -32,6 +32,10 @@ public class Application implements Hookable { // TODO unit tests for crash hook
 			return;
 		}
 
+		if (!testBootability()) {
+			return; // TODO should we log this?
+		}
+
 		state = ApplicationState.BOOT;
 		Optional<Crash> crash = callBootHooks();
 		if (crash.isPresent()) {
@@ -39,6 +43,14 @@ public class Application implements Hookable { // TODO unit tests for crash hook
 		} else {
 			state = ApplicationState.RUNTIME;
 		}
+	}
+
+	private boolean testBootability() {
+		if (this instanceof CheckedBoot) {
+			CheckedBoot checked = (CheckedBoot) this;
+			return checked.canBoot();
+		}
+		return true;
 	}
 
 	private Optional<Crash> callBootHooks() {
