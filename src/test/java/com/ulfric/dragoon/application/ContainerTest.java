@@ -96,6 +96,14 @@ class ContainerTest extends DragoonTestSuite {
 		Truth.assertThat(new ExtendedContainer().getName()).isEqualTo("extended");
 	}
 
+	@Test
+	void testShutdownWhileBootingDoesNothing() {
+		Container container = new Container();
+		container.addBootHook(container::shutdown);
+		container.boot();
+		Truth.assertThat(container.getState()).isSameAs(ApplicationState.RUNTIME);
+	}
+
 	static class ApplicationExample extends Application {
 		static ApplicationExample last;
 
