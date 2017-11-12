@@ -1,10 +1,12 @@
 package com.ulfric.dragoon.reflect;
 
+import java.lang.reflect.Type;
+
+import com.ulfric.dragoon.Dynamic;
+
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
-
-import com.ulfric.dragoon.Dynamic;
 
 public class Classes {
 
@@ -15,6 +17,14 @@ public class Classes {
 
 	public static <T> Class<? extends T> translate(Class<T> type, ClassLoader owner) {
 		return Classes.extend(type).make().load(owner).getLoaded();
+	}
+
+	public static <T> Class<? extends T> implement(Class<T> type, Type... implement) {
+		return extend(type)
+				.implement(implement)
+				.make()
+				.load(type.getClassLoader())
+				.getLoaded();
 	}
 
 	public static Class<?> getNonDynamic(Class<?> type) {

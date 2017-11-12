@@ -1,12 +1,13 @@
 package com.ulfric.dragoon.reflect;
 
-import com.ulfric.dragoon.value.Lazy;
-
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public final class LazyFieldProfile implements Consumer<Object> {
+import com.ulfric.dragoon.value.Lazy;
+
+public final class LazyFieldProfile implements Consumer<Object>, Predicate<Class<?>> {
 
 	private final Lazy<FieldProfile> wrap;
 	private boolean loading;
@@ -33,6 +34,15 @@ public final class LazyFieldProfile implements Consumer<Object> {
 		}
 
 		wrap.get().accept(setValues);
+	}
+
+	@Override
+	public boolean test(Class<?> type) {
+		if (loading) {
+			return false;
+		}
+
+		return wrap.get().containsFields(type);
 	}
 
 }

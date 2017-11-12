@@ -89,7 +89,7 @@ public final class FieldProfile implements Consumer<Object> {
 
 	@Override
 	public void accept(Object setValues) {
-		for (Setter handle : this.requests.computeIfAbsent(setValues.getClass(), this::createSetters)) {
+		for (Setter handle : getSetters(setValues.getClass())) {
 
 			Parameters parameters = Parameters.qualifiedHolder(handle.qualifier, setValues);
 			Class<?> injectType = this.typeResolver.apply(parameters);
@@ -103,6 +103,14 @@ public final class FieldProfile implements Consumer<Object> {
 				this.failureStrategy.accept(injectType, parameters);
 			}
 		}
+	}
+
+	public boolean containsFields(Class<?> type) {
+		return !getSetters(type).isEmpty();
+	}
+
+	private List<Setter> getSetters(Class<?> type) {
+		return requests.computeIfAbsent(type, this::createSetters);
 	}
 
 	private List<Setter> createSetters(Class<?> type) {
