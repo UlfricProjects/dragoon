@@ -109,7 +109,7 @@ public final class FieldProfile implements Consumer<Object> {
 		return !getSetters(type).isEmpty();
 	}
 
-	private List<Setter> getSetters(Class<?> type) {
+	public List<Setter> getSetters(Class<?> type) {
 		return requests.computeIfAbsent(type, this::createSetters);
 	}
 

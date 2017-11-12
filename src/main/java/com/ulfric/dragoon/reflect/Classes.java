@@ -15,8 +15,9 @@ public class Classes {
 		        .annotateType(type.getAnnotations()).implement(Dynamic.class);
 	}
 
-	public static <T> Class<? extends T> translate(Class<T> type, ClassLoader owner) {
-		return Classes.extend(type).make().load(owner).getLoaded();
+	public static <T> DynamicType.Builder<T> extend(Class<T> type, Type... implement) {
+		return extend(type)
+				.implement(implement);
 	}
 
 	public static <T> Class<? extends T> implement(Class<T> type, Type... implement) {
@@ -25,6 +26,10 @@ public class Classes {
 				.make()
 				.load(type.getClassLoader())
 				.getLoaded();
+	}
+
+	public static <T> Class<? extends T> translate(Class<T> type, ClassLoader owner) {
+		return Classes.extend(type).make().load(owner).getLoaded();
 	}
 
 	public static Class<?> getNonDynamic(Class<?> type) {
