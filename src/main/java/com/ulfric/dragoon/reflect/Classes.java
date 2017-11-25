@@ -1,5 +1,6 @@
 package com.ulfric.dragoon.reflect;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import com.ulfric.dragoon.Dynamic;
@@ -54,6 +55,19 @@ public class Classes {
 		}
 
 		return object.getClass();
+	}
+
+	public static Class<?> getRawType(Type type) {
+		if (type instanceof Class) {
+			return (Class<?>) type;
+		}
+
+		if (type instanceof ParameterizedType) {
+			ParameterizedType parameterizedType = (ParameterizedType) type;
+			return getRawType(parameterizedType.getRawType());
+		}
+
+		throw new UnsupportedOperationException("Could not get raw type from " + type);
 	}
 
 	private Classes() {}

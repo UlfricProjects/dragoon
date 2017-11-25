@@ -1,6 +1,7 @@
 package com.ulfric.dragoon.qualifier;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 public enum EmptyQualifier implements Qualifier {
 
@@ -29,7 +30,7 @@ public enum EmptyQualifier implements Qualifier {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Type getType() {
 		return Object.class;
 	}
 

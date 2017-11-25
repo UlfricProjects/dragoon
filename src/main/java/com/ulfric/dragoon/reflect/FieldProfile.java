@@ -38,7 +38,7 @@ public final class FieldProfile implements Consumer<Object> {
 
 			Function<Parameters, Class<?>> typeResolver = this.typeResolver;
 			if (typeResolver == null) {
-				typeResolver = (parameters) -> parameters.getQualifier().getType();
+				typeResolver = (parameters) -> Classes.getRawType(parameters.getQualifier().getType());
 			}
 
 			BiConsumer<Class<?>, Parameters> failureStrategy = this.failureStrategy;
