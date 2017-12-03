@@ -6,9 +6,11 @@ public enum CurrentThreadExecutorSupplier implements Supplier<CurrentThreadExecu
 
 	INSTANCE;
 
+	private final CurrentThreadExecutor executor = new CurrentThreadExecutor();
+
 	@Override
 	public CurrentThreadExecutor get() {
-		return CurrentThreadExecutor.INSTANCE;
+		return executor;
 	}
 
 }

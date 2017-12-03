@@ -16,7 +16,12 @@ import com.ulfric.dragoon.extension.intercept.Interceptor;
 public class AsynchronousInterceptor extends Interceptor<Asynchronous> {
 
 	public static ExecutorService executor(Factory factory, Asynchronous asynchronous) {
-		return factory.request(asynchronous.executor()).get();
+		return executor(factory, asynchronous.value());
+	}
+
+	public static ExecutorService executor(Factory factory,
+			Class<? extends Supplier<? extends ExecutorService>> supplier) {
+		return factory.request(supplier).get();
 	}
 
 	@Inject
