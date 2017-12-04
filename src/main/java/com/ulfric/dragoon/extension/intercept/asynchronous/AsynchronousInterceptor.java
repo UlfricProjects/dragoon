@@ -4,7 +4,7 @@ import java.lang.reflect.Executable;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
@@ -15,19 +15,19 @@ import com.ulfric.dragoon.extension.intercept.Interceptor;
 
 public class AsynchronousInterceptor extends Interceptor<Asynchronous> {
 
-	public static ExecutorService executor(Factory factory, Asynchronous asynchronous) {
+	public static Executor executor(Factory factory, Asynchronous asynchronous) {
 		return executor(factory, asynchronous.value());
 	}
 
-	public static ExecutorService executor(Factory factory,
-			Class<? extends Supplier<? extends ExecutorService>> supplier) {
+	public static Executor executor(Factory factory,
+			Class<? extends Supplier<? extends Executor>> supplier) {
 		return factory.request(supplier).get();
 	}
 
 	@Inject
 	private ObjectFactory factory;
 
-	private ExecutorService executor;
+	private Executor executor;
 
 	public AsynchronousInterceptor(Executable call, Asynchronous declaration) {
 		super(call, declaration);
@@ -59,7 +59,7 @@ public class AsynchronousInterceptor extends Interceptor<Asynchronous> {
 		};
 	}
 
-	private ExecutorService executor() {
+	private Executor executor() {
 		if (executor != null) {
 			return executor;
 		}

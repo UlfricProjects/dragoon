@@ -1,35 +1,8 @@
 package com.ulfric.dragoon.extension.intercept.asynchronous;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.AbstractExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executor;
 
-public class CurrentThreadExecutor extends AbstractExecutorService {
-
-	@Override
-	public void shutdown() {
-	}
-
-	@Override
-	public List<Runnable> shutdownNow() {
-		return Collections.emptyList();
-	}
-
-	@Override
-	public boolean isShutdown() {
-		return false;
-	}
-
-	@Override
-	public boolean isTerminated() {
-		return false;
-	}
-
-	@Override
-	public boolean awaitTermination(long timeout, TimeUnit unit) {
-		return true;
-	}
+public class CurrentThreadExecutor implements Executor {
 
 	@Override
 	public void execute(Runnable command) {

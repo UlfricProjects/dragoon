@@ -8,7 +8,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 import com.ulfric.dragoon.extension.intercept.Intercept;
@@ -18,6 +18,6 @@ import com.ulfric.dragoon.extension.intercept.Intercept;
 @Intercept
 public @interface Asynchronous {
 
-	Class<? extends Supplier<? extends ExecutorService>> value() default CommonForkJoinPoolSupplier.class;
+	Class<? extends Supplier<? extends Executor>> value() default CommonForkJoinPoolSupplier.class;
 
 }
