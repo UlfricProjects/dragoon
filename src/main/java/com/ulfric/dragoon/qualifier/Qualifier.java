@@ -9,4 +9,6 @@ public interface Qualifier extends AnnotatedElement {
 
 	Type getType();
 
+	Type getEnclosingType();
+
 }

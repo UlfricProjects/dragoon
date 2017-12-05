@@ -20,4 +20,9 @@ public class FieldQualifier extends DelegatingQualifier<Field> {
 		return delegate.getGenericType();
 	}
 
+	@Override
+	public Type getEnclosingType() {
+		return delegate.getDeclaringClass();
+	}
+
 }

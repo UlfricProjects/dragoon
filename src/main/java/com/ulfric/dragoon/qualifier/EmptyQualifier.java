@@ -39,4 +39,9 @@ public enum EmptyQualifier implements Qualifier {
 		return null;
 	}
 
+	@Override
+	public Type getEnclosingType() {
+		return null;
+	}
+
 }
