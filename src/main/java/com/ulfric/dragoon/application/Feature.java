@@ -22,14 +22,24 @@ public abstract class Feature implements Function<Object, Application> { // TODO
 	}
 
 	public static Application wrap(Object raw) {
+		List<Application> applications = new ArrayList<>();
+
 		for (Feature wrapper : WRAPPERS) {
 			Application wrapped = wrapper.apply(raw);
 			if (wrapped != null) {
-				return wrapped;
+				applications.add(wrapped);
 			}
 		}
 
-		return raw instanceof Application ? (Application) raw : null;
+		if (raw instanceof Application) {
+			applications.add((Application) raw);
+		}
+
+		if (applications.isEmpty()) {
+			return null;
+		}
+
+		return new AggregateApplication(applications);
 	}
 
 }

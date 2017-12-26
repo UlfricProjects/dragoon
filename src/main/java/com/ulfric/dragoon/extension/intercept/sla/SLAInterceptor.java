@@ -2,10 +2,10 @@ package com.ulfric.dragoon.extension.intercept.sla;
 
 import java.lang.reflect.Executable;
 import java.util.concurrent.Callable;
-import java.util.logging.Logger;
 
 import com.ulfric.dragoon.extension.inject.Inject;
 import com.ulfric.dragoon.extension.intercept.Interceptor;
+import com.ulfric.dragoon.logging.Log;
 
 public class SLAInterceptor extends Interceptor<SLA> {
 
@@ -14,7 +14,7 @@ public class SLAInterceptor extends Interceptor<SLA> {
 	private final String slaDescription;
 
 	@Inject
-	private Logger logger;
+	private Log logger;
 
 	public SLAInterceptor(Executable call, SLA declaration) {
 		super(call, declaration);

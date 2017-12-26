@@ -1,5 +1,6 @@
 package com.ulfric.dragoon.reflect;
 
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -68,6 +69,10 @@ public class Classes {
 		}
 
 		throw new UnsupportedOperationException("Could not get raw type from " + type);
+	}
+
+	public static boolean isConcrete(Class<?> type) {
+		return !type.isInterface() && !Modifier.isAbstract(type.getModifiers());
 	}
 
 	private Classes() {}
