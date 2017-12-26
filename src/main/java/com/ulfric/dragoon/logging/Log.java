@@ -34,4 +34,10 @@ public class Log {
 		}
 	}
 
+	public void log(Level level, String message, Object... parameters) {
+		if (logger != null) {
+			logger.log(level, message, parameters);
+		}
+	}
+
 }

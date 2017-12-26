@@ -41,4 +41,9 @@ public abstract class DelegatingQualifier<A extends AnnotatedElement> implements
 		return name.value();
 	}
 
+	@Override
+	public String toString() {
+		return String.format("%s[%s]", getClass().getSimpleName(), getName());
+	}
+
 }

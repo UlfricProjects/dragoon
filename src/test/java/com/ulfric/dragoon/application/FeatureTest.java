@@ -26,7 +26,7 @@ class FeatureTest {
 	@Test
 	void testWrapApplication() {
 		Application expected = new Application();
-		Truth.assertThat(Feature.wrap(expected)).isSameAs(expected);
+		Truth.assertThat(Feature.wrap(expected)).isInstanceOf(AggregateApplication.class);
 	}
 
 	@Test
@@ -37,9 +37,10 @@ class FeatureTest {
 
 	@Test
 	void testNewApplicationWrapper() {
-		Application expected = new Application();
-		Mockito.when(feature.apply(ArgumentMatchers.any())).thenReturn(expected);
-		Truth.assertThat(Feature.wrap(new Object())).isSameAs(expected);
+		Object expected = new Object();
+		Mockito.when(feature.apply(ArgumentMatchers.any())).thenReturn(new Application());
+		Truth.assertThat(Feature.wrap(expected)).isInstanceOf(AggregateApplication.class);
+		Mockito.verify(feature, Mockito.times(1)).apply(expected);
 	}
 
 }

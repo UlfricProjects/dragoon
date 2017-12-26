@@ -8,12 +8,12 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import com.ulfric.dragoon.ObjectFactory;
 import com.ulfric.dragoon.extension.Extensible;
 import com.ulfric.dragoon.extension.inject.Inject;
-import com.ulfric.dragoon.logging.Log;
 import com.ulfric.dragoon.reflect.Classes;
 import com.ulfric.dragoon.value.Result;
 
@@ -57,8 +57,8 @@ public class Container extends Application implements Extensible<Class<?>> {
 	@Inject
 	private ObjectFactory factory;
 
-	@Inject
-	private Log logger;
+	@Inject(optional = true)
+	private Logger logger;
 
 	private final Set<Class<?>> applicationTypes = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Application> applications = new ArrayList<>();
@@ -144,12 +144,20 @@ public class Container extends Application implements Extensible<Class<?>> {
 	private void auditedInstall(Class<?> application) {
 		Result install = install(application);
 		if (!install.isSuccess()) {
-			logger.severe("Failed to install " + Classes.getNonDynamic(application));
+			severe("Failed to install " + Classes.getNonDynamic(application));
 		}
 	}
 
 	protected void log(String message) {
-		logger.info(message);
+		if (logger != null) {
+			logger.info(message);
+		}
+	}
+
+	protected void severe(String message) {
+		if (logger != null) {
+			logger.severe(message);
+		}
 	}
 
 	private <T> Class<? extends T> getAsOwnedClass(Class<T> type) {
