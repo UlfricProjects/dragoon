@@ -124,13 +124,11 @@ public class Container extends Application implements Extensible<Class<?>> {
 		Object rawInstall = getFactory().request(implementation);
 
 		if (rawInstall == null) {
-			System.out.println(application + " FAILURE 1");
 			return Result.FAILURE;
 		}
 
 		Application install = rawInstall instanceof Application ? (Application) rawInstall : Feature.wrap(rawInstall);
 		if (install == null) {
-			System.out.println(application + " FAILURE 2");
 			return Result.FAILURE;
 		}
 

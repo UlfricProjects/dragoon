@@ -5,6 +5,10 @@ import java.lang.reflect.Type;
 
 public class FieldQualifier extends DelegatingQualifier<Field> {
 
+	public static String getQualifiedName(Field field) {
+		return field.getDeclaringClass().getSimpleName() + '.' + field.getName();
+	}
+
 	public FieldQualifier(Field field) {
 		super(field);
 	}
@@ -12,7 +16,7 @@ public class FieldQualifier extends DelegatingQualifier<Field> {
 	@Override
 	public String getName() {
 		String name = super.getName();
-		return name == null ? delegate.getName() : name;
+		return name == null ? getQualifiedName(delegate) : name;
 	}
 
 	@Override
