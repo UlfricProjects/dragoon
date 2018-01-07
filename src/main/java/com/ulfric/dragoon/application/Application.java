@@ -7,10 +7,10 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.ulfric.dragoon.extension.inject.Inject;
-import com.ulfric.dragoon.logging.Log;
 import com.ulfric.dragoon.reflect.Classes;
 
 public class Application implements Hookable { // TODO unit tests for crash hooks
@@ -20,8 +20,8 @@ public class Application implements Hookable { // TODO unit tests for crash hook
 	private final List<Consumer<Crash>> crash = new ArrayList<>();
 	private ApplicationState state = ApplicationState.STATELESS;
 
-	@Inject
-	private Log logger;
+	@Inject(optional = true)
+	private Logger logger;
 
 	public final ApplicationState getState() {
 		return state;
@@ -98,6 +98,9 @@ public class Application implements Hookable { // TODO unit tests for crash hook
 	}
 
 	private void logCrash(Crash crash) {
+		if (logger == null) {
+			return;
+		}
 		for (Throwable thrown : crash.getCauses()) {
 			logger.log(Level.SEVERE, getName() + " crashed in " + crash.getState(), thrown);
 		}
@@ -151,7 +154,9 @@ public class Application implements Hookable { // TODO unit tests for crash hook
 			try {
 				consumer.accept(crash);
 			} catch (Throwable exception) {
-				logger.log(Level.SEVERE, "Crash hook threw an exception", exception);
+				if (logger != null) {
+					logger.log(Level.SEVERE, "Crash hook threw an exception", exception);
+				}
 			}
 		};
 	}
