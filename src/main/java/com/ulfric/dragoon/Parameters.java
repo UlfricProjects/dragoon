@@ -22,7 +22,7 @@ public final class Parameters {
 			}
 		}
 
-		return parameters.getQualifier().getName();
+		return parameters.getQualifier().getSimpleName();
 	}
 
 	public static String getQualifiedName(Parameters parameters) {
@@ -33,7 +33,7 @@ public final class Parameters {
 			string.add(holder.toString());
 		}
 
-		string.add(parameters.getQualifier().getName());
+		string.add(parameters.getQualifier().getSimpleName());
 
 		return string.toString();
 	}

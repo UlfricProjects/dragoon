@@ -14,9 +14,9 @@ public class FieldQualifier extends DelegatingQualifier<Field> {
 	}
 
 	@Override
-	public String getName() {
-		String name = super.getName();
-		return name == null ? getQualifiedName(delegate) : name;
+	public String getSimpleName() {
+		String name = super.getSimpleName();
+		return name == null ? delegate.getName() : name;
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 
 public interface Qualifier extends AnnotatedElement {
 
-	String getName();
+	String getSimpleName();
 
 	Type getType();
 

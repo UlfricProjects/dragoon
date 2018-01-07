@@ -35,8 +35,8 @@ public enum EmptyQualifier implements Qualifier {
 	}
 
 	@Override
-	public String getName() {
-		return null;
+	public String getSimpleName() {
+		return toString();
 	}
 
 	@Override

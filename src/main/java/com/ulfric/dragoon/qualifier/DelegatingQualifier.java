@@ -33,7 +33,7 @@ public abstract class DelegatingQualifier<A extends AnnotatedElement> implements
 	}
 
 	@Override
-	public String getName() {
+	public String getSimpleName() {
 		Name name = Stereotypes.getFirst(this, Name.class);
 		if (name == null) {
 			return null;
@@ -43,7 +43,7 @@ public abstract class DelegatingQualifier<A extends AnnotatedElement> implements
 
 	@Override
 	public String toString() {
-		return String.format("%s[%s]", getClass().getSimpleName(), getName());
+		return String.format("%s[%s]", getClass().getSimpleName(), getSimpleName());
 	}
 
 }

@@ -18,8 +18,8 @@ public enum DefaultLoggerBinding implements Function<Parameters, Logger> {
 			return Logger.getGlobal();
 		}
 
-		String name = qualifier.getName();
-		if (name == null) {
+		String name = qualifier.getSimpleName();
+		if (name == null || name.isEmpty()) {
 			return Logger.getGlobal();
 		}
 
